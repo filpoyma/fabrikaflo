@@ -1,0 +1,121 @@
+// Prisma 7 schema. The new `prisma-client` generator emits a TypeScript
+// client into a custom output directory and is used together with a driver
+// adapter (see src/plugins/prisma.ts).
+// Docs: https://www.prisma.io/docs
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  runtime      = "nodejs"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum Role {
+  CLIENT
+  ADMIN
+  COURIER
+}
+
+enum RequestStatus {
+  PENDING
+  CONTACTED
+  CONVERTED
+  CANCELLED
+}
+
+enum OrderStatus {
+  CREATED
+  ASSEMBLING
+  ASSEMBLED
+  WAITING_FOR_APPROVAL
+  APPROVED
+  WAITING_FOR_PAYMENT
+  PAID
+  DELIVERING
+  DELIVERED
+  CANCELLED
+}
+
+enum DeliveryType {
+  PICKUP
+  DELIVERY
+}
+
+model User {
+  id           String   @id @default(uuid())
+  telegramId   String?  @unique
+  username     String?
+  name         String?
+  phone        String?
+  role         Role     @default(CLIENT)
+  passwordHash String?  // Only populated for dashboard administrators
+  botState     String?  // Current state of conversation wizard
+  botData      String?  // JSON data collected during wizard
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  requests       Request[]
+  clientOrders   Order[]   @relation("ClientOrders")
+  courierOrders  Order[]   @relation("CourierOrders")
+}
+
+model Request {
+  id              String        @id @default(uuid())
+  clientId        String
+  client          User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  occasion        String
+  budget          Float
+  date            DateTime
+  deliveryType    DeliveryType  @default(DELIVERY)
+  comment         String?
+  examplePhotoUrl String?
+  status          RequestStatus @default(PENDING)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  orders          Order[]
+}
+
+model Order {
+  id              String       @id @default(uuid())
+  clientId        String
+  client          User         @relation("ClientOrders", fields: [clientId], references: [id], onDelete: Cascade)
+  requestId       String?
+  request         Request?     @relation(fields: [requestId], references: [id], onDelete: SetNull)
+  recipientName   String?
+  recipientPhone  String?
+  deliveryAddress String?
+  deliveryTime    DateTime?
+  budget          Float
+  wishes          String?
+  postcardText    String?
+  comment         String?
+  status          OrderStatus  @default(CREATED)
+  paymentLink     String?
+  courierId       String?
+  courier         User?        @relation("CourierOrders", fields: [courierId], references: [id], onDelete: SetNull)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  photos          OrderPhoto[]
+}
+
+model OrderPhoto {
+  id        String   @id @default(uuid())
+  orderId   String
+  order     Order    @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  photoUrl  String
+  createdAt DateTime @default(now())
+}
+
+model PortfolioItem {
+  id          String   @id @default(uuid())
+  photoUrl    String
+  title       String?
+  description String?
+  createdAt   DateTime @default(now())
+}

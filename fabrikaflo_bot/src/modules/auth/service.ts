@@ -8,10 +8,11 @@ export function createAuthService(fastify: FastifyInstance) {
 
   return {
     async login(username: string, checkPass: string) {
+      const cleanUsername = username.replace(/^@/, '').trim()
       const user = await prisma.user.findFirst({
         where: {
           OR: [
-            { username: username },
+            { username: cleanUsername },
             { phone: username },
           ],
           role: 'ADMIN', // React Dashboard is only accessible by administrators

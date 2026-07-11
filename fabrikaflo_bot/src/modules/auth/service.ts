@@ -12,6 +12,7 @@ export function createAuthService(fastify: FastifyInstance) {
       const user = await prisma.user.findFirst({
         where: {
           OR: [
+            { login: cleanUsername },
             { username: cleanUsername },
             { phone: username },
           ],

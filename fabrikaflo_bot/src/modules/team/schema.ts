@@ -4,6 +4,7 @@ export const TeamMemberSchema = Type.Object({
   id: Type.String(),
   name: Type.Union([Type.String(), Type.Null()]),
   username: Type.Union([Type.String(), Type.Null()]),
+  login: Type.Union([Type.String(), Type.Null()]),
   phone: Type.Union([Type.String(), Type.Null()]),
   role: Type.String(),
   telegramId: Type.Union([Type.String(), Type.Null()]),
@@ -24,6 +25,7 @@ export const createTeamSchema = {
   body: Type.Object({
     name: Type.String({ minLength: 1 }),
     username: Type.Optional(Type.String()),
+    login: Type.Optional(Type.String()),
     phone: Type.Optional(Type.String()),
     role: Type.Union([Type.Literal('ADMIN'), Type.Literal('COURIER')]),
     password: Type.Optional(Type.String()),

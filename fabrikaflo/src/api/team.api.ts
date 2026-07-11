@@ -4,6 +4,7 @@ export interface ITeamMember {
   id: string
   name: string | null
   username: string | null
+  login: string | null
   phone: string | null
   role: 'ADMIN' | 'COURIER'
   telegramId: string | null
@@ -13,6 +14,7 @@ export interface ITeamMember {
 export interface ICreateTeamMember {
   name: string
   username?: string
+  login?: string
   phone?: string
   role: 'ADMIN' | 'COURIER'
   password?: string

@@ -49,6 +49,7 @@ export const TeamPage: React.FC = () => {
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [name, setName] = useState('')
   const [username, setUsername] = useState('')
+  const [login, setLogin] = useState('')
   const [phone, setPhone] = useState('')
   const [role, setRole] = useState<'ADMIN' | 'COURIER'>('COURIER')
   const [password, setPassword] = useState('')
@@ -56,6 +57,7 @@ export const TeamPage: React.FC = () => {
   const resetForm = () => {
     setName('')
     setUsername('')
+    setLogin('')
     setPhone('')
     setRole('COURIER')
     setPassword('')
@@ -64,11 +66,13 @@ export const TeamPage: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!name.trim()) return alert('Введите имя сотрудника')
+    if (role === 'ADMIN' && !login.trim()) return alert('Введите логин для администратора')
     if (role === 'ADMIN' && !password.trim()) return alert('Введите пароль для администратора')
 
     createMutation.mutate({
       name: name.trim(),
       username: username.trim() || undefined,
+      login: role === 'ADMIN' ? login.trim() : undefined,
       phone: phone.trim() || undefined,
       role,
       password: password.trim() || undefined,
@@ -125,6 +129,11 @@ export const TeamPage: React.FC = () => {
               {member.name || 'Без имени'}
             </span>
             <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+              {member.login && (
+                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                  Логин: {member.login}
+                </span>
+              )}
               {member.username && (
                 <a
                   href={`https://t.me/${member.username}`}
@@ -346,17 +355,30 @@ export const TeamPage: React.FC = () => {
           </div>
 
           {role === 'ADMIN' && (
-            <div className="form-group">
-              <label className="form-label">Пароль для входа в CRM *</label>
-              <input
-                type="password"
-                className="form-input"
-                placeholder="Минимум 8 символов"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+            <>
+              <div className="form-group">
+                <label className="form-label">Логин *</label>
+                <input
+                  type="text"
+                  className="form-input"
+                  placeholder="Например: elena"
+                  value={login}
+                  onChange={(e) => setLogin(e.target.value)}
+                  required
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">Пароль для входа в CRM *</label>
+                <input
+                  type="password"
+                  className="form-input"
+                  placeholder="Минимум 8 символов"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                />
+              </div>
+            </>
           )}
 
           <div style={{ display: 'flex', gap: '12px', marginTop: '4px', justifyContent: 'flex-end' }}>

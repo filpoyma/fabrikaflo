@@ -15,6 +15,7 @@ export function createTeamService(fastify: FastifyInstance) {
           id: true,
           name: true,
           username: true,
+          login: true,
           phone: true,
           role: true,
           telegramId: true,
@@ -27,6 +28,7 @@ export function createTeamService(fastify: FastifyInstance) {
     async createMember(data: {
       name: string
       username?: string
+      login?: string
       phone?: string
       role: 'ADMIN' | 'COURIER'
       password?: string
@@ -34,9 +36,21 @@ export function createTeamService(fastify: FastifyInstance) {
       if (data.role === 'ADMIN' && !data.password) {
         throw new ValidationError('Пароль обязателен для администратора')
       }
+      if (data.role === 'ADMIN' && !data.login) {
+        throw new ValidationError('Логин обязателен для администратора')
+      }
 
       // Sanitize username: remove leading @
       const username = data.username?.replace(/^@/, '').trim() || null
+      // Sanitize login
+      const login = data.login?.toLowerCase().trim() || null
+
+      if (login) {
+        const existing = await prisma.user.findFirst({ where: { login } })
+        if (existing) {
+          throw new ValidationError('Сотрудник с таким логином уже существует')
+        }
+      }
 
       const passwordHash =
         data.role === 'ADMIN' && data.password
@@ -52,6 +66,7 @@ export function createTeamService(fastify: FastifyInstance) {
             data: {
               role: data.role,
               name: data.name,
+              login,
               phone: data.phone || existing.phone,
               ...(passwordHash ? { passwordHash } : {}),
             },
@@ -59,6 +74,7 @@ export function createTeamService(fastify: FastifyInstance) {
               id: true,
               name: true,
               username: true,
+              login: true,
               phone: true,
               role: true,
               telegramId: true,
@@ -72,6 +88,7 @@ export function createTeamService(fastify: FastifyInstance) {
         data: {
           name: data.name,
           username,
+          login,
           phone: data.phone || null,
           role: data.role,
           passwordHash,
@@ -80,6 +97,7 @@ export function createTeamService(fastify: FastifyInstance) {
           id: true,
           name: true,
           username: true,
+          login: true,
           phone: true,
           role: true,
           telegramId: true,

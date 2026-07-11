@@ -1,0 +1,7 @@
+allowBuilds:
+  '@prisma/engines': true
+  bcrypt: true
+  prisma: true
+minimumReleaseAgeExclude:
+  - '@sinclair/typebox@0.34.51'
+  - eslint@10.7.0

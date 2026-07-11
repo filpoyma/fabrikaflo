@@ -11,7 +11,8 @@ const adapter = new PrismaPg(pool)
 const prisma = new PrismaClient({ adapter })
 
 async function main() {
-  console.log('Seeding flower shop database...')
+  const maskedUrl = databaseUrl.replace(/:[^:@]+@/, ':***@')
+  console.log(`Seeding flower shop database using URL: ${maskedUrl}`)
 
   // Clear existing data
   await prisma.portfolioItem.deleteMany()

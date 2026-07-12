@@ -46,5 +46,18 @@ export function createClientsService(fastify: FastifyInstance) {
         orderBy: { name: 'asc' },
       })
     },
+
+    async getProfile(userId: string) {
+      return prisma.user.findUnique({
+        where: { id: userId },
+      })
+    },
+
+    async updateProfile(userId: string, data: { name?: string; phone?: string }) {
+      return prisma.user.update({
+        where: { id: userId },
+        data,
+      })
+    },
   }
 }

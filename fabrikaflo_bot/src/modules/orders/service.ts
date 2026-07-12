@@ -232,5 +232,131 @@ export function createOrdersService(fastify: FastifyInstance) {
 
       return { success: true, status: 'DELIVERING' }
     },
+
+    async getMyOrders(userId: string) {
+      return prisma.order.findMany({
+        where: { clientId: userId },
+        orderBy: { createdAt: 'desc' },
+        include: { client: true, courier: true, photos: true, request: true },
+      })
+    },
+
+    async clientGetById(id: string, userId: string) {
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { client: true, courier: true, photos: true, request: true },
+      })
+      if (!order || order.clientId !== userId) throw new NotFoundError('Order')
+      return order
+    },
+
+    async clientApproveOrder(id: string, userId: string) {
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { client: true },
+      })
+      if (!order || order.clientId !== userId) throw new NotFoundError('Order')
+      if (order.status !== 'WAITING_FOR_APPROVAL') {
+        throw new ValidationError('Order is not waiting for approval')
+      }
+
+      await prisma.order.update({
+        where: { id },
+        data: { status: 'WAITING_FOR_PAYMENT' },
+      })
+
+      const adminChatId = fastify.config.ADMIN_CHAT_ID
+      if (adminChatId) {
+        const admins = adminChatId.split(',').map((a) => a.trim())
+        for (const adminId of admins) {
+          try {
+            await fastify.bot.api.sendMessage(
+              adminId,
+              `🔔 Клиент одобрил букет по заказу на ${order.budget} руб.\n` +
+                `Ожидайте оплаты или отправьте ссылку.`,
+            )
+          } catch (e) { /* ignore */ }
+        }
+      }
+
+      return { success: true, status: 'WAITING_FOR_PAYMENT' }
+    },
+
+    async clientDisapproveOrder(id: string, userId: string, feedback: string) {
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { client: true },
+      })
+      if (!order || order.clientId !== userId) throw new NotFoundError('Order')
+      if (order.status !== 'WAITING_FOR_APPROVAL') {
+        throw new ValidationError('Order is not waiting for approval')
+      }
+
+      const updatedFeedback = order.clientFeedback
+        ? `${order.clientFeedback}\n${feedback}`
+        : feedback
+
+      await prisma.order.update({
+        where: { id },
+        data: {
+          status: 'ASSEMBLING',
+          clientFeedback: updatedFeedback,
+        },
+      })
+
+      const adminChatId = fastify.config.ADMIN_CHAT_ID
+      if (adminChatId) {
+        const admins = adminChatId.split(',').map((a) => a.trim())
+        for (const adminId of admins) {
+          try {
+            await fastify.bot.api.sendMessage(
+              adminId,
+              `⚠️ Клиент отклонил букет по заказу на ${order.budget} руб. и внес правки:\n` +
+                `_"${feedback}"_\n` +
+                `Заказ возвращен флористу в статус сборки (ASSEMBLING).`,
+            )
+          } catch (e) { /* ignore */ }
+        }
+      }
+
+      return { success: true, status: 'ASSEMBLING' }
+    },
+
+    async clientUploadReceipt(id: string, fileUrl: string, userId: string) {
+      const order = await prisma.order.findUnique({
+        where: { id },
+        include: { client: true },
+      })
+      if (!order || order.clientId !== userId) throw new NotFoundError('Order')
+
+      const updatedComment = order.comment
+        ? `${order.comment}\n[Чек об оплате загружен: ${fileUrl}]`
+        : `[Чек об оплате загружен: ${fileUrl}]`
+
+      await prisma.order.update({
+        where: { id },
+        data: {
+          status: 'PAID',
+          comment: updatedComment,
+        },
+      })
+
+      const adminChatId = fastify.config.ADMIN_CHAT_ID
+      if (adminChatId) {
+        const admins = adminChatId.split(',').map((a) => a.trim())
+        for (const adminId of admins) {
+          try {
+            await fastify.bot.api.sendMessage(
+              adminId,
+              `🔔 Клиент загрузил чек об оплате по заказу на ${order.budget} руб.\n` +
+                `Ссылка на чек: ${fileUrl}\n` +
+                `Статус заказа изменен на Оплачен (PAID).`,
+            )
+          } catch (e) { /* ignore */ }
+        }
+      }
+
+      return { success: true }
+    },
   }
 }

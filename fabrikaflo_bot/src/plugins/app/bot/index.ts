@@ -69,7 +69,7 @@ export default fp(
         })
       } else {
         await ctx.reply(welcomeText, {
-          reply_markup: getClientMainMenu(),
+          reply_markup: getClientMainMenu(fastify.config.MINI_APP_URL),
         })
       }
     })
@@ -79,7 +79,7 @@ export default fp(
       const user = await getOrCreateUser(fastify, ctx, adminChatId)
       if (!user) return
       await ctx.reply('Переключаю на меню клиента:', {
-        reply_markup: getClientMainMenu(),
+        reply_markup: getClientMainMenu(fastify.config.MINI_APP_URL),
       })
     })
 
@@ -100,6 +100,25 @@ export default fp(
     registerOrderHandlers(bot, fastify, adminChatId)
     registerCourierHandlers(bot, fastify, adminChatId)
     registerWizardHandlers(bot, fastify, token, adminChatId)
+
+    // Set Chat Menu Button to open the Web App
+    if (fastify.config.MINI_APP_URL && fastify.config.MINI_APP_URL.startsWith('https://')) {
+      bot.api.setChatMenuButton({
+        menu_button: {
+          type: 'web_app',
+          text: '🌸 Магазин',
+          web_app: { url: fastify.config.MINI_APP_URL }
+        }
+      }).catch(err => {
+        fastify.log.error(err, 'Failed to set Chat Menu Button')
+      })
+    } else {
+      bot.api.setChatMenuButton({
+        menu_button: {
+          type: 'default'
+        }
+      }).catch(() => {})
+    }
 
     // Setup running mode (Webhook or Polling)
     const mode = fastify.config.TELEGRAM_BOT_MODE

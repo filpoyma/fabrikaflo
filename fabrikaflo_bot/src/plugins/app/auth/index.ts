@@ -1,6 +1,7 @@
 import fp from 'fastify-plugin'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
 import jwt from 'jsonwebtoken'
+import crypto from 'node:crypto'
 import type { User } from '../../../generated/prisma/client.ts'
 import { UnauthorizedError, ForbiddenError } from '../../../lib/errors.ts'
 
@@ -19,9 +20,71 @@ interface JwtPayload {
   role: string
 }
 
+function verifyTelegramInitData(initData: string, botToken: string): any {
+  if (!initData) return null
+  try {
+    const params = new URLSearchParams(initData)
+    const hash = params.get('hash')
+    if (!hash) return null
+
+    const sortedKeys = Array.from(params.keys())
+      .filter((k) => k !== 'hash')
+      .sort()
+
+    const dataCheckString = sortedKeys
+      .map((k) => `${k}=${params.get(k)}`)
+      .join('\n')
+
+    const secretKey = crypto
+      .createHmac('sha256', 'WebAppData')
+      .update(botToken)
+      .digest()
+
+    const expectedHash = crypto
+      .createHmac('sha256', secretKey)
+      .update(dataCheckString)
+      .digest('hex')
+
+    if (expectedHash === hash) {
+      const userJson = params.get('user')
+      if (userJson) {
+        return JSON.parse(userJson)
+      }
+    }
+  } catch (err) {
+    // Ignore
+  }
+  return null
+}
+
 export default fp(
   async (fastify: FastifyInstance) => {
     fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
+      // 1. Check X-Init-Data header first (Telegram Mini App)
+      const initDataHeader = request.headers['x-init-data'] as string
+      if (initDataHeader) {
+        const tgUser = verifyTelegramInitData(initDataHeader, fastify.config.TELEGRAM_BOT_TOKEN)
+        if (tgUser && tgUser.id) {
+          const telegramId = String(tgUser.id)
+          let user = await fastify.prisma.user.findUnique({
+            where: { telegramId },
+          })
+          if (!user) {
+            user = await fastify.prisma.user.create({
+              data: {
+                telegramId,
+                tgname: tgUser.username || '',
+                name: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || 'Client',
+                role: 'CLIENT',
+              },
+            })
+          }
+          request.user = user
+          return
+        }
+      }
+
+      // 2. Fallback to Bearer JWT (Dashboard Admin / API calls)
       const authHeader = request.headers['authorization']
       if (!authHeader || !authHeader.startsWith('Bearer ')) {
         throw new UnauthorizedError()

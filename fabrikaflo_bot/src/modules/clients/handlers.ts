@@ -12,3 +12,19 @@ export async function listCouriers(request: FastifyRequest, _reply: FastifyReply
   const data = await service.getCouriers()
   return { data }
 }
+
+export async function getProfile(request: FastifyRequest, reply: FastifyReply) {
+  const service = createClientsService(request.server)
+  const data = await service.getProfile(request.user.id)
+  if (!data) return reply.notFound('Profile not found')
+  return { data }
+}
+
+export async function updateProfile(
+  request: FastifyRequest<{ Body: { name?: string; phone?: string } }>,
+  _reply: FastifyReply,
+) {
+  const service = createClientsService(request.server)
+  const data = await service.updateProfile(request.user.id, request.body)
+  return { data }
+}

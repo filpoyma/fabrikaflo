@@ -44,3 +44,35 @@ export async function convertRequest(
   const service = createRequestsService(request.server)
   return service.convertToOrder(request.params.id, request.body)
 }
+
+export async function createRequest(
+  request: FastifyRequest<{
+    Body: {
+      occasion: string
+      budget: number
+      date?: string | null
+      deliveryType: string
+      deliveryAddress?: string | null
+      recipientPhone?: string | null
+      postcardText?: string | null
+      comment?: string | null
+      examplePhotoUrl?: string | null
+    }
+  }>,
+  reply: FastifyReply,
+) {
+  const service = createRequestsService(request.server)
+  const data = await service.create(request.user.id, request.body)
+  return reply.code(201).send({ data })
+}
+
+export async function uploadRequestPhoto(request: FastifyRequest, reply: FastifyReply) {
+  const fileData = await request.file()
+  if (!fileData) {
+    return reply.badRequest('No file uploaded')
+  }
+
+  const buffer = await fileData.toBuffer()
+  const url = await request.server.cloudinary.uploadBuffer(buffer, 'fabrikaflo_examples')
+  return { url }
+}

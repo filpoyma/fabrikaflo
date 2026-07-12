@@ -3,11 +3,12 @@ import { Type } from '@sinclair/typebox'
 export const TeamMemberSchema = Type.Object({
   id: Type.String(),
   name: Type.Union([Type.String(), Type.Null()]),
-  username: Type.Union([Type.String(), Type.Null()]),
+  tgname: Type.Union([Type.String(), Type.Null()]),
   login: Type.Union([Type.String(), Type.Null()]),
   phone: Type.Union([Type.String(), Type.Null()]),
   role: Type.String(),
   telegramId: Type.Union([Type.String(), Type.Null()]),
+  avatarUrl: Type.Union([Type.String(), Type.Null()]),
   createdAt: Type.Any(),
 })
 
@@ -24,7 +25,7 @@ export const createTeamSchema = {
   tags: ['team'],
   body: Type.Object({
     name: Type.String({ minLength: 1 }),
-    username: Type.Optional(Type.String()),
+    tgname: Type.Optional(Type.String()),
     login: Type.Optional(Type.String()),
     phone: Type.Optional(Type.String()),
     role: Type.Union([Type.Literal('ADMIN'), Type.Literal('COURIER')]),
@@ -48,3 +49,37 @@ export const deleteTeamSchema = {
     }),
   },
 }
+
+export const updateTeamSchema = {
+  tags: ['team'],
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  body: Type.Object({
+    name: Type.String({ minLength: 1 }),
+    tgname: Type.Optional(Type.String()),
+    login: Type.Optional(Type.String()),
+    phone: Type.Optional(Type.String()),
+    role: Type.Union([Type.Literal('ADMIN'), Type.Literal('COURIER')]),
+    password: Type.Optional(Type.String()),
+  }),
+  response: {
+    200: Type.Object({
+      data: TeamMemberSchema,
+    }),
+  },
+}
+
+export const uploadAvatarSchema = {
+  tags: ['team'],
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  response: {
+    200: Type.Object({
+      data: TeamMemberSchema,
+    }),
+  },
+}
+
+

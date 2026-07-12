@@ -1,5 +1,5 @@
-import api from './baseApi.ts'
-import type { IOrder } from '../types'
+import api from '../baseApi.ts'
+import type { IOrder } from '../../types'
 
 export const ordersApi = {
   async list() {
@@ -33,9 +33,13 @@ export const ordersApi = {
     return api.post(`orders/${id}/send-approval`).json<{ success: boolean; status: string }>()
   },
   async sendPayment(id: string, paymentLink: string) {
-    return api.post(`orders/${id}/send-payment`, { json: { paymentLink } }).json<{ success: boolean; status: string }>()
+    return api
+      .post(`orders/${id}/send-payment`, { json: { paymentLink } })
+      .json<{ success: boolean; status: string }>()
   },
   async assignCourier(id: string, courierId: string) {
-    return api.post(`orders/${id}/assign-courier`, { json: { courierId } }).json<{ success: boolean; status: string }>()
+    return api
+      .post(`orders/${id}/assign-courier`, { json: { courierId } })
+      .json<{ success: boolean; status: string }>()
   },
 }

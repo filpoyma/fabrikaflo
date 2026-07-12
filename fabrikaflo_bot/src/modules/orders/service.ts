@@ -8,14 +8,14 @@ export function createOrdersService(fastify: FastifyInstance) {
     async getAll() {
       return prisma.order.findMany({
         orderBy: { createdAt: 'desc' },
-        include: { client: true, courier: true, photos: true },
+        include: { client: true, courier: true, photos: true, request: true },
       })
     },
 
     async getById(id: string) {
       const order = await prisma.order.findUnique({
         where: { id },
-        include: { client: true, courier: true, photos: true },
+        include: { client: true, courier: true, photos: true, request: true },
       })
       if (!order) throw new NotFoundError('Order')
       return order
@@ -50,7 +50,7 @@ export function createOrdersService(fastify: FastifyInstance) {
           comment: data.comment,
           status: 'CREATED',
         },
-        include: { client: true, courier: true, photos: true },
+        include: { client: true, courier: true, photos: true, request: true },
       })
 
       // Notify Client in Telegram
@@ -78,7 +78,7 @@ export function createOrdersService(fastify: FastifyInstance) {
       const updated = await prisma.order.update({
         where: { id },
         data: { status },
-        include: { client: true, courier: true, photos: true },
+        include: { client: true, courier: true, photos: true, request: true },
       })
 
       // Send simple client notifications on status updates
@@ -117,7 +117,7 @@ export function createOrdersService(fastify: FastifyInstance) {
       return prisma.order.update({
         where: { id },
         data: { status: 'ASSEMBLED' },
-        include: { client: true, courier: true, photos: true },
+        include: { client: true, courier: true, photos: true, request: true },
       })
     },
 

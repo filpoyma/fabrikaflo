@@ -48,7 +48,7 @@ enum DeliveryType {
 model User {
   id           String   @id @default(uuid())
   telegramId   String?  @unique
-  username     String?
+  tgname       String?
   login        String?  @unique
   name         String?
   phone        String?
@@ -56,6 +56,7 @@ model User {
   passwordHash String?  // Only populated for dashboard administrators
   botState     String?  // Current state of conversation wizard
   botData      String?  // JSON data collected during wizard
+  avatarUrl    String?
   createdAt    DateTime @default(now())
   updatedAt    DateTime @updatedAt
 
@@ -70,8 +71,11 @@ model Request {
   client          User          @relation(fields: [clientId], references: [id], onDelete: Cascade)
   occasion        String
   budget          Float
-  date            DateTime
+  date            DateTime?
   deliveryType    DeliveryType  @default(DELIVERY)
+  deliveryAddress String?
+  recipientPhone  String?
+  postcardText    String?
   comment         String?
   examplePhotoUrl String?
   status          RequestStatus @default(PENDING)
@@ -95,6 +99,7 @@ model Order {
   wishes          String?
   postcardText    String?
   comment         String?
+  clientFeedback  String?
   status          OrderStatus  @default(CREATED)
   paymentLink     String?
   courierId       String?

@@ -2,12 +2,12 @@ import type { FastifyRequest, FastifyReply } from 'fastify'
 import { createAuthService } from './service.ts'
 
 export async function login(
-  request: FastifyRequest<{ Body: { username: string; password: string } }>,
+  request: FastifyRequest<{ Body: { login: string; password: string } }>,
   _reply: FastifyReply,
 ) {
   const service = createAuthService(request.server)
-  const { username, password } = request.body
-  return service.login(username, password)
+  const { login, password } = request.body
+  return service.login(login, password)
 }
 
 export async function getMe(

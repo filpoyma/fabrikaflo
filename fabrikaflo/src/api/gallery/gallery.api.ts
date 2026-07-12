@@ -1,5 +1,5 @@
-import api from './baseApi.ts'
-import type { IPortfolioItem } from '../types'
+import api from '../baseApi.ts'
+import type { IPortfolioItem } from '../../types'
 
 export const galleryApi = {
   async list() {

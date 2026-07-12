@@ -3,7 +3,7 @@ import { Type } from '@sinclair/typebox'
 export const UserSchema = Type.Object({
   id: Type.String(),
   telegramId: Type.Union([Type.String(), Type.Null()]),
-  username: Type.Union([Type.String(), Type.Null()]),
+  tgname: Type.Union([Type.String(), Type.Null()]),
   name: Type.Union([Type.String(), Type.Null()]),
   phone: Type.Union([Type.String(), Type.Null()]),
   role: Type.String(),
@@ -14,7 +14,7 @@ export const UserSchema = Type.Object({
 export const loginSchema = {
   tags: ['auth'],
   body: Type.Object({
-    username: Type.String(),
+    login: Type.String(),
     password: Type.String(),
   }),
   response: {

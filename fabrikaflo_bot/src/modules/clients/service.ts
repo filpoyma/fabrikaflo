@@ -26,7 +26,7 @@ export function createClientsService(fastify: FastifyInstance) {
         return {
           id: user.id,
           telegramId: user.telegramId,
-          username: user.username,
+          tgname: user.tgname,
           name: user.name,
           phone: user.phone,
           role: user.role,

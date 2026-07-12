@@ -1,37 +1,41 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { useNavigate } from 'react-router-dom'
-import { useMutation } from '@tanstack/react-query'
-import { authApi } from '../../api/auth.api.ts'
-import { setCredentials } from '../../store'
+import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
+import { useLoginMutation } from '../../api/auth';
+import { setCredentials } from '../../store';
+import { Button } from '../../shared/ui';
 
 export const LoginPage: React.FC = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorMsg, setErrorMsg] = useState('')
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [login, setLogin] = useState('');
+  const [password, setPassword] = useState('');
+  const [errorMsg, setErrorMsg] = useState('');
 
-  const loginMutation = useMutation({
-    mutationFn: () => authApi.login(username, password),
-    onSuccess: (data) => {
-      dispatch(setCredentials(data))
-      navigate('/')
-    },
-    onError: (err: any) => {
-      setErrorMsg(err.message || 'Ошибка входа. Проверьте логин и пароль.')
-    },
-  })
+  const loginMutation = useLoginMutation();
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrorMsg('')
-    if (!username || !password) {
-      setErrorMsg('Пожалуйста, заполните все поля.')
-      return
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setErrorMsg('');
+    if (!login || !password) {
+      setErrorMsg('Пожалуйста, заполните все поля.');
+      return;
     }
-    loginMutation.mutate()
-  }
+    loginMutation.mutate(
+      { login, password },
+      {
+        onSuccess: (data) => {
+          dispatch(setCredentials(data));
+          navigate('/');
+        },
+        onError: (err) => {
+          setErrorMsg(
+            err instanceof Error ? err.message : 'Ошибка входа. Проверьте логин и пароль.'
+          );
+        },
+      }
+    );
+  };
 
   return (
     <div
@@ -58,20 +62,29 @@ export const LoginPage: React.FC = () => {
           <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', marginBottom: '8px' }}>
             fabrika.flo
           </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>
+          <p
+            style={{
+              color: 'var(--text-secondary)',
+              fontSize: '0.9rem',
+              letterSpacing: '0.05em',
+              textTransform: 'uppercase',
+            }}
+          >
             Система управления мастерской
           </p>
         </div>
 
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}>
+        <form
+          onSubmit={handleSubmit}
+          style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}
+        >
           <div className="form-group">
-            <label className="form-label">Логин или телефон</label>
+            <label className="form-label">Логин</label>
             <input
               type="text"
               className="form-input"
-              placeholder="admin или +7..."
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              value={login}
+              onChange={(e) => setLogin(e.target.value)}
               disabled={loginMutation.isPending}
             />
           </div>
@@ -81,7 +94,6 @@ export const LoginPage: React.FC = () => {
             <input
               type="password"
               className="form-input"
-              placeholder="••••••••"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loginMutation.isPending}
@@ -104,16 +116,11 @@ export const LoginPage: React.FC = () => {
             </div>
           )}
 
-          <button
-            type="submit"
-            className="btn btn-primary"
-            style={{ width: '100%', padding: '12px', fontSize: '1rem' }}
-            disabled={loginMutation.isPending}
-          >
+          <Button type="submit" size="lg" fullWidth disabled={loginMutation.isPending}>
             {loginMutation.isPending ? 'Вход в систему...' : 'Войти в панель'}
-          </button>
+          </Button>
         </form>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -1,14 +1,8 @@
 import React, { useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { clientsApi } from '../../api/clients.api.ts'
+import { useClientsQuery } from '../../api/clients'
 
 export const ClientsPage: React.FC = () => {
-  const { data: clientsData, isLoading } = useQuery({
-    queryKey: ['clients'],
-    queryFn: clientsApi.list,
-  })
-
-  const clients = clientsData?.data ?? []
+  const { data: clients = [], isLoading } = useClientsQuery()
   const [searchTerm, setSearchTerm] = useState('')
 
   const filteredClients = clients.filter((client) => {
@@ -16,7 +10,7 @@ export const ClientsPage: React.FC = () => {
     return (
       (client.name?.toLowerCase() || '').includes(term) ||
       (client.phone?.toLowerCase() || '').includes(term) ||
-      (client.username?.toLowerCase() || '').includes(term)
+      (client.tgname?.toLowerCase() || '').includes(term)
     )
   })
 
@@ -80,14 +74,14 @@ export const ClientsPage: React.FC = () => {
                     >
                       <td style={{ padding: '18px 20px', fontWeight: 600 }}>{client.name || 'Без имени'}</td>
                       <td style={{ padding: '18px 20px' }}>
-                        {client.username ? (
+                        {client.tgname ? (
                           <a
-                            href={`https://t.me/${client.username}`}
+                            href={`https://t.me/${client.tgname}`}
                             target="_blank"
                             rel="noreferrer"
                             style={{ color: 'var(--color-accent-dark)', textDecoration: 'none', fontWeight: 500 }}
                           >
-                            @{client.username}
+                            @{client.tgname}
                           </a>
                         ) : (
                           <span style={{ color: 'var(--text-secondary)' }}>отсутствует</span>

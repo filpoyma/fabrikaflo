@@ -1,5 +1,5 @@
-import api from './baseApi.ts'
-import type { IClientStats, IUser } from '../types'
+import api from '../baseApi.ts'
+import type { IClientStats, IUser } from '../../types'
 
 export const clientsApi = {
   async list() {

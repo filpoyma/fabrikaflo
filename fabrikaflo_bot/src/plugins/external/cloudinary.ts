@@ -50,11 +50,30 @@ export default fp(
       api_secret: apiSecret,
     })
 
+    function getUploadOptions(folder: string): any {
+      const options: any = { folder }
+      if (folder === 'fabrikaflo_avatars') {
+        options.width = 300
+        options.height = 300
+        options.crop = 'fill'
+        options.gravity = 'face'
+        options.quality = 'auto'
+        options.fetch_format = 'auto'
+      } else {
+        options.width = 1200
+        options.height = 1200
+        options.crop = 'limit'
+        options.quality = 'auto'
+        options.fetch_format = 'auto'
+      }
+      return options
+    }
+
     fastify.decorate('cloudinary', {
       uploadBuffer(buffer: Buffer, folder = 'fabrikaflo'): Promise<string> {
         return new Promise((resolve, reject) => {
           const upload = cloudinary.uploader.upload_stream(
-            { folder },
+            getUploadOptions(folder),
             (error, result) => {
               if (error) reject(error)
               else if (result?.secure_url) resolve(result.secure_url)
@@ -67,7 +86,7 @@ export default fp(
       uploadStream(stream: any, folder = 'fabrikaflo'): Promise<string> {
         return new Promise((resolve, reject) => {
           const upload = cloudinary.uploader.upload_stream(
-            { folder },
+            getUploadOptions(folder),
             (error, result) => {
               if (error) reject(error)
               else if (result?.secure_url) resolve(result.secure_url)
@@ -81,7 +100,7 @@ export default fp(
         return new Promise((resolve, reject) => {
           cloudinary.uploader.upload(
             urlOrPath,
-            { folder },
+            getUploadOptions(folder),
             (error, result) => {
               if (error) reject(error)
               else if (result?.secure_url) resolve(result.secure_url)

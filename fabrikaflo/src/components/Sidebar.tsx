@@ -1,25 +1,25 @@
-import React from 'react'
-import { NavLink, useNavigate } from 'react-router-dom'
-import { useDispatch, useSelector } from 'react-redux'
-import { logout, type RootState } from '../store'
+import React from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { logout, type RootState } from '../store';
 
-import HomeIcon from '../assets/icons/home.svg'
-import InboxIcon from '../assets/icons/inbox.svg'
-import ShoppingBagIcon from '../assets/icons/shopping-bag.svg'
-import UsersIcon from '../assets/icons/users.svg'
-import PhotoIcon from '../assets/icons/photo.svg'
-import UserGroupIcon from '../assets/icons/user-group.svg'
-import LogoutIcon from '../assets/icons/logout.svg'
+import HomeIcon from '../assets/icons/home.svg';
+import InboxIcon from '../assets/icons/inbox.svg';
+import ShoppingBagIcon from '../assets/icons/shopping-bag.svg';
+import UsersIcon from '../assets/icons/users.svg';
+import PhotoIcon from '../assets/icons/photo.svg';
+import UserGroupIcon from '../assets/icons/user-group.svg';
+import LogoutIcon from '../assets/icons/logout.svg';
 
 export const Sidebar: React.FC = () => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const user = useSelector((state: RootState) => state.auth.user)
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const user = useSelector((state: RootState) => state.auth.user);
 
   const handleLogout = () => {
-    dispatch(logout())
-    navigate('/login')
-  }
+    dispatch(logout());
+    navigate('/login');
+  };
 
   const activeStyle = ({ isActive }: { isActive: boolean }) => ({
     display: 'flex',
@@ -33,7 +33,7 @@ export const Sidebar: React.FC = () => {
     color: isActive ? 'var(--text-primary)' : 'var(--text-light)',
     backgroundColor: isActive ? 'var(--color-sage)' : 'transparent',
     transition: 'all 0.2s ease',
-  })
+  });
 
   return (
     <div
@@ -53,10 +53,24 @@ export const Sidebar: React.FC = () => {
       <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
         {/* Brand Header */}
         <div style={{ padding: '0 8px' }}>
-          <h2 style={{ color: 'var(--text-light)', fontFamily: 'var(--font-serif)', fontSize: '2.1rem', fontWeight: 600 }}>
+          <h2
+            style={{
+              color: 'var(--text-light)',
+              fontFamily: 'var(--font-serif)',
+              fontSize: '2.1rem',
+              fontWeight: 600,
+            }}
+          >
             fabrika.flo
           </h2>
-          <span style={{ fontSize: '0.75rem', textTransform: 'uppercase', letterSpacing: '0.12em', color: 'var(--color-sage)' }}>
+          <span
+            style={{
+              fontSize: '0.75rem',
+              textTransform: 'uppercase',
+              letterSpacing: '0.12em',
+              color: 'var(--color-sage)',
+            }}
+          >
             Цветочный цех
           </span>
         </div>
@@ -79,13 +93,13 @@ export const Sidebar: React.FC = () => {
             <UsersIcon style={{ width: '20px', height: '20px' }} />
             <span>Клиенты CRM</span>
           </NavLink>
-          <NavLink to="/gallery" style={activeStyle}>
-            <PhotoIcon style={{ width: '20px', height: '20px' }} />
-            <span>Галерея работ</span>
-          </NavLink>
           <NavLink to="/team" style={activeStyle}>
             <UserGroupIcon style={{ width: '20px', height: '20px' }} />
             <span>Команда</span>
+          </NavLink>
+          <NavLink to="/gallery" style={activeStyle}>
+            <PhotoIcon style={{ width: '20px', height: '20px' }} />
+            <span>Галерея работ</span>
           </NavLink>
         </nav>
       </div>
@@ -105,7 +119,7 @@ export const Sidebar: React.FC = () => {
             {user?.name || 'Администратор'}
           </span>
           <span style={{ fontSize: '0.75rem', color: 'var(--color-sage)' }}>
-            @{user?.username || 'admin'}
+            @{user?.tgname || 'admin'}
           </span>
         </div>
         <button
@@ -126,12 +140,12 @@ export const Sidebar: React.FC = () => {
             transition: 'all 0.2s',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--color-error)'
-            e.currentTarget.style.borderColor = 'var(--color-error)'
+            e.currentTarget.style.backgroundColor = 'var(--color-error)';
+            e.currentTarget.style.borderColor = 'var(--color-error)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(244, 215, 212, 0.08)'
-            e.currentTarget.style.borderColor = 'rgba(244, 215, 212, 0.2)'
+            e.currentTarget.style.backgroundColor = 'rgba(244, 215, 212, 0.08)';
+            e.currentTarget.style.borderColor = 'rgba(244, 215, 212, 0.2)';
           }}
         >
           <LogoutIcon style={{ width: '18px', height: '18px' }} />
@@ -139,5 +153,5 @@ export const Sidebar: React.FC = () => {
         </button>
       </div>
     </div>
-  )
-}
+  );
+};

@@ -15,11 +15,15 @@ const errorInterceptor: BeforeErrorHook = async ({ error }) => {
   if (!isHTTPError(error)) return error
 
   try {
-    const data = await error.response.clone().json() as ApiErrorBody
+    const data = error.data as ApiErrorBody | undefined
     if (data && data.message) {
-      error.message = data.message
+      Object.defineProperty(error, 'message', {
+        value: data.message,
+        writable: true,
+        configurable: true,
+      })
     }
-  } catch (e) {
+  } catch {
     // Ignore JSON parsing errors
   }
 

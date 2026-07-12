@@ -1,68 +1,24 @@
 import React, { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { galleryApi } from '../../api/gallery.api.ts'
-import { Modal } from '../../components/Modal.tsx'
+import {
+  useGalleryQuery,
+  useUploadGalleryItemMutation,
+  useUpdateGalleryItemMutation,
+  useDeleteGalleryItemMutation,
+} from '../../api/gallery'
+import { IconButton, Button, Modal } from '../../shared/ui'
 import type { IPortfolioItem } from '../../types'
 
 import PlusIcon from '../../assets/icons/plus.svg'
-import TrashIcon from '../../assets/icons/trash.svg'
-import DocumentIcon from '../../assets/icons/document.svg'
+
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error)
 
 export const GalleryPage: React.FC = () => {
-  const queryClient = useQueryClient()
+  const { data: items = [], isLoading } = useGalleryQuery()
 
-  // Queries
-  const { data: galleryData, isLoading } = useQuery({
-    queryKey: ['gallery'],
-    queryFn: galleryApi.list,
-  })
-
-  const items = galleryData?.data ?? []
-
-  // Mutations
-  const uploadMutation = useMutation({
-    mutationFn: ({ file, title, description }: { file: File; title?: string; description?: string }) =>
-      galleryApi.upload(file, title, description),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gallery'] })
-      setIsUploadModalOpen(false)
-      // reset form
-      setFile(null)
-      setPreviewUrl(null)
-      setTitle('')
-      setDescription('')
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: (id: string) => galleryApi.deleteItem(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gallery'] })
-    },
-    onError: (error: any) => {
-      console.error('Delete error:', error)
-      alert(`Ошибка при удалении: ${error.message || error}`)
-    },
-  })
-
-  const updateMutation = useMutation({
-    mutationFn: ({ id, file, title, description }: { id: string; file?: File | null; title?: string; description?: string }) =>
-      galleryApi.update(id, file, title, description),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['gallery'] })
-      setIsEditModalOpen(false)
-      setEditingItem(null)
-      // reset form
-      setFile(null)
-      setPreviewUrl(null)
-      setTitle('')
-      setDescription('')
-    },
-    onError: (error: any) => {
-      console.error('Update error:', error)
-      alert(`Ошибка при редактировании: ${error.message || error}`)
-    },
-  })
+  const uploadMutation = useUploadGalleryItemMutation()
+  const deleteMutation = useDeleteGalleryItemMutation()
+  const updateMutation = useUpdateGalleryItemMutation()
 
   // States
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false)
@@ -74,6 +30,13 @@ export const GalleryPage: React.FC = () => {
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
 
+  const resetForm = () => {
+    setFile(null)
+    setPreviewUrl(null)
+    setTitle('')
+    setDescription('')
+  }
+
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0]
     if (selected) {
@@ -84,10 +47,7 @@ export const GalleryPage: React.FC = () => {
 
   const handleOpenCreate = () => {
     setEditingItem(null)
-    setFile(null)
-    setPreviewUrl(null)
-    setTitle('')
-    setDescription('')
+    resetForm()
     setIsUploadModalOpen(true)
   }
 
@@ -100,23 +60,44 @@ export const GalleryPage: React.FC = () => {
     setIsEditModalOpen(true)
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!file) return alert('Пожалуйста, выберите файл!')
 
-    uploadMutation.mutate({ file, title, description })
+    uploadMutation.mutate(
+      { file, title, description },
+      {
+        onSuccess: () => {
+          setIsUploadModalOpen(false)
+          resetForm()
+        },
+      },
+    )
   }
 
-  const handleEditSubmit = (e: React.FormEvent) => {
+  const handleEditSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!editingItem) return
 
-    updateMutation.mutate({
-      id: editingItem.id,
-      file,
-      title,
-      description,
-    })
+    updateMutation.mutate(
+      {
+        id: editingItem.id,
+        file,
+        title,
+        description,
+      },
+      {
+        onSuccess: () => {
+          setIsEditModalOpen(false)
+          setEditingItem(null)
+          resetForm()
+        },
+        onError: (error) => {
+          console.error('Update error:', error)
+          alert(`Ошибка при редактировании: ${getErrorMessage(error)}`)
+        },
+      },
+    )
   }
 
   return (
@@ -130,14 +111,9 @@ export const GalleryPage: React.FC = () => {
             Эти фотографии будут показываться клиентам в Telegram-боте в разделе «❤️ Наши работы».
           </p>
         </div>
-        <button
-          className="btn btn-primary"
-          onClick={handleOpenCreate}
-          style={{ display: 'flex', alignItems: 'center', gap: '8px' }}
-        >
-          <PlusIcon style={{ width: '18px', height: '18px' }} />
-          <span>Добавить работу</span>
-        </button>
+        <Button onClick={handleOpenCreate} icon={PlusIcon}>
+          Добавить работу
+        </Button>
       </div>
 
       {isLoading ? (
@@ -205,70 +181,33 @@ export const GalleryPage: React.FC = () => {
                     </p>
                   </div>
 
-                  {/* Absolute Edit Button on Card */}
-                  <button
+                  <IconButton
+                    variant="edit"
+                    appearance="filled"
                     onClick={() => handleOpenEdit(item)}
-                    style={{
-                      position: 'absolute',
-                      bottom: '12px',
-                      right: '12px',
-                      backgroundColor: 'var(--color-sage)',
-                      color: 'white',
-                      border: 'none',
-                      padding: '10px',
-                      borderRadius: '50%',
-                      cursor: 'pointer',
-                      boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                      transition: 'all 0.2s ease',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      zIndex: 10,
-                    }}
-                    onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-accent-dark)')}
-                    onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'var(--color-sage)')}
-                  >
-                    <DocumentIcon style={{ width: '16px', height: '16px' }} />
-                  </button>
+                    style={{ position: 'absolute', bottom: '12px', right: '12px', zIndex: 10 }}
+                  />
 
-                  {/* Absolute Delete Button on Card */}
                   {(() => {
                     const isDeleting = deleteMutation.isPending && deleteMutation.variables === item.id
                     return (
-                      <button
+                      <IconButton
+                        variant="delete"
+                        appearance="filled"
+                        loading={isDeleting}
+                        disabled={isDeleting}
                         onClick={() => {
                           if (confirm('Вы действительно хотите удалить эту работу из портфолио?')) {
-                            deleteMutation.mutate(item.id)
+                            deleteMutation.mutate(item.id, {
+                              onError: (error) => {
+                                console.error('Delete error:', error)
+                                alert(`Ошибка при удалении: ${getErrorMessage(error)}`)
+                              },
+                            })
                           }
                         }}
-                        disabled={isDeleting}
-                        style={{
-                          position: 'absolute',
-                          top: '12px',
-                          right: '12px',
-                          backgroundColor: 'rgba(200, 92, 92, 0.95)',
-                          color: 'white',
-                          border: 'none',
-                          padding: '10px',
-                          borderRadius: '50%',
-                          cursor: 'pointer',
-                          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
-                          transition: 'all 0.2s ease',
-                          display: 'flex',
-                          alignItems: 'center',
-                          justifyContent: 'center',
-                          zIndex: 10,
-                        }}
-                      >
-                        <TrashIcon
-                          style={{
-                            width: '16px',
-                            height: '16px',
-                            transition: 'transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1)',
-                            transform: isDeleting ? 'scale(1.45)' : 'scale(1)',
-                          }}
-                        />
-                      </button>
+                        style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 10 }}
+                      />
                     )
                   })()}
                 </div>
@@ -375,20 +314,12 @@ export const GalleryPage: React.FC = () => {
           </div>
 
           <div style={{ display: 'flex', gap: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
-            <button
-              type="button"
-              className="btn btn-secondary"
-              onClick={() => setIsUploadModalOpen(false)}
-            >
+            <Button variant="secondary" type="button" onClick={() => setIsUploadModalOpen(false)}>
               Отмена
-            </button>
-            <button
-              type="submit"
-              className="btn btn-primary"
-              disabled={uploadMutation.isPending}
-            >
+            </Button>
+            <Button type="submit" disabled={uploadMutation.isPending}>
               {uploadMutation.isPending ? 'Загрузка...' : 'Загрузить в портфолио'}
-            </button>
+            </Button>
           </div>
         </form>
       </Modal>
@@ -490,20 +421,12 @@ export const GalleryPage: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setIsEditModalOpen(false)}
-              >
+              <Button variant="secondary" type="button" onClick={() => setIsEditModalOpen(false)}>
                 Отмена
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={updateMutation.isPending}
-              >
+              </Button>
+              <Button type="submit" disabled={updateMutation.isPending}>
                 {updateMutation.isPending ? 'Сохранение...' : 'Сохранить изменения'}
-              </button>
+              </Button>
             </div>
           </form>
         </Modal>

@@ -1,22 +1,12 @@
 import React from 'react'
-import { useQuery } from '@tanstack/react-query'
-import { requestsApi } from '../../api/requests.api.ts'
-import { ordersApi } from '../../api/orders.api.ts'
 import { Link } from 'react-router-dom'
+import { useRequestsQuery } from '../../api/requests'
+import { useOrdersQuery } from '../../api/orders'
+import { Button } from '../../shared/ui'
 
 export const DashboardPage: React.FC = () => {
-  const { data: requestsData, isLoading: reqLoading } = useQuery({
-    queryKey: ['requests'],
-    queryFn: requestsApi.list,
-  })
-
-  const { data: ordersData, isLoading: ordLoading } = useQuery({
-    queryKey: ['orders'],
-    queryFn: ordersApi.list,
-  })
-
-  const requests = requestsData?.data ?? []
-  const orders = ordersData?.data ?? []
+  const { data: requests = [], isLoading: reqLoading } = useRequestsQuery()
+  const { data: orders = [], isLoading: ordLoading } = useOrdersQuery()
 
   // Metrics calculations
   const pendingRequests = requests.filter((r) => r.status === 'PENDING')
@@ -145,9 +135,9 @@ export const DashboardPage: React.FC = () => {
                           💐 {req.occasion} • {req.budget} руб.
                         </div>
                       </div>
-                      <Link to="/requests" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                      <Button to="/requests" variant="secondary" size="sm">
                         Открыть
-                      </Link>
+                      </Button>
                     </div>
                   ))}
                 </div>
@@ -185,9 +175,9 @@ export const DashboardPage: React.FC = () => {
                           📍 {ord.deliveryAddress || 'Самовывоз'} • Курьер: {ord.courier?.name || 'не назначен'}
                         </div>
                       </div>
-                      <Link to="/orders" className="btn btn-secondary" style={{ padding: '6px 12px', fontSize: '0.8rem' }}>
+                      <Button to="/orders" variant="secondary" size="sm">
                         Просмотр
-                      </Link>
+                      </Button>
                     </div>
                   ))}
                 </div>

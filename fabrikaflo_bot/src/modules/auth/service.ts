@@ -7,29 +7,19 @@ export function createAuthService(fastify: FastifyInstance) {
   const prisma = fastify.prisma
 
   return {
-    async login(username: string, checkPass: string) {
-      const cleanUsername = username.replace(/^@/, '').trim()
+    async login(login: string, checkPass: string) {
       const user = await prisma.user.findFirst({
-        where: {
-          OR: [
-            { login: cleanUsername },
-            { username: cleanUsername },
-            { phone: username },
-          ],
-          role: 'ADMIN', // React Dashboard is only accessible by administrators
-        },
+        where: { login: login.trim(), role: 'ADMIN' },
       })
 
-      if (!user || !user.passwordHash) {
-        throw new UnauthorizedError('Invalid credentials')
-      }
+      if (!user || !user.passwordHash) throw new UnauthorizedError('Invalid credentials')
+      
 
       const isMatch = await bcrypt.compare(checkPass, user.passwordHash)
       if (!isMatch) {
         throw new UnauthorizedError('Invalid credentials')
       }
 
-      // Generate a signed JWT token
       const token = jwt.sign(
         { userId: user.id, role: user.role },
         fastify.config.JWT_SECRET,

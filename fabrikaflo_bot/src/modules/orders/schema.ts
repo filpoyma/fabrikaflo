@@ -1,5 +1,6 @@
 import { Type } from '@sinclair/typebox'
 import { UserSchema } from '../auth/schema.ts'
+import { RequestSchema } from '../requests/schema.ts'
 
 export const OrderPhotoSchema = Type.Object({
   id: Type.String(),
@@ -13,6 +14,7 @@ export const OrderSchema = Type.Object({
   clientId: Type.String(),
   client: Type.Optional(UserSchema),
   requestId: Type.Union([Type.String(), Type.Null()]),
+  request: Type.Optional(Type.Union([RequestSchema, Type.Null()])),
   recipientName: Type.Union([Type.String(), Type.Null()]),
   recipientPhone: Type.Union([Type.String(), Type.Null()]),
   deliveryAddress: Type.Union([Type.String(), Type.Null()]),
@@ -21,6 +23,7 @@ export const OrderSchema = Type.Object({
   wishes: Type.Union([Type.String(), Type.Null()]),
   postcardText: Type.Union([Type.String(), Type.Null()]),
   comment: Type.Union([Type.String(), Type.Null()]),
+  clientFeedback: Type.Union([Type.String(), Type.Null()]),
   status: Type.String(),
   paymentLink: Type.Union([Type.String(), Type.Null()]),
   courierId: Type.Union([Type.String(), Type.Null()]),

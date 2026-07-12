@@ -1,7 +1,7 @@
 export interface IUser {
   id: string
   telegramId: string | null
-  username: string | null
+  tgname: string | null
   name: string | null
   phone: string | null
   role: 'CLIENT' | 'ADMIN' | 'COURIER'
@@ -15,8 +15,11 @@ export interface IRequest {
   client?: IUser
   occasion: string
   budget: number
-  date: string
+  date: string | null
   deliveryType: 'PICKUP' | 'DELIVERY'
+  deliveryAddress: string | null
+  recipientPhone: string | null
+  postcardText: string | null
   comment: string | null
   examplePhotoUrl: string | null
   status: 'PENDING' | 'CONTACTED' | 'CONVERTED' | 'CANCELLED'
@@ -45,6 +48,7 @@ export interface IOrder {
   wishes: string | null
   postcardText: string | null
   comment: string | null
+  clientFeedback: string | null
   status:
     | 'CREATED'
     | 'ASSEMBLING'
@@ -75,7 +79,7 @@ export interface IPortfolioItem {
 export interface IClientStats {
   id: string
   telegramId: string | null
-  username: string | null
+  tgname: string | null
   name: string | null
   phone: string | null
   role: string

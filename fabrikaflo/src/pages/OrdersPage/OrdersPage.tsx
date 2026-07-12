@@ -1,8 +1,15 @@
 import React, { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ordersApi } from '../../api/orders.api.ts'
-import { clientsApi } from '../../api/clients.api.ts'
+import {
+  useOrdersQuery,
+  useUpdateOrderStatusMutation,
+  useUploadOrderPhotoMutation,
+  useSendOrderApprovalMutation,
+  useSendOrderPaymentMutation,
+  useAssignOrderCourierMutation,
+} from '../../api/orders'
+import { useCouriersQuery } from '../../api/clients'
 import type { IOrder } from '../../types'
+import { Button } from '../../shared/ui'
 
 import InboxIcon from '../../assets/icons/inbox.svg'
 import ShoppingBagIcon from '../../assets/icons/shopping-bag.svg'
@@ -13,88 +20,18 @@ import PlusIcon from '../../assets/icons/plus.svg'
 import ShoppingIcon from '../../assets/icons/shopping-bag.svg'
 import DocumentIcon from '../../assets/icons/document.svg'
 
+const getErrorMessage = (error: unknown) =>
+  error instanceof Error ? error.message : String(error)
+
 export const OrdersPage: React.FC = () => {
-  const queryClient = useQueryClient()
+  const { data: orders = [], isLoading: ordLoading } = useOrdersQuery({ refetchInterval: 20_000 })
+  const { data: couriers = [] } = useCouriersQuery()
 
-  // Queries
-  const { data: ordersData, isLoading: ordLoading } = useQuery({
-    queryKey: ['orders'],
-    queryFn: ordersApi.list,
-    refetchInterval: 20_000, // обновляем каждые 20 сек пока страница открыта
-  })
-
-  const { data: couriersData } = useQuery({
-    queryKey: ['couriers'],
-    queryFn: clientsApi.listCouriers,
-  })
-
-  const orders = ordersData?.data ?? []
-  const couriers = couriersData?.data ?? []
-
-  // Mutations
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
-      ordersApi.updateStatus(id, status),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
-    },
-    onError: (error: any) => {
-      console.error('Update status error:', error)
-      alert(`Ошибка обновления статуса: ${error.message || error}`)
-    },
-  })
-
-  const uploadPhotoMutation = useMutation({
-    mutationFn: ({ id, file }: { id: string; file: File }) =>
-      ordersApi.uploadPhoto(id, file),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
-    },
-    onError: (error: any) => {
-      console.error('Upload photo error:', error)
-      alert(`Ошибка загрузки фотографии: ${error.message || error}`)
-    },
-  })
-
-  const sendApprovalMutation = useMutation({
-    mutationFn: (id: string) => ordersApi.sendApproval(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
-    },
-    onError: (error: any) => {
-      console.error('Send approval error:', error)
-      alert(`Ошибка отправки на согласование: ${error.message || error}`)
-    },
-  })
-
-  const sendPaymentMutation = useMutation({
-    mutationFn: ({ id, paymentLink }: { id: string; paymentLink: string }) =>
-      ordersApi.sendPayment(id, paymentLink),
-    onSuccess: (_data, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
-      setPaymentLinks((prev) => {
-        const copy = { ...prev }
-        delete copy[variables.id]
-        return copy
-      })
-    },
-    onError: (error: any) => {
-      console.error('Send payment error:', error)
-      alert(`Ошибка отправки ссылки на оплату: ${error.message || error}`)
-    },
-  })
-
-  const assignCourierMutation = useMutation({
-    mutationFn: ({ id, courierId }: { id: string; courierId: string }) =>
-      ordersApi.assignCourier(id, courierId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
-    },
-    onError: (error: any) => {
-      console.error('Assign courier error:', error)
-      alert(`Ошибка назначения курьера: ${error.message || error}`)
-    },
-  })
+  const updateStatusMutation = useUpdateOrderStatusMutation()
+  const uploadPhotoMutation = useUploadOrderPhotoMutation()
+  const sendApprovalMutation = useSendOrderApprovalMutation()
+  const sendPaymentMutation = useSendOrderPaymentMutation()
+  const assignCourierMutation = useAssignOrderCourierMutation()
 
   // Local component states
   const [paymentLinks, setPaymentLinks] = useState<Record<string, string>>({})
@@ -115,8 +52,28 @@ export const OrdersPage: React.FC = () => {
   const handlePhotoSelect = (id: string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (file) {
-      uploadPhotoMutation.mutate({ id, file })
+      uploadPhotoMutation.mutate(
+        { id, file },
+        {
+          onError: (error) => {
+            console.error('Upload photo error:', error)
+            alert(`Ошибка загрузки фотографии: ${getErrorMessage(error)}`)
+          },
+        },
+      )
     }
+  }
+
+  const mutateStatus = (id: string, status: string) => {
+    updateStatusMutation.mutate(
+      { id, status },
+      {
+        onError: (error) => {
+          console.error('Update status error:', error)
+          alert(`Ошибка обновления статуса: ${getErrorMessage(error)}`)
+        },
+      },
+    )
   }
 
   const getStatusLabel = (status: string) => {
@@ -194,14 +151,14 @@ export const OrdersPage: React.FC = () => {
             <div style={{ fontWeight: 600, fontSize: '0.95rem' }}>Заказ #{order.id.substring(0, 8)}</div>
             <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
               👤 {order.client?.name || 'Клиент'}
-              {order.client?.username && (
+              {order.client?.tgname && (
                 <a
-                  href={`https://t.me/${order.client.username}`}
+                  href={`https://t.me/${order.client.tgname}`}
                   target="_blank"
                   rel="noreferrer"
                   style={{ marginLeft: '6px', color: 'var(--color-accent-dark)', textDecoration: 'none' }}
                 >
-                  (@{order.client.username})
+                  (@{order.client.tgname})
                 </a>
               )}
             </div>
@@ -236,6 +193,29 @@ export const OrdersPage: React.FC = () => {
         >
           {currentPhoto ? (
             <img src={currentPhoto} alt="Bouquet preview" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+          ) : order.request?.examplePhotoUrl ? (
+            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
+              <img
+                src={order.request.examplePhotoUrl}
+                alt="Client reference"
+                style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
+              />
+              <div
+                style={{
+                  position: 'absolute',
+                  top: '8px',
+                  left: '8px',
+                  backgroundColor: 'rgba(23, 45, 31, 0.75)',
+                  color: '#FFFFFF',
+                  padding: '3px 8px',
+                  borderRadius: '12px',
+                  fontSize: '0.7rem',
+                  fontWeight: 500,
+                }}
+              >
+                📋 Пример клиента
+              </div>
+            </div>
           ) : (
             <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
               {isUploading ? 'Загрузка букета...' : 'Фото отсутствует'}
@@ -248,6 +228,29 @@ export const OrdersPage: React.FC = () => {
           <div>💰 Бюджет: <strong>{order.budget} руб.</strong></div>
           {order.wishes && <div>🌿 Состав: <span style={{ color: 'var(--text-secondary)' }}>{order.wishes}</span></div>}
           {order.postcardText && <div>💌 Открытка: <span style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>«{order.postcardText}»</span></div>}
+          {order.request?.examplePhotoUrl && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
+              <span style={{ color: 'var(--text-secondary)' }}>📷 Пример клиента:</span>
+              <a
+                href={order.request.examplePhotoUrl}
+                target="_blank"
+                rel="noreferrer"
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: '4px',
+                  overflow: 'hidden',
+                  border: '1px solid var(--border-light)',
+                  lineHeight: 0
+                }}
+              >
+                <img
+                  src={order.request.examplePhotoUrl}
+                  alt="Reference"
+                  style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                />
+              </a>
+            </div>
+          )}
 
           <div style={{ borderTop: '1px dotted var(--border-light)', marginTop: '6px', paddingTop: '6px' }}>
             <div>🚗 {order.deliveryAddress ? `Доставка: ${order.deliveryAddress}` : 'Самовывоз'}</div>
@@ -260,6 +263,42 @@ export const OrdersPage: React.FC = () => {
           {order.courier && (
             <div style={{ color: 'var(--color-sage)', fontWeight: 500, fontSize: '0.85rem', marginTop: '4px' }}>
               🚴 Курьер: {order.courier.name}
+            </div>
+          )}
+          {order.comment && (
+            <div
+              style={{
+                marginTop: '8px',
+                padding: '8px 12px',
+                backgroundColor: '#FAF8F5',
+                border: '1px solid var(--border-light)',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+              }}
+            >
+              <strong>📝 Комментарий:</strong>
+              <div style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}>
+                {order.comment}
+              </div>
+            </div>
+          )}
+          {order.clientFeedback && (
+            <div
+              style={{
+                marginTop: '8px',
+                padding: '8px 12px',
+                backgroundColor: '#FFF5F5',
+                border: '1px solid #FFE3E3',
+                borderRadius: '6px',
+                fontSize: '0.85rem',
+              }}
+            >
+              <strong style={{ color: '#D32F2F' }}>
+                ⚠️ Замечания клиента:
+              </strong>
+              <div style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}>
+                {order.clientFeedback}
+              </div>
             </div>
           )}
         </div>
@@ -276,14 +315,13 @@ export const OrdersPage: React.FC = () => {
         >
           {/* CREATED state */}
           {order.status === 'CREATED' && (
-            <button
-              className="btn btn-primary w-100"
-              onClick={() => updateStatusMutation.mutate({ id: order.id, status: 'ASSEMBLING' })}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+            <Button
+              fullWidth
+              icon={ShoppingBagIcon}
+              onClick={() => mutateStatus(order.id, 'ASSEMBLING')}
             >
-              <ShoppingBagIcon style={{ width: '16px', height: '16px' }} />
-              <span>Начать сборку</span>
-            </button>
+              Начать сборку
+            </Button>
           )}
 
           {/* ASSEMBLING state (Upload picture) */}
@@ -322,15 +360,21 @@ export const OrdersPage: React.FC = () => {
 
           {/* ASSEMBLED state (Send approval) */}
           {order.status === 'ASSEMBLED' && (
-            <button
-              className="btn btn-primary w-100"
-              onClick={() => sendApprovalMutation.mutate(order.id)}
+            <Button
+              fullWidth
+              icon={InboxIcon}
+              onClick={() =>
+                sendApprovalMutation.mutate(order.id, {
+                  onError: (error) => {
+                    console.error('Send approval error:', error)
+                    alert(`Ошибка отправки на согласование: ${getErrorMessage(error)}`)
+                  },
+                })
+              }
               disabled={sendApprovalMutation.isPending && sendApprovalMutation.variables === order.id}
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
             >
-              <InboxIcon style={{ width: '16px', height: '16px' }} />
-              <span>Отправить на согласование</span>
-            </button>
+              Отправить на согласование
+            </Button>
           )}
 
           {/* WAITING_FOR_APPROVAL state */}
@@ -354,29 +398,49 @@ export const OrdersPage: React.FC = () => {
                   setPaymentLinks((prev) => ({ ...prev, [order.id]: val }))
                 }}
               />
-              <button
-                className="btn btn-primary w-100"
-                style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                onClick={() =>
-                  sendPaymentMutation.mutate({
-                    id: order.id,
-                    paymentLink: paymentLinks[order.id] || `https://pay.fabrikaflo.ru/order-${order.id.substring(0, 5)}`,
-                  })
+              <Button
+                fullWidth
+                size="sm"
+                icon={InboxIcon}
+                onClick={() => {
+                  const link = (paymentLinks[order.id] || '').trim()
+                  sendPaymentMutation.mutate(
+                    {
+                      id: order.id,
+                      paymentLink: link,
+                    },
+                    {
+                      onSuccess: (_data, variables) => {
+                        setPaymentLinks((prev) => {
+                          const copy = { ...prev }
+                          delete copy[variables.id]
+                          return copy
+                        })
+                      },
+                      onError: (error) => {
+                        console.error('Send payment error:', error)
+                        alert(`Ошибка отправки ссылки на оплату: ${getErrorMessage(error)}`)
+                      },
+                    },
+                  )
+                }}
+                disabled={
+                  (sendPaymentMutation.isPending && sendPaymentMutation.variables?.id === order.id) ||
+                  !/^https?:\/\/\S+$/i.test((paymentLinks[order.id] || '').trim())
                 }
-                disabled={sendPaymentMutation.isPending && sendPaymentMutation.variables?.id === order.id}
               >
-                <InboxIcon style={{ width: '16px', height: '16px' }} />
-                <span>Отправить ссылку</span>
-              </button>
+                Отправить ссылку
+              </Button>
               {order.status === 'WAITING_FOR_PAYMENT' && (
-                <button
-                  className="btn btn-secondary w-100"
-                  style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-                  onClick={() => updateStatusMutation.mutate({ id: order.id, status: 'PAID' })}
+                <Button
+                  fullWidth
+                  size="sm"
+                  variant="secondary"
+                  icon={CheckIcon}
+                  onClick={() => mutateStatus(order.id, 'PAID')}
                 >
-                  <CheckIcon style={{ width: '16px', height: '16px' }} />
-                  <span>Оплачено вручную</span>
-                </button>
+                  Оплачено вручную
+                </Button>
               )}
             </div>
           )}
@@ -396,23 +460,31 @@ export const OrdersPage: React.FC = () => {
                 <option value="">-- Выбрать курьера --</option>
                 {couriers.map((c) => (
                   <option key={c.id} value={c.id}>
-                    🚴 {c.name} (@{c.username || 'username'})
+                    🚴 {c.name} (@{c.tgname || 'нет'})
                   </option>
                 ))}
               </select>
-              <button
-                className="btn btn-primary w-100"
-                style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
+              <Button
+                fullWidth
+                size="sm"
+                icon={TruckIcon}
                 onClick={() => {
                   const courierId = selectedCouriers[order.id]
                   if (!courierId) return alert('Пожалуйста, выберите курьера!')
-                  assignCourierMutation.mutate({ id: order.id, courierId })
+                  assignCourierMutation.mutate(
+                    { id: order.id, courierId },
+                    {
+                      onError: (error) => {
+                        console.error('Assign courier error:', error)
+                        alert(`Ошибка назначения курьера: ${getErrorMessage(error)}`)
+                      },
+                    },
+                  )
                 }}
                 disabled={!selectedCouriers[order.id] || assignCourierMutation.isPending}
               >
-                <TruckIcon style={{ width: '16px', height: '16px' }} />
-                <span>Передать курьеру</span>
-              </button>
+                Передать курьеру
+              </Button>
             </div>
           )}
 
@@ -425,14 +497,17 @@ export const OrdersPage: React.FC = () => {
 
           {/* Cancel capability at any active stage */}
           {order.status !== 'DELIVERED' && order.status !== 'CANCELLED' && (
-            <button
-              className="btn btn-secondary w-100"
-              style={{ color: 'var(--color-error)', border: 'none', padding: '6px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px' }}
-              onClick={() => updateStatusMutation.mutate({ id: order.id, status: 'CANCELLED' })}
+            <Button
+              fullWidth
+              size="sm"
+              variant="secondary"
+              icon={XMarkIcon}
+              dangerText
+              style={{ border: 'none', padding: '6px' }}
+              onClick={() => mutateStatus(order.id, 'CANCELLED')}
             >
-              <XMarkIcon style={{ width: '16px', height: '16px' }} />
-              <span>Отменить заказ</span>
-            </button>
+              Отменить заказ
+            </Button>
           )}
         </div>
       </div>

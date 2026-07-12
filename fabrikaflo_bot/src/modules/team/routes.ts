@@ -13,6 +13,16 @@ export const teamRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     { schema: schema.createTeamSchema, preHandler: [fastify.authenticate, fastify.requireAdmin] },
     handlers.createTeamMember,
   )
+  fastify.put(
+    '/:id',
+    { schema: schema.updateTeamSchema, preHandler: [fastify.authenticate, fastify.requireAdmin] },
+    handlers.updateTeamMember,
+  )
+  fastify.post(
+    '/:id/avatar',
+    { schema: schema.uploadAvatarSchema, preHandler: [fastify.authenticate, fastify.requireAdmin] },
+    handlers.uploadTeamMemberAvatar,
+  )
   fastify.delete(
     '/:id',
     { schema: schema.deleteTeamSchema, preHandler: [fastify.authenticate, fastify.requireAdmin] },

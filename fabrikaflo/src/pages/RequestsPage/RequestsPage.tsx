@@ -1,7 +1,10 @@
 import React, { useState } from 'react'
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { requestsApi } from '../../api/requests.api.ts'
-import { Modal } from '../../components/Modal.tsx'
+import {
+  useRequestsQuery,
+  useUpdateRequestStatusMutation,
+  useConvertRequestMutation,
+} from '../../api/requests'
+import { Button, Modal } from '../../shared/ui'
 import type { IRequest } from '../../types'
 
 import PlusIcon from '../../assets/icons/plus.svg'
@@ -9,39 +12,14 @@ import CheckIcon from '../../assets/icons/check.svg'
 import XMarkIcon from '../../assets/icons/x-mark.svg'
 
 export const RequestsPage: React.FC = () => {
-  const queryClient = useQueryClient()
-  const { data: requestsData, isLoading } = useQuery({
-    queryKey: ['requests'],
-    queryFn: requestsApi.list,
-  })
-
-  const requests = requestsData?.data ?? []
-
-  // Status updates mutations
-  const updateStatusMutation = useMutation({
-    mutationFn: ({ id, status }: { id: string; status: string }) =>
-      requestsApi.updateStatus(id, status),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['requests'] })
-    },
-  })
-
-  // Convert to order mutation
-  const convertMutation = useMutation({
-    mutationFn: ({ id, data }: { id: string; data: any }) =>
-      requestsApi.convert(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['requests'] })
-      queryClient.invalidateQueries({ queryKey: ['orders'] })
-      setIsConvertModalOpen(false)
-      setSelectedRequest(null)
-    },
-  })
+  const { data: requests = [], isLoading } = useRequestsQuery({ refetchInterval: 20_000 })
+  const updateStatusMutation = useUpdateRequestStatusMutation()
+  const convertMutation = useConvertRequestMutation()
 
   // Modal and form states
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false)
   const [selectedRequest, setSelectedRequest] = useState<IRequest | null>(null)
-  
+
   // Order Form states
   const [recipientName, setRecipientName] = useState('')
   const [recipientPhone, setRecipientPhone] = useState('')
@@ -55,17 +33,17 @@ export const RequestsPage: React.FC = () => {
   const handleOpenConvert = (req: IRequest) => {
     setSelectedRequest(req)
     setRecipientName(req.client?.name || '')
-    setRecipientPhone(req.client?.phone || '')
-    setDeliveryAddress(req.deliveryType === 'DELIVERY' ? 'г. Москва, ' : '')
+    setRecipientPhone(req.recipientPhone || req.client?.phone || '')
+    setDeliveryAddress(req.deliveryAddress || '')
     setDeliveryTime('')
-    setPostcardText('')
+    setPostcardText(req.postcardText || '')
     setWishes(req.comment || '')
     setComment('')
     setBudget(req.budget)
     setIsConvertModalOpen(true)
   }
 
-  const handleConvertSubmit = (e: React.FormEvent) => {
+  const handleConvertSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
     e.preventDefault()
     if (!selectedRequest) return
 
@@ -80,7 +58,15 @@ export const RequestsPage: React.FC = () => {
       budget: Number(budget),
     }
 
-    convertMutation.mutate({ id: selectedRequest.id, data: payload })
+    convertMutation.mutate(
+      { id: selectedRequest.id, data: payload },
+      {
+        onSuccess: () => {
+          setIsConvertModalOpen(false)
+          setSelectedRequest(null)
+        },
+      },
+    )
   }
 
   const statusTranslations: Record<string, string> = {
@@ -153,7 +139,7 @@ export const RequestsPage: React.FC = () => {
                       <td style={{ padding: '18px 20px' }}>
                         <div style={{ fontWeight: 600 }}>{req.client?.name || 'Клиент'}</div>
                         <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-                          {req.client?.username ? `@${req.client.username}` : ''}
+                          {req.client?.tgname ? `@${req.client.tgname}` : ''}
                         </div>
                       </td>
                       <td style={{ padding: '18px 20px', maxWidth: '300px' }}>
@@ -175,7 +161,7 @@ export const RequestsPage: React.FC = () => {
                       <td style={{ padding: '18px 20px' }}>
                         <div>{req.deliveryType === 'PICKUP' ? '🚗 Самовывоз' : '🚚 Доставка'}</div>
                         <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                          Желаемая дата: {new Date(req.date).toLocaleDateString()}
+                          Желаемая дата: {req.date ? new Date(req.date).toLocaleDateString() : '—'}
                         </div>
                       </td>
                       <td style={{ padding: '18px 20px' }}>
@@ -186,33 +172,34 @@ export const RequestsPage: React.FC = () => {
                       <td style={{ padding: '18px 20px', textAlign: 'right' }}>
                         <div style={{ display: 'inline-flex', gap: '8px' }}>
                           {req.status === 'PENDING' && (
-                            <button
-                              className="btn btn-secondary"
-                              style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              icon={CheckIcon}
                               onClick={() => updateStatusMutation.mutate({ id: req.id, status: 'CONTACTED' })}
                             >
-                              <CheckIcon style={{ width: '12px', height: '12px' }} />
-                              <span>Связаться</span>
-                            </button>
+                              Связаться
+                            </Button>
                           )}
                           {(req.status === 'PENDING' || req.status === 'CONTACTED') && (
                             <>
-                              <button
-                                className="btn btn-primary"
-                                style={{ padding: '6px 12px', fontSize: '0.8rem', display: 'flex', alignItems: 'center', gap: '4px' }}
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                icon={PlusIcon}
                                 onClick={() => handleOpenConvert(req)}
                               >
-                                <PlusIcon style={{ width: '12px', height: '12px' }} />
-                                <span>Создать заказ</span>
-                              </button>
-                              <button
-                                className="btn btn-secondary"
-                                style={{ padding: '6px 12px', fontSize: '0.8rem', color: 'var(--color-error)', display: 'flex', alignItems: 'center', gap: '4px' }}
+                                Создать заказ
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                icon={XMarkIcon}
+                                dangerText
                                 onClick={() => updateStatusMutation.mutate({ id: req.id, status: 'CANCELLED' })}
                               >
-                                <XMarkIcon style={{ width: '12px', height: '12px' }} />
-                                <span>Отменить</span>
-                              </button>
+                                Отменить
+                              </Button>
                             </>
                           )}
                           {req.status === 'CONVERTED' && (
@@ -290,7 +277,7 @@ export const RequestsPage: React.FC = () => {
             </div>
 
             <div className="form-group">
-              <label className="form-label">Пожелания к букету / состав</label>
+              <label className="form-label">Пожелания</label>
               <textarea
                 className="form-input"
                 style={{ minHeight: '60px', resize: 'vertical' }}
@@ -334,22 +321,12 @@ export const RequestsPage: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', gap: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
-              <button
-                type="button"
-                className="btn btn-secondary"
-                onClick={() => setIsConvertModalOpen(false)}
-              >
+              <Button variant="secondary" type="button" onClick={() => setIsConvertModalOpen(false)}>
                 Отмена
-              </button>
-              <button
-                type="submit"
-                className="btn btn-primary"
-                disabled={convertMutation.isPending}
-                style={{ display: 'flex', alignItems: 'center', gap: '6px' }}
-              >
-                <CheckIcon style={{ width: '16px', height: '16px' }} />
-                <span>{convertMutation.isPending ? 'Оформление...' : 'Оформить заказ'}</span>
-              </button>
+              </Button>
+              <Button type="submit" disabled={convertMutation.isPending} icon={CheckIcon}>
+                {convertMutation.isPending ? 'Оформление...' : 'Оформить заказ'}
+              </Button>
             </div>
           </form>
         </Modal>

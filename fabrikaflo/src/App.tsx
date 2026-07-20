@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import type { RootState } from './store'
+import { selectIsAuthenticated } from './store/reducers/auth'
 
 import { Sidebar } from './components/Sidebar.tsx'
 import { LoginPage } from './pages/LoginPage/LoginPage.tsx'
@@ -13,8 +13,7 @@ import { GalleryPage } from './pages/GalleryPage/GalleryPage.tsx'
 import { TeamPage } from './pages/TeamPage/TeamPage.tsx'
 
 export const App: React.FC = () => {
-  const token = useSelector((state: RootState) => state.auth.token)
-  const isAuthenticated = !!token
+  const isAuthenticated = useSelector(selectIsAuthenticated)
 
   if (!isAuthenticated) {
     return (

@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout, type RootState } from '../store';
+import { authActions, selectAuthUser } from '../store/reducers/auth';
 
 import HomeIcon from '../assets/icons/home.svg';
 import InboxIcon from '../assets/icons/inbox.svg';
@@ -14,10 +14,10 @@ import LogoutIcon from '../assets/icons/logout.svg';
 export const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector(selectAuthUser);
 
   const handleLogout = () => {
-    dispatch(logout());
+    dispatch(authActions.logout());
     navigate('/login');
   };
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../../api/auth';
-import { setCredentials } from '../../store';
+import { authActions } from '../../store/reducers/auth';
 import { Button } from '../../shared/ui';
 
 export const LoginPage: React.FC = () => {
@@ -25,7 +25,7 @@ export const LoginPage: React.FC = () => {
       { login, password },
       {
         onSuccess: (data) => {
-          dispatch(setCredentials(data));
+          dispatch(authActions.setCredentials(data));
           navigate('/');
         },
         onError: (err) => {

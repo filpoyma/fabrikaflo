@@ -112,7 +112,7 @@ export const LoginPage: React.FC = () => {
                 marginBottom: '20px',
               }}
             >
-              ⚠️ {errorMsg}
+              {errorMsg}
             </div>
           )}
 

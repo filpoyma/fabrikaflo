@@ -11,6 +11,7 @@ import {
 import { AvatarCircle, IconButton, Button, SegmentedControl, type SegmentedOption, Modal } from '../../shared/ui'
 
 import PlusIcon from '../../assets/icons/plus.svg'
+import { PeonyIcon } from '../../components/BotanicalIcons'
 
 const roleLabels: Record<string, { label: string; color: string; bg: string }> = {
   ADMIN: { label: 'Администратор', color: '#6A1A2B', bg: '#F2E8D5' },
@@ -275,26 +276,17 @@ export const TeamPage: React.FC = () => {
 
         {/* Role badge */}
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
-          <span
-            style={{
-              backgroundColor: rl.bg,
-              color: rl.color,
-              padding: '3px 10px',
-              borderRadius: '20px',
-              fontSize: '0.78rem',
-              fontWeight: 600,
-              whiteSpace: 'nowrap',
-            }}
-          >
+          {/* Status pill (role) + Telegram link status */}
+          <span className={`status-pill ${member.role === 'ADMIN' ? 'status-pill--warn' : 'status-pill--sage'}`}>
             {rl.label}
           </span>
-
-          {/* Telegram link status */}
           <span
             style={{
-              fontSize: '0.75rem',
-              color: isLinked ? 'var(--color-sage)' : 'var(--text-secondary)',
-              fontWeight: 500,
+              fontSize: '0.62rem',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              fontWeight: 600,
+              color: isLinked ? 'var(--color-success)' : 'var(--text-secondary)',
             }}
           >
             {isLinked ? '● Telegram подключён' : '○ Ожидает подключения'}
@@ -324,48 +316,55 @@ export const TeamPage: React.FC = () => {
   }
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px', textAlign: 'left' }}>
+    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px', textAlign: 'left' }} data-testid="team-page">
       {/* Header */}
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
-        <div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: 400 }}>Команда</h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-            Управление сотрудниками: администраторы CRM и курьеры Telegram-бота.
-          </p>
+      <header className="page-header with-action">
+        <div className="head-text">
+          <span className="eyebrow">Мастерская</span>
+          <h1>Команда <em>цеха</em></h1>
+          <p>Управление сотрудниками: администраторы CRM и курьеры Telegram-бота.</p>
         </div>
-        <Button onClick={handleOpenCreate} icon={PlusIcon} style={{ flexShrink: 0 }}>
+        <Button onClick={handleOpenCreate} icon={PlusIcon} style={{ flexShrink: 0 }} data-testid="add-member-btn">
           Добавить сотрудника
         </Button>
-      </div>
+      </header>
 
       {isLoading ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          Загрузка команды...
+        <div className="empty-state">
+          <PeonyIcon size={48} color="var(--color-gold-deep)" />
+          <div className="headline">Загрузка</div>
+          <p>Загружаем список сотрудников…</p>
         </div>
       ) : members.length === 0 ? (
-        <div className="glass-card" style={{ padding: '60px', textAlign: 'center', backgroundColor: '#FFFFFF', color: 'var(--text-secondary)' }}>
-          Сотрудники пока не добавлены. Нажмите «+ Добавить сотрудника», чтобы создать первого.
+        <div className="glass-card" style={{ backgroundColor: '#FFFFFF' }}>
+          <div className="empty-state">
+            <PeonyIcon size={64} color="var(--color-gold-deep)" />
+            <div className="headline">Команда ещё не собрана</div>
+            <p>Нажмите «Добавить сотрудника», чтобы создать первого администратора или курьера.</p>
+          </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '28px' }}>
-          {/* Admins section */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+          {/* Admins */}
           {admins.length > 0 && (
             <div>
-              <h3 style={{ fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                Администраторы · {admins.length}
-              </h3>
+              <div className="section-eyebrow">
+                <span>Администраторы</span>
+                <span className="count">· {String(admins.length).padStart(2, '0')}</span>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {admins.map(renderMemberCard)}
               </div>
             </div>
           )}
 
-          {/* Couriers section */}
+          {/* Couriers */}
           {couriers.length > 0 && (
             <div>
-              <h3 style={{ fontSize: '0.8rem', fontWeight: 600, textTransform: 'uppercase', letterSpacing: '0.1em', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-                Курьеры · {couriers.length}
-              </h3>
+              <div className="section-eyebrow">
+                <span>Курьеры</span>
+                <span className="count">· {String(couriers.length).padStart(2, '0')}</span>
+              </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 {couriers.map(renderMemberCard)}
               </div>

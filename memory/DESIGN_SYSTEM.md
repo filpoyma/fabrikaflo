@@ -24,15 +24,27 @@ Unified across both frontends of the project:
 Both frontends share the same tokens/fonts/spacing/aesthetics so the whole product feels
 like one editorial magazine surface.
 
-## Iteration 4 (2026-01-20) — Editorial touches inside pages
-- **`src/components/BotanicalIcons.tsx`** (new) — hand-drawn line-art SVG icons: `PeonyIcon`, `DeliveryIcon` (scooter+bouquet crate), `PinIcon`, `VanIcon`, `PickupIcon`. Reused across pages, replaces emojis.
-- **`src/index.css`** — added reusable editorial helpers: `.page-header` (eyebrow + italic h1 with hairline), `.editorial-table` (uppercase spaced thead, italic-serif primary cells, champagne row-hover), `.empty-state` (peony icon + italic headline with gold hairline), `.hair-list` (Dashboard list items).
-- **`src/pages/DashboardPage`** — full editorial rewrite: page-header with eyebrow, extracted `StatCard` component (uppercase eyebrow → big Fraunces italic number → hairline → hint). Two-list section («Последние заявки» / «Активные доставки») with eyebrow + right-aligned "все заявки" link + `PeonyIcon` / `DeliveryIcon` empty states, replaced emojis 🌸 🚗 📍 with SVG.
-- **`src/pages/RequestsPage`** — page-header + `.editorial-table` markup, `PickupIcon`/`VanIcon` replace 🚗/🚚, `.empty-state` with peony replaces plain text, ✅ replaced with uppercase «оформлен» text, comment shown as italic serif quote «…».
-- **`src/pages/ClientsPage`** — page-header, editorial table (search input restyled to 13px padding), `PeonyIcon` in empty state (both "not found" and "empty"), Telegram links with champagne underline, italic serif for averageCheck number.
-- **`src/pages/OrdersPage`** (Kanban) — page-header, kanban columns re-styled: eyebrow «ЭТАП · 00» → italic serif column title with monochrome icon + 1px hairline underneath (was 2px thick coloured border), replaced 🚗 (delivery address in card) with `PinIcon`, replaced 🚚 (waiting-for-courier line) with `DeliveryIcon`, removed 📅 (time now shown as plain letterspaced ru-RU string).
-- **`src/main.tsx`** — `BrowserRouter basename="/fabrikaflo"` (was missing — direct URLs like `/fabrikaflo/requests` used to render Vite 404).
+## Iteration 5 (2026-01-20) — OrdersPage cards + Gallery/Team page-headers
+- **`src/index.css`** — added new reusable classes:
+  - `.card-editorial` (kanban/detail cards on white with hover-lift + champagne border)
+  - `.card-thumb` (4:3 image slot with `.thumb-badge` overlay pill)
+  - `.status-pill` + variants `--info / --sage / --warn / --gold / --ok / --err`
+  - `.card-detail` (row with uppercase-eyebrow label + value, `.v.serif`, `.v.number`)
+  - `.page-header.with-action` (page-header + right-aligned button)
+  - `.section-eyebrow` (uppercase group label + italic count) — for Team roles
+- **`src/pages/OrdersPage/OrdersPage.tsx`** — full refactor of `renderOrderCard` header + thumb + details:
+  - Replaced coloured 4px `borderLeft` with `.card-editorial` (subtle hairline everywhere)
+  - Extracted status color helper `getStatusPillClass` → uses new `.status-pill--<variant>` classes
+  - Details block: `.card-detail` rows with uppercase eyebrow labels («Бюджет», «Состав», «Открытка», «Референс», «Куда»)
+  - Budget number in italic Fraunces (`.v.number`)
+  - Wishes/postcard shown as italic serif quotes «…» (`.v.serif`)
+  - Removed emojis: 👤 (client), 💰 (budget), 🌿 (composition), 💌 (postcard), 📷 📋 (reference photo), 🚴 (courier), 📝 (comment), ⚠️ (client feedback), 🚗 🚚 📅 (delivery info)
+- **`src/pages/GalleryPage/GalleryPage.tsx`** — `.page-header.with-action` + editorial `.empty-state` with `PeonyIcon` for empty portfolio, removed all 📸 hints inside upload boxes.
+- **`src/pages/TeamPage/TeamPage.tsx`** — `.page-header.with-action`, editorial `.empty-state` with `PeonyIcon`, `.section-eyebrow` with italic count for Administrators/Couriers groups, role labels now use `.status-pill--warn` (admin) / `.status-pill--sage` (courier), Telegram-link status also in uppercase letterspaced style.
+- **`src/pages/LoginPage/LoginPage.tsx`** — removed lone ⚠️ before error message (cleanup).
 
 ## Next Action Items
-- OrdersPage's `renderOrderCard` (~500 lines of the file) — inner cards still use inline styles; adding `.card-editorial` class + status pills would tighten it further. Skipped in this pass to keep scope minimal.
-- GalleryPage + TeamPage — same treatment as Requests/Clients (page-header + editorial-table). They already inherit the palette.
+- Полный e2e прогон через testing_agent, когда backend снова стабильно запущен (Postgres после ре-старта пода — нужно re-migrate + re-seed)
+- Реализовать `GET /api/fabrika/articles` на backend (сейчас в webapp `api.getArticle` бросает 'Not implemented')
+- LLM-интеграция для AI-флориста (заменить mock-ответы на реальные)
+- Mobile-адаптация admin-панели (сейчас desktop-first: 260px sidebar + 4-col kanban ломается на планшетах)

@@ -9,6 +9,7 @@ import { IconButton, Button, Modal } from '../../shared/ui'
 import type { IPortfolioItem } from '../../types'
 
 import PlusIcon from '../../assets/icons/plus.svg'
+import { PeonyIcon } from '../../components/BotanicalIcons'
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error)
@@ -101,31 +102,34 @@ export const GalleryPage: React.FC = () => {
   }
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-        <div>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: 400 }}>
-            Галерея работ (Портфолио)
-          </h1>
-          <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-            Эти фотографии будут показываться клиентам в Telegram-боте в разделе «❤️ Наши работы».
-          </p>
+    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }} data-testid="gallery-page">
+      <header className="page-header with-action">
+        <div className="head-text">
+          <span className="eyebrow">Портфолио · fabrika.flo</span>
+          <h1>Галерея <em>работ</em></h1>
+          <p>Эти фотографии показываются клиентам в Telegram-боте в разделе «Наши работы».</p>
         </div>
-        <Button onClick={handleOpenCreate} icon={PlusIcon}>
+        <Button onClick={handleOpenCreate} icon={PlusIcon} data-testid="add-work-btn">
           Добавить работу
         </Button>
-      </div>
+      </header>
 
       {isLoading ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          Загрузка галереи...
+        <div className="empty-state">
+          <PeonyIcon size={48} color="var(--color-gold-deep)" />
+          <div className="headline">Загрузка</div>
+          <p>Собираем галерею работ…</p>
         </div>
       ) : (
         /* Portfolio Grid */
         <div>
           {items.length === 0 ? (
-            <div className="glass-card" style={{ padding: '60px', textAlign: 'center', backgroundColor: '#FFFFFF', color: 'var(--text-secondary)' }}>
-              В галерее пока нет работ. Нажмите кнопку «Добавить работу», чтобы загрузить фотографии букетов для вдохновения клиентов.
+            <div className="glass-card" style={{ backgroundColor: '#FFFFFF' }}>
+              <div className="empty-state">
+                <PeonyIcon size={64} color="var(--color-gold-deep)" />
+                <div className="headline">Портфолио пусто</div>
+                <p>Нажмите «Добавить работу», чтобы загрузить первую фотографию букета для вдохновения клиентов.</p>
+              </div>
             </div>
           ) : (
             <div
@@ -279,7 +283,7 @@ export const GalleryPage: React.FC = () => {
                       fontWeight: 500,
                     }}
                   >
-                    Нажмите, чтобы изменить 📸
+                    Нажмите, чтобы изменить
                   </div>
                 </>
               ) : (
@@ -386,7 +390,7 @@ export const GalleryPage: React.FC = () => {
                         fontWeight: 500,
                       }}
                     >
-                      Нажмите, чтобы заменить 📸
+                      Нажмите, чтобы заменить
                     </div>
                   </>
                 ) : (

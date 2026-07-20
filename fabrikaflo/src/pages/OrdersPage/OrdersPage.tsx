@@ -127,6 +127,29 @@ export const OrdersPage: React.FC = () => {
     }
   };
 
+  const getStatusPillClass = (status: string) => {
+    switch (status) {
+      case 'CREATED':
+      case 'ASSEMBLING':
+        return 'status-pill status-pill--info';
+      case 'ASSEMBLED':
+      case 'APPROVED':
+        return 'status-pill status-pill--sage';
+      case 'WAITING_FOR_APPROVAL':
+      case 'WAITING_FOR_PAYMENT':
+        return 'status-pill status-pill--warn';
+      case 'PAID':
+      case 'DELIVERING':
+        return 'status-pill status-pill--gold';
+      case 'DELIVERED':
+        return 'status-pill status-pill--ok';
+      case 'CANCELLED':
+        return 'status-pill status-pill--err';
+      default:
+        return 'status-pill status-pill--info';
+    }
+  };
+
   const renderOrderCard = (order: IOrder) => {
     const isUploading =
       uploadPhotoMutation.isPending && uploadPhotoMutation.variables?.id === order.id;
@@ -136,169 +159,88 @@ export const OrdersPage: React.FC = () => {
     return (
       <div
         key={order.id}
-        className="glass-card"
-        style={{
-          padding: '20px',
-          backgroundColor: '#FFFFFF',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '14px',
-          fontSize: '0.9rem',
-          borderLeft: `4px solid ${getStatusColor(order.status)}`,
-        }}
+        className="card-editorial"
+        data-testid={`order-card-${order.id}`}
       >
         {/* Card Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '3px' }}>
-          {/* Card Header Top Row: Order ID & Status */}
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            <div style={{ fontWeight: 600, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
-              Заказ #{order.id.substring(0, 8)}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <span className="card-eyebrow">№ {order.id.substring(0, 8)}</span>
+              <div className="card-title" style={{ marginTop: '4px' }}>
+                {order.client?.name || 'Клиент'}
+              </div>
             </div>
-            <span
-              style={{
-                fontSize: '0.75rem',
-                fontWeight: 600,
-                color: getStatusColor(order.status),
-                textTransform: 'uppercase',
-                letterSpacing: '0.02em',
-              }}
-            >
+            <span className={getStatusPillClass(order.status)}>
               {getStatusLabel(order.status)}
             </span>
           </div>
 
-          {/* Card Header Bottom Row: Client Info (Full Width) */}
-          <div
-            style={{
-              fontSize: '0.8rem',
-              color: 'var(--text-secondary)',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '1px',
-            }}
-          >
-            <div style={{ fontWeight: 600, color: 'var(--text-primary)', fontSize: '0.9rem' }}>
-              👤 {order.client?.name || 'Клиент'}
+          {(order.client?.phone || order.client?.tgname) && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+              {order.client?.phone && <span>{order.client.phone}</span>}
+              {order.client?.tgname && (
+                <a
+                  href={`https://t.me/${order.client.tgname}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  style={{
+                    color: 'var(--color-sage)',
+                    textDecoration: 'none',
+                    fontWeight: 500,
+                    borderBottom: '1px solid var(--color-gold-deep)',
+                    paddingBottom: '1px',
+                  }}
+                >
+                  @{order.client.tgname}
+                </a>
+              )}
             </div>
-            {(order.client?.phone || order.client?.tgname) && (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
-                {order.client?.phone && <span>{order.client.phone}</span>}
-                {order.client?.tgname && (
-                  <a
-                    href={`https://t.me/${order.client.tgname}`}
-                    target="_blank"
-                    rel="noreferrer"
-                    style={{
-                      color: 'var(--color-accent-dark)',
-                      textDecoration: 'none',
-                      fontWeight: 500,
-                    }}
-                  >
-                    @{order.client.tgname}
-                  </a>
-                )}
-              </div>
-            )}
-          </div>
-        </div>
-
-        {/* Bouquet Image Preview */}
-        <div
-          style={{
-            width: '100%',
-            height: '160px',
-            backgroundColor: '#FAF8F5',
-            borderRadius: '6px',
-            overflow: 'hidden',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'center',
-            border: '1px solid var(--border-light)',
-            position: 'relative',
-          }}
-        >
-          {currentPhoto ? (
-            <img
-              src={currentPhoto}
-              alt="Bouquet preview"
-              style={{ width: '100%', height: '100%', objectFit: 'cover' }}
-            />
-          ) : order.request?.examplePhotoUrl ? (
-            <div style={{ width: '100%', height: '100%', position: 'relative' }}>
-              <img
-                src={order.request.examplePhotoUrl}
-                alt="Client reference"
-                style={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.85 }}
-              />
-              <div
-                style={{
-                  position: 'absolute',
-                  top: '8px',
-                  left: '8px',
-                  backgroundColor: 'rgba(23, 45, 31, 0.75)',
-                  color: '#FFFFFF',
-                  padding: '3px 8px',
-                  borderRadius: '12px',
-                  fontSize: '0.7rem',
-                  fontWeight: 500,
-                }}
-              >
-                📋 Пример клиента
-              </div>
-            </div>
-          ) : (
-            <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
-              {isUploading ? 'Загрузка букета...' : 'Фото отсутствует'}
-            </span>
           )}
         </div>
 
-        {/* Order Details */}
-        <div
-          style={{
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '6px',
-            borderTop: '1px solid var(--border-light)',
-            paddingTop: '10px',
-          }}
-        >
-          <div>
-            💰 Бюджет: <strong>{order.budget} руб.</strong>
+        {/* Thumb */}
+        <div className="card-thumb">
+          {currentPhoto ? (
+            <img src={currentPhoto} alt="Готовый букет" />
+          ) : order.request?.examplePhotoUrl ? (
+            <>
+              <img src={order.request.examplePhotoUrl} alt="Пример клиента" style={{ opacity: 0.85 }} />
+              <span className="thumb-badge">Пример клиента</span>
+            </>
+          ) : (
+            <div style={{ display: 'grid', placeItems: 'center', width: '100%', height: '100%', color: 'var(--text-secondary)', fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '0.9rem' }}>
+              {isUploading ? 'Загрузка…' : 'фото ещё нет'}
+            </div>
+          )}
+        </div>
+
+        {/* Details */}
+        <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '10px', display: 'flex', flexDirection: 'column' }}>
+          <div className="card-detail">
+            <span className="k">Бюджет</span>
+            <span className="v number">{order.budget} ₽</span>
           </div>
           {order.wishes && (
-            <div>
-              🌿 Состав: <span style={{ color: 'var(--text-secondary)' }}>{order.wishes}</span>
+            <div className="card-detail">
+              <span className="k">Состав</span>
+              <span className="v serif">«{order.wishes}»</span>
             </div>
           )}
           {order.postcardText && (
-            <div>
-              💌 Открытка:{' '}
-              <span style={{ fontStyle: 'italic', color: 'var(--text-secondary)' }}>
-                «{order.postcardText}»
-              </span>
+            <div className="card-detail">
+              <span className="k">Открытка</span>
+              <span className="v serif">«{order.postcardText}»</span>
             </div>
           )}
           {order.request?.examplePhotoUrl && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '2px' }}>
-              <span style={{ color: 'var(--text-secondary)' }}>📷 Пример клиента:</span>
+            <div className="card-detail" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
+              <span className="k" style={{ flexShrink: 0 }}>Референс</span>
               <a
                 href={order.request.examplePhotoUrl}
                 target="_blank"
                 rel="noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  borderRadius: '4px',
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-light)',
-                  lineHeight: 0,
-                }}
+                style={{ display: 'inline-flex', borderRadius: '3px', overflow: 'hidden', border: '1px solid var(--border-light)', lineHeight: 0 }}
               >
                 <img
                   src={order.request.examplePhotoUrl}
@@ -309,35 +251,31 @@ export const OrdersPage: React.FC = () => {
             </div>
           )}
 
-          <div
-            style={{
-              borderTop: '1px dotted var(--border-light)',
-              marginTop: '6px',
-              paddingTop: '6px',
-            }}
-          >
-            <div>
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
-                <PinIcon size={12} color="var(--color-gold-deep)" />
-                {order.deliveryAddress ? `Доставка · ${order.deliveryAddress}` : 'Самовывоз'}
-              </div>
-            </div>
+          <div className="card-detail">
+            <span className="k">Куда</span>
+            <span className="v" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+              <PinIcon size={12} color="var(--color-gold-deep)" />
+              {order.deliveryAddress ? order.deliveryAddress : 'Самовывоз'}
+            </span>
             {order.deliveryTime && (
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px', letterSpacing: '0.06em' }}>
+              <span className="v" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px', letterSpacing: '0.04em' }}>
                 {new Date(order.deliveryTime).toLocaleString('ru-RU')}
-              </div>
+              </span>
             )}
           </div>
           {order.courier && (
             <div
               style={{
+                fontFamily: 'var(--font-sans)',
                 color: 'var(--color-sage)',
-                fontWeight: 500,
-                fontSize: '0.85rem',
-                marginTop: '4px',
+                fontSize: '0.72rem',
+                letterSpacing: '0.22em',
+                textTransform: 'uppercase',
+                fontWeight: 600,
+                marginTop: '2px',
               }}
             >
-              🚴 Курьер: {order.courier.name}
+              Курьер · {order.courier.name}
             </div>
           )}
           {order.comment && (
@@ -351,7 +289,7 @@ export const OrdersPage: React.FC = () => {
                 fontSize: '0.85rem',
               }}
             >
-              <strong>📝 Комментарий:</strong>
+              <strong style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Комментарий</strong>
               <div
                 style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}
               >
@@ -370,7 +308,7 @@ export const OrdersPage: React.FC = () => {
                 fontSize: '0.85rem',
               }}
             >
-              <strong style={{ color: '#D32F2F' }}>⚠️ Замечания клиента:</strong>
+              <strong style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--color-error)' }}>Замечания клиента</strong>
               <div
                 style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}
               >
@@ -553,7 +491,7 @@ export const OrdersPage: React.FC = () => {
                 <option value="">-- Выбрать курьера --</option>
                 {couriers.map((c) => (
                   <option key={c.id} value={c.id}>
-                    🚴 {c.name} (@{c.tgname || 'нет'})
+                    {c.name} · @{c.tgname || 'нет'}
                   </option>
                 ))}
               </select>

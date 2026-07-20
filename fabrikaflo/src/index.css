@@ -1,44 +1,60 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=Source+Sans+3:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,300;1,9..144,400&family=Manrope:wght@300;400;500;600;700&display=swap');
 
 :root {
-  /* Botanical Essence Color Palette */
-  --bg-primary: #E5EAE6;      /* Muted light grey-green background */
-  --bg-secondary: #FDFBF7;    /* Tertiary clean cream-white for cards */
-  --bg-sidebar: #2D322E;      /* Inverted dark charcoal-green for sidebar */
-  
-  --text-primary: #2B3B30;    /* Dark charcoal-green for body and titles */
-  --text-secondary: #707571;  /* Neutral medium grey for captions & helper text */
-  --text-light: #FDFBF7;      /* Clean cream-white for sidebar links */
-  
-  --border-light: #D5DBD6;    /* Soft grey-green linen border */
-  --border-focus: #8BA88E;    /* Muted sage highlight border */
-  
-  --color-sage: #8BA88E;      /* Primary Sage theme color */
-  --color-accent: #F4D7D4;    /* Secondary soft pink theme color */
-  --color-accent-dark: #E2B2AD;
-  --color-accent-light: rgba(244, 215, 212, 0.2);
-  --color-gold: #D4AF37;
-  
-  --btn-primary-bg: #4E6554;  /* Dark forest green for main actions */
+  /* ==========================================================
+     fabrika.flo — Editorial Admin Palette
+     Ivory + Wine/Burgundy + Champagne/Gold
+     Same tokens as /webapp so the whole product feels unified.
+     ========================================================== */
+
+  /* Backgrounds */
+  --bg-primary: #F5F1EA;      /* Warm ivory canvas */
+  --bg-secondary: #FDFBF7;    /* Cream-white for cards */
+  --bg-sidebar: #4F121F;      /* Wine-deep sidebar (was dark green) */
+
+  /* Text */
+  --text-primary: #282321;    /* Rich ink */
+  --text-secondary: #736862;  /* Soft ink */
+  --text-light: #F5EFE7;      /* Ivory-warm for sidebar / on-dark surfaces */
+
+  /* Lines / borders */
+  --border-light: #E8DFD5;
+  --border-focus: #D5B47B;    /* Champagne */
+
+  /* Accents (kept variable names, remapped) */
+  --color-sage: #6A1A2B;              /* PRIMARY wine (was sage green) */
+  --color-sage-dark: #4F121F;
+  --color-sage-soft: #8C273B;
+  --color-accent: #F2E8D5;            /* Champagne tint (soft) */
+  --color-accent-dark: #D5B47B;       /* Champagne */
+  --color-accent-light: rgba(213, 180, 123, 0.18);
+  --color-gold: #D5B47B;
+  --color-gold-deep: #C29E5F;
+
+  /* Buttons */
+  --btn-primary-bg: #6A1A2B;          /* Wine primary */
   --btn-primary-text: #FDFBF7;
-  
-  --color-success: #5F8265;
-  --color-warning: #B59369;
-  --color-error: #C82222;     /* Botanical red for warnings/deletions */
-  --color-info: #5A7E8F;
-  
-  --shadow-sm: 0 2px 8px rgba(43, 59, 48, 0.04);
-  --shadow-md: 0 8px 24px rgba(43, 59, 48, 0.07);
-  --shadow-lg: 0 16px 48px rgba(43, 59, 48, 0.12);
-  
-  --border-radius-sm: 8px;
-  --border-radius-md: 14px;
-  --border-radius-lg: 22px;
-  
-  /* Fonts from Screenshot */
-  --font-serif: 'Plus Jakarta Sans', system-ui, sans-serif;
-  --font-sans: 'Source Sans 3', system-ui, sans-serif;
-  
+
+  /* Status colors */
+  --color-success: #3D6B4E;
+  --color-warning: #C29E5F;
+  --color-error: #B53D3D;
+  --color-info: #6A1A2B;              /* Info uses wine too, consistent brand */
+
+  /* Shadows — warm ivory shadows */
+  --shadow-sm: 0 1px 0 rgba(40, 35, 33, 0.03), 0 2px 8px rgba(40, 35, 33, 0.04);
+  --shadow-md: 0 4px 12px rgba(40, 35, 33, 0.05), 0 8px 24px rgba(40, 35, 33, 0.05);
+  --shadow-lg: 0 8px 20px rgba(40, 35, 33, 0.06), 0 20px 48px rgba(40, 35, 33, 0.09);
+
+  /* Radius */
+  --border-radius-sm: 4px;
+  --border-radius-md: 6px;
+  --border-radius-lg: 10px;
+
+  /* Fonts — editorial magazine feel */
+  --font-serif: 'Fraunces', 'PP Editorial New', Georgia, serif;
+  --font-sans: 'Manrope', 'Inter Tight', system-ui, -apple-system, sans-serif;
+
   font-family: var(--font-sans);
   color: var(--text-primary);
   background-color: var(--bg-primary);
@@ -53,6 +69,18 @@ body {
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  position: relative;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    radial-gradient(1400px circle at 88% -6%, rgba(213, 180, 123, 0.10), transparent 42%),
+    radial-gradient(1100px circle at -12% 115%, rgba(106, 26, 43, 0.05), transparent 45%);
+  pointer-events: none;
+  z-index: 0;
 }
 
 #root {
@@ -60,67 +88,75 @@ body {
   min-height: 100vh;
   display: flex;
   box-sizing: border-box;
+  position: relative;
+  z-index: 1;
 }
 
-/* Scrollbar Customization */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
-::-webkit-scrollbar-track {
-  background: var(--bg-primary);
-}
+::selection { background: var(--color-sage); color: var(--bg-secondary); }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb {
-  background: #C4CCC7;
+  background: var(--border-light);
   border-radius: var(--border-radius-sm);
 }
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-sage);
-}
+::-webkit-scrollbar-thumb:hover { background: var(--color-gold-deep); }
 
-/* Typography */
+/* Typography — editorial */
 h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-serif);
   margin: 0;
   color: var(--text-primary);
-  font-weight: 600;
-  letter-spacing: -0.015em;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  line-height: 1.12;
 }
 
-h1 {
-  font-size: 2.85rem;
-  line-height: 1.15;
-}
-
-h2 {
-  font-size: 2.1rem;
-}
-
-h3 {
-  font-size: 1.55rem;
-}
-
-p, span, select, input, textarea, button {
+h1 { font-size: 2.6rem; font-weight: 300; }
+h2 { font-size: 1.9rem; font-weight: 300; }
+h3 { font-size: 1.35rem; font-weight: 400; font-style: italic; }
+h4 {
   font-family: var(--font-sans);
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
 }
 
-/* Glassmorphism card utility */
+p, span, select, input, textarea, button, label {
+  font-family: var(--font-sans);
+  color: inherit;
+}
+
+/* Editorial page-title helper (used across pages) */
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--color-sage);
+  display: inline-block;
+}
+
+.serif-italic { font-family: var(--font-serif); font-style: italic; font-weight: 400; }
+
+/* Cards */
 .glass-card {
-  background: rgba(253, 251, 247, 0.92);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
+  background: var(--bg-secondary);
   border: 1px solid var(--border-light);
   border-radius: var(--border-radius-md);
   box-shadow: var(--shadow-sm);
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: border-color 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .glass-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: rgba(139, 168, 142, 0.5);
+  border-color: var(--color-gold-deep);
 }
 
-/* Premium Sidebar Layout */
+/* Layout */
 .app-container {
   display: flex;
   width: 100vw;
@@ -130,11 +166,11 @@ p, span, select, input, textarea, button {
 
 .main-content {
   flex: 1;
-  padding: 40px;
+  padding: 40px 48px 56px;
   max-height: 100vh;
   overflow-y: auto;
   box-sizing: border-box;
-  background-color: var(--bg-primary);
+  background-color: transparent;
 }
 
 /* Flex utilities */
@@ -147,56 +183,57 @@ p, span, select, input, textarea, button {
 .gap-3 { gap: 24px; }
 .w-100 { width: 100%; }
 
-/* Buttons styling */
+/* Buttons */
 .btn {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 22px;
-  border-radius: var(--border-radius-sm);
-  font-size: 0.9rem;
+  padding: 10px 20px;
+  border-radius: 999px;
+  font-size: 0.82rem;
   font-weight: 500;
+  letter-spacing: 0.06em;
   cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  border: none;
+  transition: background-color 0.25s ease, color 0.25s ease, border-color 0.25s ease, transform 0.2s ease;
+  border: 1px solid transparent;
   gap: 8px;
+  font-family: var(--font-sans);
 }
 
 .btn-primary {
   background-color: var(--btn-primary-bg);
   color: var(--btn-primary-text);
-  border: 1px solid #435848;
+  border-color: var(--btn-primary-bg);
 }
-
 .btn-primary:hover {
-  background-color: #3F5244;
+  background-color: var(--color-sage-dark);
+  border-color: var(--color-sage-dark);
   transform: translateY(-1px);
-  box-shadow: 0 4px 12px rgba(78, 101, 84, 0.2);
 }
 
 .btn-secondary {
-  background-color: var(--bg-secondary);
+  background-color: transparent;
   color: var(--text-primary);
-  border: 1px solid var(--border-light);
+  border-color: var(--text-primary);
 }
-
 .btn-secondary:hover {
-  background-color: #FAF8F4;
-  border-color: var(--color-sage);
+  background-color: var(--text-primary);
+  color: var(--bg-secondary);
 }
 
 .btn-danger {
   background-color: var(--color-error);
-  color: white;
+  color: var(--bg-secondary);
+  border-color: var(--color-error);
 }
-
 .btn-danger:hover {
-  background-color: #A31C1C;
+  background-color: #8f2d2d;
+  border-color: #8f2d2d;
   transform: translateY(-1px);
 }
 
 .btn:disabled {
-  opacity: 0.6;
+  opacity: 0.55;
   cursor: not-allowed;
   transform: none !important;
 }
@@ -206,55 +243,65 @@ p, span, select, input, textarea, button {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 
 .form-label {
-  font-size: 0.8rem;
+  font-size: 0.68rem;
   font-weight: 600;
-  color: var(--text-primary);
+  color: var(--text-secondary);
   text-transform: uppercase;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.22em;
 }
 
 .form-input {
-  padding: 12px 16px;
+  padding: 12px 14px;
   border-radius: var(--border-radius-sm);
   border: 1px solid var(--border-light);
   background-color: var(--bg-secondary);
   color: var(--text-primary);
-  font-size: 0.95rem;
-  transition: all 0.2s ease;
+  font-size: 0.94rem;
+  transition: border-color 0.25s ease, box-shadow 0.25s ease;
   outline: none;
+  font-family: var(--font-sans);
 }
 
 .form-input:focus {
-  border-color: var(--border-focus);
-  box-shadow: 0 0 0 3px rgba(139, 168, 142, 0.2);
+  border-color: var(--color-sage);
+  box-shadow: 0 0 0 3px rgba(106, 26, 43, 0.12);
 }
 
-/* Badge tags for statuses */
+.form-input::placeholder { color: rgba(115, 104, 98, 0.55); }
+
+/* Badge / status */
 .badge {
   display: inline-flex;
-  padding: 4px 10px;
-  border-radius: 50px;
-  font-size: 0.75rem;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 0.62rem;
   font-weight: 600;
   text-transform: uppercase;
-  letter-spacing: 0.02em;
+  letter-spacing: 0.22em;
+  border: 1px solid transparent;
+  font-family: var(--font-sans);
+}
+.badge-pending { background-color: var(--color-accent); color: var(--color-sage); border-color: var(--color-accent-dark); }
+.badge-success { background-color: rgba(61, 107, 78, 0.10); color: var(--color-success); border-color: rgba(61, 107, 78, 0.28); }
+.badge-warning { background-color: var(--color-accent); color: var(--color-gold-deep); border-color: var(--color-accent-dark); }
+.badge-error   { background-color: rgba(181, 61, 61, 0.10); color: var(--color-error); border-color: rgba(181, 61, 61, 0.28); }
+
+/* Hairline divider */
+.hairline {
+  height: 1px;
+  background: var(--border-light);
+  margin: 24px 0;
 }
 
-.badge-pending { background-color: rgba(90, 126, 143, 0.12); color: var(--color-info); }
-.badge-success { background-color: rgba(95, 130, 101, 0.12); color: var(--color-success); }
-.badge-warning { background-color: rgba(181, 147, 105, 0.12); color: var(--color-warning); }
-.badge-error { background-color: rgba(200, 34, 34, 0.1); color: var(--color-error); }
-
-/* Animation keyframes */
+/* Animation */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
-
 .animated-fade-in {
   animation: fadeIn 0.45s cubic-bezier(0.4, 0, 0.2, 1) forwards;
 }

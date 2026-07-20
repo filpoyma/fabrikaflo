@@ -13,8 +13,8 @@ import { AvatarCircle, IconButton, Button, SegmentedControl, type SegmentedOptio
 import PlusIcon from '../../assets/icons/plus.svg'
 
 const roleLabels: Record<string, { label: string; color: string; bg: string }> = {
-  ADMIN: { label: 'Администратор', color: '#2B3B30', bg: '#C8D8B0' },
-  COURIER: { label: 'Курьер', color: '#1E3A5F', bg: '#B8D4F0' },
+  ADMIN: { label: 'Администратор', color: '#6A1A2B', bg: '#F2E8D5' },
+  COURIER: { label: 'Курьер', color: '#282321', bg: '#EFE6D9' },
 }
 
 const roleOptions: SegmentedOption<'ADMIN' | 'COURIER'>[] = [

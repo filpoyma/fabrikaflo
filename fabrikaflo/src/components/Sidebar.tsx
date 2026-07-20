@@ -25,14 +25,18 @@ export const Sidebar: React.FC = () => {
     display: 'flex',
     alignItems: 'center',
     gap: '12px',
-    padding: '12px 18px',
-    borderRadius: '8px',
-    fontSize: '0.95rem',
-    fontWeight: isActive ? 600 : 500,
+    padding: '11px 16px',
+    borderRadius: '4px',
+    fontSize: '0.72rem',
+    fontWeight: 600,
+    letterSpacing: '0.22em',
+    textTransform: 'uppercase' as const,
     textDecoration: 'none',
-    color: isActive ? 'var(--text-primary)' : 'var(--text-light)',
-    backgroundColor: isActive ? 'var(--color-sage)' : 'transparent',
-    transition: 'all 0.2s ease',
+    color: isActive ? 'var(--text-primary)' : 'rgba(245, 239, 231, 0.72)',
+    backgroundColor: isActive ? 'var(--color-gold)' : 'transparent',
+    borderLeft: isActive ? '2px solid var(--color-gold-deep)' : '2px solid transparent',
+    transition: 'background-color 0.25s ease, color 0.25s ease',
+    fontFamily: 'var(--font-sans)',
   });
 
   return (
@@ -44,81 +48,113 @@ export const Sidebar: React.FC = () => {
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
-        padding: '24px 16px',
-        borderRight: '1px solid rgba(253, 251, 247, 0.1)',
+        padding: '32px 18px',
+        borderRight: '1px solid rgba(213, 180, 123, 0.14)',
         height: '100vh',
         boxSizing: 'border-box',
       }}
     >
-      <div style={{ display: 'flex', flexDirection: 'column', gap: '40px' }}>
-        {/* Brand Header */}
-        <div style={{ padding: '0 8px' }}>
-          <h2
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '44px' }}>
+        {/* Brand */}
+        <div style={{ padding: '0 10px' }}>
+          <div
             style={{
               color: 'var(--text-light)',
               fontFamily: 'var(--font-serif)',
-              fontSize: '2.1rem',
-              fontWeight: 600,
+              fontStyle: 'italic',
+              fontSize: '2rem',
+              fontWeight: 300,
+              lineHeight: 1,
+              letterSpacing: '-0.02em',
             }}
           >
-            fabrika.flo
-          </h2>
+            fabrika<span style={{ color: 'var(--color-gold)' }}>.</span>flo
+          </div>
+          <div
+            style={{
+              marginTop: '10px',
+              width: '32px',
+              height: '1px',
+              background: 'var(--color-gold-deep)',
+            }}
+          />
           <span
             style={{
-              fontSize: '0.75rem',
+              display: 'block',
+              marginTop: '10px',
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.62rem',
               textTransform: 'uppercase',
-              letterSpacing: '0.12em',
-              color: 'var(--color-sage)',
+              letterSpacing: '0.34em',
+              color: 'rgba(245, 239, 231, 0.72)',
+              fontWeight: 500,
             }}
           >
             Цветочный цех
           </span>
         </div>
 
-        {/* Navigation Links */}
-        <nav style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          <NavLink to="/" style={activeStyle}>
-            <HomeIcon style={{ width: '20px', height: '20px' }} />
+        {/* Nav */}
+        <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
+          <NavLink to="/" style={activeStyle} end data-testid="nav-dashboard">
+            <HomeIcon style={{ width: '18px', height: '18px' }} />
             <span>Панель</span>
           </NavLink>
-          <NavLink to="/requests" style={activeStyle}>
-            <InboxIcon style={{ width: '20px', height: '20px' }} />
+          <NavLink to="/requests" style={activeStyle} data-testid="nav-requests">
+            <InboxIcon style={{ width: '18px', height: '18px' }} />
             <span>Заявки</span>
           </NavLink>
-          <NavLink to="/orders" style={activeStyle}>
-            <ShoppingBagIcon style={{ width: '20px', height: '20px' }} />
+          <NavLink to="/orders" style={activeStyle} data-testid="nav-orders">
+            <ShoppingBagIcon style={{ width: '18px', height: '18px' }} />
             <span>Заказы</span>
           </NavLink>
-          <NavLink to="/clients" style={activeStyle}>
-            <UsersIcon style={{ width: '20px', height: '20px' }} />
-            <span>Клиенты CRM</span>
+          <NavLink to="/clients" style={activeStyle} data-testid="nav-clients">
+            <UsersIcon style={{ width: '18px', height: '18px' }} />
+            <span>Клиенты</span>
           </NavLink>
-          <NavLink to="/team" style={activeStyle}>
-            <UserGroupIcon style={{ width: '20px', height: '20px' }} />
+          <NavLink to="/team" style={activeStyle} data-testid="nav-team">
+            <UserGroupIcon style={{ width: '18px', height: '18px' }} />
             <span>Команда</span>
           </NavLink>
-          <NavLink to="/gallery" style={activeStyle}>
-            <PhotoIcon style={{ width: '20px', height: '20px' }} />
-            <span>Галерея работ</span>
+          <NavLink to="/gallery" style={activeStyle} data-testid="nav-gallery">
+            <PhotoIcon style={{ width: '18px', height: '18px' }} />
+            <span>Галерея</span>
           </NavLink>
         </nav>
       </div>
 
-      {/* Admin Profile & Logout */}
+      {/* Bottom: Profile + Logout */}
       <div
         style={{
-          borderTop: '1px solid rgba(253, 251, 247, 0.1)',
-          paddingTop: '20px',
+          borderTop: '1px solid rgba(213, 180, 123, 0.14)',
+          paddingTop: '22px',
           display: 'flex',
           flexDirection: 'column',
-          gap: '16px',
+          gap: '14px',
         }}
       >
-        <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px' }}>
-          <span style={{ fontSize: '0.9rem', fontWeight: 600, color: 'var(--color-accent)' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', padding: '0 8px', gap: '3px' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontStyle: 'italic',
+              fontSize: '1.05rem',
+              fontWeight: 400,
+              color: 'var(--color-accent)',
+            }}
+          >
             {user?.name || 'Администратор'}
           </span>
-          <span style={{ fontSize: '0.75rem', color: 'var(--color-sage)' }}>
+          <span
+            style={{
+              fontFamily: 'var(--font-sans)',
+              fontSize: '0.65rem',
+              letterSpacing: '0.2em',
+              textTransform: 'uppercase',
+              color: 'var(--color-gold-deep)',
+              fontWeight: 500,
+            }}
+          >
             @{user?.tgname || 'admin'}
           </span>
         </div>
@@ -129,27 +165,33 @@ export const Sidebar: React.FC = () => {
             alignItems: 'center',
             justifyContent: 'center',
             gap: '10px',
-            padding: '12px',
-            backgroundColor: 'rgba(244, 215, 212, 0.08)',
-            border: '1px solid rgba(244, 215, 212, 0.2)',
-            borderRadius: '6px',
+            padding: '11px',
+            backgroundColor: 'rgba(245, 239, 231, 0.05)',
+            border: '1px solid rgba(213, 180, 123, 0.22)',
+            borderRadius: '999px',
             color: 'var(--text-light)',
             cursor: 'pointer',
-            fontSize: '0.85rem',
-            fontWeight: 500,
-            transition: 'all 0.2s',
+            fontSize: '0.68rem',
+            fontWeight: 600,
+            letterSpacing: '0.24em',
+            textTransform: 'uppercase',
+            fontFamily: 'var(--font-sans)',
+            transition: 'background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease',
           }}
           onMouseEnter={(e) => {
-            e.currentTarget.style.backgroundColor = 'var(--color-error)';
-            e.currentTarget.style.borderColor = 'var(--color-error)';
+            e.currentTarget.style.backgroundColor = 'var(--color-gold)';
+            e.currentTarget.style.borderColor = 'var(--color-gold)';
+            e.currentTarget.style.color = 'var(--text-primary)';
           }}
           onMouseLeave={(e) => {
-            e.currentTarget.style.backgroundColor = 'rgba(244, 215, 212, 0.08)';
-            e.currentTarget.style.borderColor = 'rgba(244, 215, 212, 0.2)';
+            e.currentTarget.style.backgroundColor = 'rgba(245, 239, 231, 0.05)';
+            e.currentTarget.style.borderColor = 'rgba(213, 180, 123, 0.22)';
+            e.currentTarget.style.color = 'var(--text-light)';
           }}
+          data-testid="logout-btn"
         >
-          <LogoutIcon style={{ width: '18px', height: '18px' }} />
-          <span>Выйти из системы</span>
+          <LogoutIcon style={{ width: '15px', height: '15px' }} />
+          <span>Выйти</span>
         </button>
       </div>
     </div>

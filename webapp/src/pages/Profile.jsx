@@ -310,8 +310,15 @@ export default function Profile() {
   const lastOrder = Array.isArray(orders) ? orders.find(o => o?.status !== 'cancelled') : null;
 
   return (
-    <div className="container page-transition" style={{ paddingBottom: '6rem' }}>
-      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem' }}>
+    <div className="container page-transition" style={{ paddingBottom: '6rem' }} data-testid="profile-page">
+      <div className="page-title">
+        <div>
+          <span className="eyebrow">Личный кабинет</span>
+          <h1 style={{ marginTop: '0.4rem' }}>Ваш <em>профиль</em></h1>
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', alignItems: 'center', gap: '1rem', marginBottom: '2rem', paddingTop: '0.5rem' }}>
         <div 
           onClick={handleAvatarClick}
           style={{ 
@@ -412,27 +419,27 @@ export default function Profile() {
 
       {lastOrder && (
         <div className="glass-card" style={{ 
-          background: 'linear-gradient(135deg, rgba(201,168,76,0.12) 0%, rgba(27,67,50,0.6) 100%)',
-          border: '1px solid rgba(201,168,76,0.4)',
+          background: 'var(--champagne-tint)',
+          border: '1px solid var(--champagne)',
           marginBottom: '1.5rem',
           padding: '1.2rem',
         }}>
-          <h3 style={{ color: 'var(--gold)', fontSize: '1rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+          <h3 style={{ color: 'var(--wine)', fontSize: '1rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
             {t('profile_quick_repeat')}
           </h3>
-          <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '0.8rem' }}>
+          <p style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', marginBottom: '0.8rem' }}>
             {t('profile_repeat_desc').replace('{id}', lastOrder.id).replace('{date}', new Date(lastOrder.created_at).toLocaleDateString())}
           </p>
-          <div style={{ fontSize: '0.85rem', marginBottom: '1rem', background: 'rgba(0,0,0,0.2)', padding: '0.6rem 0.8rem', borderRadius: '8px' }}>
+          <div style={{ fontSize: '0.85rem', marginBottom: '1rem', background: 'var(--ivory)', padding: '0.6rem 0.8rem', borderRadius: '4px', border: '1px solid var(--line)' }}>
             {Array.isArray(lastOrder.items) && lastOrder.items.map((item, idx) => (
-              <div key={idx} style={{ color: 'var(--text)', marginBottom: idx < lastOrder.items.length - 1 ? '0.3rem' : 0 }}>
+              <div key={idx} style={{ color: 'var(--ink)', marginBottom: idx < lastOrder.items.length - 1 ? '0.3rem' : 0 }}>
                 • {item.qty} × {item.name} ({item.variant})
               </div>
             ))}
           </div>
           <button 
             className="primary" 
-            style={{ width: '100%', padding: '0.8rem', background: 'linear-gradient(90deg, var(--gold), var(--gold-light))' }}
+            style={{ width: '100%', padding: '0.9rem' }}
             onClick={() => handleRepeatOrder(lastOrder.id)}
             disabled={repeating}
           >
@@ -529,14 +536,14 @@ export default function Profile() {
       </div>
 
       <div className="glass-card" style={{ 
-        background: 'linear-gradient(135deg, rgba(201,168,76,0.15) 0%, rgba(201,168,76,0.05) 100%)',
-        border: '1px solid rgba(201,168,76,0.3)',
+        background: 'var(--ivory)',
+        border: '1px solid var(--champagne)',
         marginBottom: '1.5rem'
       }}>
         <div className="flex-between" style={{ marginBottom: '1rem' }}>
-          <h3 style={{ color: 'var(--gold)', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <Gift size={20} /> {profile?.is_partner 
-              ? (language === 'ru' ? 'Персональная партнерская программа' : 'Personal Partner Program')
+          <h3 style={{ color: 'var(--wine)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400 }}>
+            <Gift size={18} strokeWidth={1.5} /> {profile?.is_partner 
+              ? (language === 'ru' ? 'Партнёрская программа' : 'Personal Partner Program')
               : t('profile_referral')}
           </h3>
         </div>
@@ -713,9 +720,9 @@ export default function Profile() {
           return null;
         })()}
 
-        <div style={{ background: 'rgba(0,0,0,0.3)', padding: '1rem', borderRadius: '12px', marginBottom: '1.5rem' }}>
-          <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)', marginBottom: '0.3rem' }}>{t('profile_ref_balance')}</div>
-          <div style={{ fontSize: '2rem', fontWeight: 'bold', color: 'var(--gold)' }}>${profile.bonus_balance}</div>
+        <div style={{ background: 'var(--champagne-tint)', padding: '1rem', borderRadius: '4px', marginBottom: '1.5rem', border: '1px solid var(--champagne)' }}>
+          <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--ink-soft)', marginBottom: '0.4rem' }}>{t('profile_ref_balance')}</div>
+          <div style={{ fontSize: '2.2rem', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 300, color: 'var(--wine)' }}>${profile.bonus_balance}</div>
         </div>
 
         {profile?.is_partner ? (

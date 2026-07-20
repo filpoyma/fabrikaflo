@@ -197,13 +197,13 @@ export default function AiGuide() {
     }}>
       
       {/* Header Info */}
-      <div className="glass-card" style={{ padding: '1rem', borderRadius: '16px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.8rem', flexShrink: 0 }}>
+      <div className="glass-card" style={{ padding: '1rem', borderRadius: '4px', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.8rem', flexShrink: 0, border: '1px solid var(--line)' }}>
         <button 
           onClick={() => { haptic.impact('light'); navigate(-1); }}
           style={{ 
             background: 'none', 
             border: 'none', 
-            color: 'var(--text-muted)', 
+            color: 'var(--ink-soft)', 
             cursor: 'pointer',
             padding: '0.4rem',
             marginRight: '-0.2rem',
@@ -213,17 +213,17 @@ export default function AiGuide() {
             marginBottom: 0
           }}
         >
-          <ArrowLeft size={22} />
+          <ArrowLeft size={20} strokeWidth={1.5} />
         </button>
-        <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'rgba(201,168,76,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--gold)' }}>
-          <Sparkles size={20} className="glow-icon" />
+        <div style={{ width: '42px', height: '42px', borderRadius: '50%', background: 'var(--champagne-tint)', border: '1px solid var(--champagne)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--wine)' }}>
+          <Sparkles size={18} strokeWidth={1.4} />
         </div>
         <div>
-          <h2 style={{ fontSize: '1.1rem', marginBottom: '0.1rem', color: 'var(--text)' }}>
-            {language === 'ru' ? 'ИИ-Проводник' : 'AI Ceremony Guide'}
+          <h2 style={{ fontSize: '1.1rem', marginBottom: '0.1rem', color: 'var(--ink)', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400 }}>
+            {language === 'ru' ? 'Цифровой флорист' : 'AI Florist'}
           </h2>
-          <p style={{ fontSize: '0.75rem', color: 'var(--text-muted)', margin: 0 }}>
-            {language === 'ru' ? 'Задавайте вопросы голосом или текстом' : 'Ask questions using voice or text'}
+          <p style={{ fontSize: '0.72rem', color: 'var(--ink-soft)', margin: 0, letterSpacing: '0.14em', textTransform: 'uppercase' }}>
+            {language === 'ru' ? 'Голосом или текстом' : 'Voice or text'}
           </p>
         </div>
       </div>
@@ -237,11 +237,11 @@ export default function AiGuide() {
           display: 'flex', 
           flexDirection: 'column', 
           gap: '1rem', 
-          padding: '0.5rem', 
+          padding: '0.9rem', 
           marginBottom: '1rem', 
-          background: 'rgba(0,0,0,0.1)', 
-          borderRadius: '12px', 
-          border: '1px solid var(--glass-border)' 
+          background: 'var(--ivory-warm)', 
+          borderRadius: '4px', 
+          border: '1px solid var(--line)' 
         }}
       >
         {messages.length === 0 ? (
@@ -275,15 +275,14 @@ export default function AiGuide() {
               flexDirection: 'column',
               gap: '0.3rem'
             }}>
-              <div className="glass-card" style={{
-                padding: '0.8rem 1rem',
-                borderRadius: msg.sender === 'user' ? '18px 18px 2px 18px' : '18px 18px 18px 2px',
-                background: msg.sender === 'user' ? 'var(--gold)' : 'rgba(255,255,255,0.03)',
-                color: msg.sender === 'user' ? '#000' : 'var(--text)',
-                border: msg.sender === 'user' ? 'none' : '1px solid var(--glass-border)',
-                boxShadow: msg.sender === 'user' ? '0 4px 12px rgba(201,168,76,0.2)' : 'none'
+              <div style={{
+                padding: '0.75rem 1rem',
+                borderRadius: msg.sender === 'user' ? '14px 14px 4px 14px' : '14px 14px 14px 4px',
+                background: msg.sender === 'user' ? 'var(--wine)' : 'var(--ivory)',
+                color: msg.sender === 'user' ? 'var(--ivory)' : 'var(--ink)',
+                border: msg.sender === 'user' ? '1px solid var(--wine)' : '1px solid var(--line)'
               }}>
-                <div style={{ fontSize: '0.85rem', lineHeight: 1.4 }}>{msg.text}</div>
+                <div style={{ fontSize: '0.9rem', lineHeight: 1.5 }}>{msg.text}</div>
                 
                 {/* Audio voice node player inside AI response */}
                 {msg.sender === 'ai' && msg.audioUrl && (

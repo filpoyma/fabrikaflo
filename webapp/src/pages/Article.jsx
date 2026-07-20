@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ArrowLeft, Edit2, Check, X, Trash2 } from 'lucide-react';
+import { ArrowLeft, Edit2, Check, X, Trash2, Upload } from 'lucide-react';
 import { api } from '../api';
 import { useTelegram } from '../hooks/useTelegram';
 
@@ -23,18 +23,9 @@ export default function Article() {
     api.getArticle(id)
       .then(a => {
         setArticle(a);
-        setEditData({
-          title: a.title,
-          short_description: a.short_description,
-          content: a.content,
-          photo_url: a.photo_url
-        });
-        
-        // Auto open edit mode if edit=true in query params
+        setEditData({ title: a.title, short_description: a.short_description, content: a.content, photo_url: a.photo_url });
         const params = new URLSearchParams(window.location.search);
-        if (params.get('edit') === 'true') {
-          setIsEditing(true);
-        }
+        if (params.get('edit') === 'true') setIsEditing(true);
       })
       .catch(console.error)
       .finally(() => setLoading(false));
@@ -47,282 +38,174 @@ export default function Article() {
 
   const handleSave = async () => {
     try {
-      setSaving(true);
-      haptic.impact('medium');
+      setSaving(true); haptic.impact('medium');
       await api.adminUpdateArticle(id, editData);
-      haptic.success();
-      setIsEditing(false);
-      loadArticle();
-    } catch (e) {
-      console.error(e);
-      haptic.error();
-      alert('Ошибка при сохранении статьи');
-    } finally {
-      setSaving(false);
-    }
+      haptic.success(); setIsEditing(false); loadArticle();
+    } catch (e) { console.error(e); haptic.error(); alert('Ошибка при сохранении статьи'); }
+    finally { setSaving(false); }
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Вы действительно хотите удалить эту статью?')) return;
+    if (!window.confirm('Удалить эту заметку?')) return;
     try {
-      setSaving(true);
-      haptic.impact('heavy');
+      setSaving(true); haptic.impact('heavy');
       await api.adminDeleteArticle(id);
-      haptic.success();
-      alert('Статья удалена!');
-      navigate('/');
-    } catch (e) {
-      console.error(e);
-      haptic.error();
-      alert('Ошибка при удалении статьи');
-    } finally {
-      setSaving(false);
-    }
+      haptic.success(); alert('Заметка удалена'); navigate('/');
+    } catch (e) { console.error(e); haptic.error(); alert('Ошибка при удалении'); }
+    finally { setSaving(false); }
   };
 
-  if (loading) {
-    return (
-      <div className="flex-center" style={{ height: '70vh' }}>
-        <div className="spinner"></div>
-      </div>
-    );
-  }
+  if (loading) return <div className="spinner" />;
 
   if (!article) {
     return (
-      <div className="container" style={{ padding: '2rem', textAlign: 'center' }}>
-        <h2>Статья не найдена</h2>
-        <button className="secondary" onClick={() => navigate('/')} style={{ marginTop: '1rem' }}>На главную</button>
+      <div className="container" style={{ padding: '4rem 1.5rem', textAlign: 'center' }}>
+        <div style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontSize: '2.4rem', color: 'var(--wine)' }}>404</div>
+        <div style={{ width: '44px', height: '1px', background: 'var(--champagne-lo)', margin: '1rem auto' }} />
+        <h2 style={{ marginTop: '0.4rem' }}>Заметка не <em>найдена</em></h2>
+        <button className="secondary" onClick={() => navigate('/')} style={{ marginTop: '1.6rem' }}>На главную</button>
       </div>
     );
   }
 
   return (
-    <div className="page-transition" style={{ paddingBottom: '3rem' }}>
-      {/* Header */}
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem', borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
-        <button className="icon-btn" onClick={() => navigate(-1)} style={{ display: 'flex', alignItems: 'center', gap: '0.3rem', color: 'var(--text-muted)' }}>
-          <ArrowLeft size={20} />
+    <div className="page-transition" data-testid="article-page">
+      <div style={{ position: 'fixed', top: '14px', left: '14px', zIndex: 100 }}>
+        <button className="icon-btn" onClick={() => navigate(-1)} style={{ background: 'rgba(253, 251, 247, 0.9)', backdropFilter: 'blur(10px)' }} data-testid="back-btn">
+          <ArrowLeft size={18} strokeWidth={1.5} />
         </button>
-        <span style={{ fontWeight: '600', fontSize: '1rem', color: 'var(--text)' }}>Статья</span>
-        <div style={{ width: '24px' }}>
-          {isAdmin && !isEditing && (
-            <button className="icon-btn" onClick={() => { haptic.impact('light'); setIsEditing(true); }} style={{ color: 'var(--gold)' }}>
-              <Edit2 size={18} />
-            </button>
-          )}
-        </div>
       </div>
+      {isAdmin && !isEditing && (
+        <div style={{ position: 'fixed', top: '14px', right: '14px', zIndex: 100 }}>
+          <button className="icon-btn" onClick={() => { haptic.impact('light'); setIsEditing(true); }} style={{ background: 'rgba(253, 251, 247, 0.9)', backdropFilter: 'blur(10px)', color: 'var(--wine)' }}>
+            <Edit2 size={16} strokeWidth={1.5} />
+          </button>
+        </div>
+      )}
 
       {isEditing ? (
-        <div className="container" style={{ marginTop: '1rem', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-          <div>
-            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.3rem' }}>Название статьи:</label>
-            <input 
-              className="input-field" 
-              value={editData.title || ''} 
-              onChange={e => setEditData({ ...editData, title: e.target.value })} 
-              style={{ width: '100%' }}
-            />
+        <div className="container" style={{ paddingTop: '3.5rem', display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
+          <div className="page-title">
+            <div>
+              <span className="eyebrow">Редактирование</span>
+              <h1 style={{ marginTop: '0.4rem' }}>Заметка</h1>
+            </div>
           </div>
-
           <div>
-            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.3rem' }}>Краткое описание:</label>
-            <input 
-              className="input-field" 
-              value={editData.short_description || ''} 
-              onChange={e => setEditData({ ...editData, short_description: e.target.value })} 
-              style={{ width: '100%' }}
-            />
+            <label className="eyebrow" style={{ color: 'var(--ink-soft)', display: 'block', marginBottom: '0.4rem' }}>Название</label>
+            <input value={editData.title || ''} onChange={e => setEditData({ ...editData, title: e.target.value })} />
           </div>
-
           <div>
-            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.3rem' }}>Фото статьи:</label>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              <input 
-                className="input-field" 
-                placeholder="Вставьте ссылку на фото..."
-                value={editData.photo_url || ''} 
-                onChange={e => setEditData({ ...editData, photo_url: e.target.value })} 
-                style={{ width: '100%', marginBottom: 0 }}
-              />
-              
-              <div style={{ display: 'flex', gap: '0.8rem', alignItems: 'center' }}>
-                <label 
-                  style={{
-                    flex: 1,
-                    background: 'rgba(201, 168, 76, 0.1)',
-                    border: '1px dashed var(--gold)',
-                    borderRadius: '8px',
-                    padding: '0.6rem 1rem',
-                    textAlign: 'center',
-                    cursor: 'pointer',
-                    color: 'var(--gold)',
-                    fontSize: '0.85rem',
-                    fontWeight: 'bold',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    gap: '0.5rem',
-                    transition: 'background-color 0.2s'
-                  }}
-                >
-                  <input 
-                    type="file" 
-                    accept="image/*" 
-                    style={{ display: 'none' }} 
-                    onChange={async (e) => {
-                      const file = e.target.files[0];
-                      if (!file) return;
-                      try {
-                        setUploadingPhoto(true);
-                        haptic.impact('light');
-                        const res = await api.adminUploadImage(file);
-                        if (res && res.ok && res.url) {
-                          setEditData(prev => ({ ...prev, photo_url: res.url }));
-                          haptic.success();
-                        } else {
-                          throw new Error('Upload failed');
-                        }
-                      } catch (err) {
-                        console.error(err);
-                        haptic.error();
-                        alert('Ошибка при загрузке фото');
-                      } finally {
-                        setUploadingPhoto(false);
-                      }
-                    }}
-                  />
-                  <span>{uploadingPhoto ? 'Загрузка...' : '📁 Выбрать файл'}</span>
-                </label>
-                
-                {editData.photo_url && (
-                  <button
-                    type="button"
-                    onClick={() => {
-                      haptic.impact('light');
-                      setEditData(prev => ({ ...prev, photo_url: '' }));
-                    }}
-                    style={{
-                      background: 'rgba(255, 77, 77, 0.1)',
-                      border: '1px solid #ff4d4d',
-                      color: '#ff4d4d',
-                      borderRadius: '8px',
-                      padding: '0.6rem 1rem',
-                      fontSize: '0.85rem',
-                      fontWeight: 'bold',
-                      cursor: 'pointer'
-                    }}
-                  >
-                    Очистить
-                  </button>
-                )}
+            <label className="eyebrow" style={{ color: 'var(--ink-soft)', display: 'block', marginBottom: '0.4rem' }}>Подзаголовок</label>
+            <input value={editData.short_description || ''} onChange={e => setEditData({ ...editData, short_description: e.target.value })} />
+          </div>
+          <div>
+            <label className="eyebrow" style={{ color: 'var(--ink-soft)', display: 'block', marginBottom: '0.4rem' }}>Фото</label>
+            <input placeholder="Ссылка на фото…" value={editData.photo_url || ''} onChange={e => setEditData({ ...editData, photo_url: e.target.value })} />
+            <label style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', padding: '0.6rem 1rem', border: '1px dashed var(--champagne)', background: 'var(--champagne-tint)', color: 'var(--wine)', cursor: 'pointer', fontSize: '0.72rem', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600 }}>
+              <input type="file" accept="image/*" style={{ display: 'none' }} onChange={async (e) => {
+                const file = e.target.files[0]; if (!file) return;
+                try {
+                  setUploadingPhoto(true); haptic.impact('light');
+                  const res = await api.adminUploadImage(file);
+                  if (res && res.ok && res.url) { setEditData(prev => ({ ...prev, photo_url: res.url })); haptic.success(); }
+                  else throw new Error('Upload failed');
+                } catch (err) { console.error(err); haptic.error(); alert('Ошибка загрузки'); }
+                finally { setUploadingPhoto(false); }
+              }} />
+              <Upload size={14} strokeWidth={1.5} />
+              <span>{uploadingPhoto ? 'Загрузка…' : 'Выбрать файл'}</span>
+            </label>
+            {editData.photo_url && (
+              <div style={{ marginTop: '0.8rem', width: '100%', aspectRatio: '2/1', overflow: 'hidden', border: '1px solid var(--line)' }}>
+                <img src={editData.photo_url} alt="Превью" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
               </div>
-
-              {editData.photo_url && (
-                <div style={{ marginTop: '0.3rem', width: '100%', height: '120px', borderRadius: '8px', overflow: 'hidden', border: '1px solid rgba(255,255,255,0.1)' }}>
-                  <img src={editData.photo_url} alt="Превью" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-                </div>
-              )}
-            </div>
+            )}
           </div>
-
           <div>
-            <label style={{ fontSize: '0.85rem', color: 'var(--text-muted)', display: 'block', marginBottom: '0.3rem' }}>Текст статьи:</label>
-            <textarea 
-              className="input-field" 
-              value={editData.content || ''} 
-              onChange={e => setEditData({ ...editData, content: e.target.value })} 
-              style={{ width: '100%', height: '250px', resize: 'vertical', lineHeight: '1.4' }}
-            />
+            <label className="eyebrow" style={{ color: 'var(--ink-soft)', display: 'block', marginBottom: '0.4rem' }}>Текст</label>
+            <textarea value={editData.content || ''} onChange={e => setEditData({ ...editData, content: e.target.value })} style={{ minHeight: '240px', lineHeight: 1.6, fontFamily: 'var(--font-display)', fontSize: '1rem' }} />
           </div>
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.8rem', marginTop: '0.5rem' }}>
-            <div style={{ display: 'flex', gap: '0.8rem' }}>
-              <button className="primary" onClick={handleSave} disabled={saving} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <Check size={18} /> {saving ? 'Сохранение...' : 'Сохранить'}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+            <div style={{ display: 'flex', gap: '0.6rem' }}>
+              <button className="primary" onClick={handleSave} disabled={saving} style={{ flex: 1 }}>
+                <Check size={14} strokeWidth={1.6} /> {saving ? 'Сохранение…' : 'Сохранить'}
               </button>
-              <button className="secondary" onClick={() => setIsEditing(false)} disabled={saving} style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}>
-                <X size={18} /> Отмена
+              <button className="secondary" onClick={() => setIsEditing(false)} disabled={saving} style={{ flex: 1 }}>
+                <X size={14} strokeWidth={1.6} /> Отмена
               </button>
             </div>
-            <button className="secondary" onClick={handleDelete} disabled={saving} style={{ border: '1px solid #ff4d4d', color: '#ff4d4d', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', marginBottom: 0 }}>
-              <Trash2 size={18} /> Удалить статью
+            <button className="tertiary" onClick={handleDelete} disabled={saving} style={{ color: 'var(--error)', alignSelf: 'flex-start' }}>
+              <Trash2 size={13} strokeWidth={1.5} /> удалить заметку
             </button>
           </div>
         </div>
       ) : (
         <div>
           {article.photo_url && (
-            <div style={{ width: '100%', height: '220px', overflow: 'hidden', position: 'relative' }}>
+            <div style={{ width: '100%', aspectRatio: '3/2', maxHeight: '55vh', overflow: 'hidden', background: 'var(--cream)' }}>
               <img src={article.photo_url} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
-              <div style={{ position: 'absolute', bottom: 0, left: 0, right: 0, height: '60px', background: 'linear-gradient(0deg, #0D2818, transparent)' }}></div>
             </div>
           )}
 
-          <div className="container" style={{ marginTop: article.photo_url ? '-1.5rem' : '1rem', position: 'relative', zIndex: 2 }}>
-            <div className="glass-card" style={{ padding: '1.5rem 1.2rem' }}>
-              <h1 style={{ fontSize: '1.5rem', color: 'var(--gold)', marginBottom: '0.8rem', lineHeight: '1.3' }}>{article.title}</h1>
-              
-              {article.short_description && (
-                <p style={{ fontSize: '1rem', fontStyle: 'italic', color: 'var(--text)', borderLeft: '3px solid var(--gold)', paddingLeft: '0.8rem', marginBottom: '1.5rem', lineHeight: '1.4' }}>
-                  {article.short_description}
-                </p>
-              )}
+          <div className="container" style={{ maxWidth: '680px', paddingTop: article.photo_url ? '2.5rem' : '3.5rem' }}>
+            <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
+              <span className="eyebrow" style={{ color: 'var(--champagne-lo)' }}>Заметка · fabrika.flo</span>
+              <h1 style={{ marginTop: '0.6rem', fontFamily: 'var(--font-display)', fontWeight: 300, fontSize: 'clamp(2rem, 6vw, 3.2rem)', lineHeight: 1.15 }}>
+                {article.title}
+              </h1>
+              <div style={{ width: '44px', height: '1px', background: 'var(--champagne-lo)', margin: '1.4rem auto 0' }} />
+            </div>
 
-              <div style={{ fontSize: '0.95rem', color: 'var(--text)', lineHeight: '1.6', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                {article.content.split('\n').map((para, idx) => {
-                  if (!para.trim()) return null;
-                  
-                  // Check if this is a heading or bullet point
-                  let content = para;
-                  let isHeading = false;
-                  let isBullet = false;
-                  
-                  if (content.startsWith('**') && content.endsWith('**')) {
-                    content = content.replace(/\*\*/g, '');
-                    isHeading = true;
-                  } else if (content.startsWith('•') || content.startsWith('-')) {
-                    content = content.substring(1).trim();
-                    isBullet = true;
-                  }
-                  
-                  // Replace @username with a clickable link
-                  const parts = content.split(/(@[a-zA-Z0-9_]{5,32})/g);
-                  const renderedContent = parts.map((part, pIdx) => {
-                    if (part.startsWith('@')) {
-                      const username = part.substring(1);
-                      return (
-                        <a 
-                          key={pIdx} 
-                          href={`https://t.me/${username}`} 
-                          target="_blank" 
-                          rel="noopener noreferrer" 
-                          style={{ color: 'var(--gold)', textDecoration: 'underline', fontWeight: 'bold' }}
-                          onClick={(e) => {
-                            if (window.Telegram?.WebApp?.openTelegramLink) {
-                              e.preventDefault();
-                              window.Telegram.WebApp.openTelegramLink(`https://t.me/${username}`);
-                            }
-                          }}
-                        >
-                          {part}
-                        </a>
-                      );
-                    }
-                    return part;
-                  });
+            {article.short_description && (
+              <p style={{
+                fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 300,
+                fontSize: '1.2rem', lineHeight: 1.55, color: 'var(--ink)',
+                textAlign: 'center', marginBottom: '2.6rem', maxWidth: '52ch', marginInline: 'auto'
+              }}>
+                {article.short_description}
+              </p>
+            )}
 
-                  if (isHeading) {
-                    return <strong key={idx} style={{ color: 'var(--gold)', display: 'block', fontSize: '1.05rem', marginTop: '0.5rem' }}>{renderedContent}</strong>;
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1.15rem', fontSize: '1rem', lineHeight: 1.75, color: 'var(--ink)' }}>
+              {article.content.split('\n').map((para, idx) => {
+                if (!para.trim()) return null;
+                let content = para, isHeading = false, isBullet = false;
+                if (content.startsWith('**') && content.endsWith('**')) { content = content.replace(/\*\*/g, ''); isHeading = true; }
+                else if (content.startsWith('•') || content.startsWith('-')) { content = content.substring(1).trim(); isBullet = true; }
+
+                const parts = content.split(/(@[a-zA-Z0-9_]{5,32})/g);
+                const rendered = parts.map((part, pIdx) => {
+                  if (part.startsWith('@')) {
+                    const username = part.substring(1);
+                    return (
+                      <a key={pIdx} href={`https://t.me/${username}`} target="_blank" rel="noopener noreferrer"
+                         style={{ color: 'var(--wine)', textDecoration: 'none', borderBottom: '1px solid var(--wine)', fontWeight: 500 }}
+                         onClick={(e) => {
+                           if (window.Telegram?.WebApp?.openTelegramLink) { e.preventDefault(); window.Telegram.WebApp.openTelegramLink(`https://t.me/${username}`); }
+                         }}>{part}</a>
+                    );
                   }
-                  if (isBullet) {
-                    return <div key={idx} style={{ paddingLeft: '1rem', position: 'relative' }}><span style={{ position: 'absolute', left: 0, color: 'var(--gold)' }}>•</span>{renderedContent}</div>;
-                  }
-                  
-                  return <p key={idx}>{renderedContent}</p>;
-                })}
-              </div>
+                  return part;
+                });
+
+                if (isHeading) return (
+                  <h3 key={idx} style={{ fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--wine)', marginTop: '1.5rem' }}>
+                    {rendered}
+                  </h3>
+                );
+                if (isBullet) return (
+                  <div key={idx} style={{ paddingLeft: '1.4rem', position: 'relative' }}>
+                    <span style={{ position: 'absolute', left: 0, color: 'var(--champagne-lo)', fontFamily: 'var(--font-display)', fontStyle: 'italic' }}>—</span>
+                    {rendered}
+                  </div>
+                );
+                return <p key={idx} style={{ color: 'var(--ink)' }}>{rendered}</p>;
+              })}
+            </div>
+
+            <div className="hairline" aria-hidden="true" style={{ marginTop: '3rem' }}>
+              <span className="dot" /> <span style={{fontFamily:'var(--font-display)', fontStyle:'italic', fontSize:'0.9rem', color:'var(--ink-soft)'}}>f.f</span> <span className="dot" />
             </div>
           </div>
         </div>

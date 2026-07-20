@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import { useClientsQuery } from '../../api/clients'
+import { PeonyIcon } from '../../components/BotanicalIcons'
 
 export const ClientsPage: React.FC = () => {
   const { data: clients = [], isLoading } = useClientsQuery()
@@ -15,90 +16,92 @@ export const ClientsPage: React.FC = () => {
   })
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'left' }}>
-      <div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: 400 }}>
-          Клиенты CRM
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-          Список клиентов из Telegram-бота, статистика заказов и средние чеки.
-        </p>
-      </div>
+    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }} data-testid="clients-page">
+      <header className="page-header">
+        <span className="eyebrow">CRM</span>
+        <h1>Клиенты <em>цветочного цеха</em></h1>
+        <p>База клиентов из Telegram-бота: контакты, статистика заказов и средний чек.</p>
+      </header>
 
-      {/* Search Input */}
+      {/* Search */}
       <div style={{ display: 'flex', width: '100%', gap: '16px' }}>
         <input
           type="text"
           className="form-input"
-          style={{ flex: 1, padding: '12px 18px', fontSize: '0.95rem' }}
-          placeholder="Поиск клиентов по имени, телефону или @username..."
+          style={{ flex: 1, padding: '13px 18px', fontSize: '0.95rem' }}
+          placeholder="Поиск по имени, телефону или @username…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
+          data-testid="clients-search"
         />
       </div>
 
       {isLoading ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          Загрузка базы клиентов...
+        <div className="empty-state">
+          <PeonyIcon size={48} color="var(--color-gold-deep)" />
+          <div className="headline">Загрузка</div>
+          <p>Получаем базу клиентов…</p>
         </div>
       ) : (
         <div className="glass-card" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
           {filteredClients.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-              {searchTerm ? 'Клиенты не найдены по запросу.' : 'Список клиентов пуст. Новые клиенты добавляются при старте бота.'}
+            <div className="empty-state">
+              <PeonyIcon size={64} color="var(--color-gold-deep)" />
+              <div className="headline">{searchTerm ? 'Ничего не найдено' : 'Список пуст'}</div>
+              <p>
+                {searchTerm
+                  ? 'Попробуйте другой поисковый запрос — имя, телефон или @username.'
+                  : 'Новые клиенты добавляются автоматически, когда открывают Telegram-бот fabrika.flo.'}
+              </p>
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
+              <table className="editorial-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: '#FAF8F5' }}>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Имя</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Telegram</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Телефон</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Дата присоединения</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'center', fontWeight: 600 }}>Количество заказов</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'right', fontWeight: 600 }}>Сумма покупок</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'right', fontWeight: 600 }}>Средний чек</th>
+                  <tr>
+                    <th>Имя</th>
+                    <th>Telegram</th>
+                    <th>Телефон</th>
+                    <th>Присоединился</th>
+                    <th className="center">Заказов</th>
+                    <th className="right">Сумма покупок</th>
+                    <th className="right">Средний чек</th>
                   </tr>
                 </thead>
                 <tbody>
                   {filteredClients.map((client) => (
-                    <tr
-                      key={client.id}
-                      style={{
-                        borderBottom: '1px solid var(--border-light)',
-                        transition: 'background-color 0.2s',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(239, 235, 229, 0.25)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                    >
-                      <td style={{ padding: '18px 20px', fontWeight: 600 }}>{client.name || 'Без имени'}</td>
-                      <td style={{ padding: '18px 20px' }}>
+                    <tr key={client.id} data-testid={`client-${client.id}`}>
+                      <td>
+                        <div className="cell-primary">{client.name || 'Без имени'}</div>
+                      </td>
+                      <td>
                         {client.tgname ? (
                           <a
                             href={`https://t.me/${client.tgname}`}
                             target="_blank"
                             rel="noreferrer"
-                            style={{ color: 'var(--color-accent-dark)', textDecoration: 'none', fontWeight: 500 }}
+                            style={{ color: 'var(--color-sage)', textDecoration: 'none', fontWeight: 500, borderBottom: '1px solid var(--color-gold-deep)', paddingBottom: '1px' }}
                           >
                             @{client.tgname}
                           </a>
                         ) : (
-                          <span style={{ color: 'var(--text-secondary)' }}>отсутствует</span>
+                          <span className="cell-mute" style={{ marginTop: 0 }}>отсутствует</span>
                         )}
                       </td>
-                      <td style={{ padding: '18px 20px' }}>{client.phone || 'не указан'}</td>
-                      <td style={{ padding: '18px 20px', color: 'var(--text-secondary)' }}>
-                        {new Date(client.createdAt).toLocaleDateString()}
+                      <td>{client.phone || <span className="cell-mute" style={{ marginTop: 0 }}>не указан</span>}</td>
+                      <td className="cell-mute" style={{ marginTop: 0 }}>
+                        {new Date(client.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                       </td>
-                      <td style={{ padding: '18px 20px', textAlign: 'center', fontWeight: 500 }}>
-                        {client.ordersCount}
+                      <td className="center">
+                        <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
+                          {client.ordersCount}
+                        </span>
                       </td>
-                      <td style={{ padding: '18px 20px', textAlign: 'right', fontWeight: 600 }}>
-                        {client.totalSpend} руб.
+                      <td className="right">
+                        <span style={{ fontWeight: 600 }}>{client.totalSpend} ₽</span>
                       </td>
-                      <td style={{ padding: '18px 20px', textAlign: 'right', color: 'var(--color-sage)', fontWeight: 600 }}>
-                        {client.averageCheck} руб.
+                      <td className="right">
+                        <span className="cell-mono-num">{client.averageCheck} ₽</span>
                       </td>
                     </tr>
                   ))}

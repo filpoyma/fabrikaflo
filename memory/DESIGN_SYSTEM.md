@@ -24,15 +24,15 @@ Unified across both frontends of the project:
 Both frontends share the same tokens/fonts/spacing/aesthetics so the whole product feels
 like one editorial magazine surface.
 
-## Iteration 3 (2026-01-20) — Admin palette unified
-- **`/app/fabrikaflo/src/index.css`** — remapped every CSS variable to editorial palette (kept legacy names like `--color-sage`, `--btn-primary-bg` — now wine/champagne). Fonts swapped to Fraunces + Manrope. Radii lowered (4–10px) for editorial print feel. Warm ivory shadows.
-- **`/app/fabrikaflo/src/components/Sidebar.tsx`** — full rewrite: dark-wine bg, italic monogram `fabrika.flo` with champagne dot, hairline, uppercase spaced nav items, champagne active-state highlight (readable ink text on champagne, not wine-on-wine). Logout pill hovers to champagne.
-- **`/app/fabrikaflo/src/pages/TeamPage/TeamPage.tsx`** — role labels: `ADMIN` (wine on champagne tint), `COURIER` (ink on cream) — was blue/green.
-- **`/app/fabrikaflo/index.html`** — title + theme-color updated.
-- **`/app/fabrikaflo/vite.config.ts`** — port 5174, proxy `/api/fabrika` → `http://127.0.0.1:3000` (real Fastify backend).
-- **`/app/fabrikaflo/.env`** — `VITE_API_URL=/api/fabrika` (unified with webapp).
+## Iteration 4 (2026-01-20) — Editorial touches inside pages
+- **`src/components/BotanicalIcons.tsx`** (new) — hand-drawn line-art SVG icons: `PeonyIcon`, `DeliveryIcon` (scooter+bouquet crate), `PinIcon`, `VanIcon`, `PickupIcon`. Reused across pages, replaces emojis.
+- **`src/index.css`** — added reusable editorial helpers: `.page-header` (eyebrow + italic h1 with hairline), `.editorial-table` (uppercase spaced thead, italic-serif primary cells, champagne row-hover), `.empty-state` (peony icon + italic headline with gold hairline), `.hair-list` (Dashboard list items).
+- **`src/pages/DashboardPage`** — full editorial rewrite: page-header with eyebrow, extracted `StatCard` component (uppercase eyebrow → big Fraunces italic number → hairline → hint). Two-list section («Последние заявки» / «Активные доставки») with eyebrow + right-aligned "все заявки" link + `PeonyIcon` / `DeliveryIcon` empty states, replaced emojis 🌸 🚗 📍 with SVG.
+- **`src/pages/RequestsPage`** — page-header + `.editorial-table` markup, `PickupIcon`/`VanIcon` replace 🚗/🚚, `.empty-state` with peony replaces plain text, ✅ replaced with uppercase «оформлен» text, comment shown as italic serif quote «…».
+- **`src/pages/ClientsPage`** — page-header, editorial table (search input restyled to 13px padding), `PeonyIcon` in empty state (both "not found" and "empty"), Telegram links with champagne underline, italic serif for averageCheck number.
+- **`src/pages/OrdersPage`** (Kanban) — page-header, kanban columns re-styled: eyebrow «ЭТАП · 00» → italic serif column title with monochrome icon + 1px hairline underneath (was 2px thick coloured border), replaced 🚗 (delivery address in card) with `PinIcon`, replaced 🚚 (waiting-for-courier line) with `DeliveryIcon`, removed 📅 (time now shown as plain letterspaced ru-RU string).
+- **`src/main.tsx`** — `BrowserRouter basename="/fabrikaflo"` (was missing — direct URLs like `/fabrikaflo/requests` used to render Vite 404).
 
 ## Next Action Items
-- Реальный запуск backend с постоянной БД (Postgres теряется при рестарте пода — если нужно, автоматизировать re-seed скриптом)
-- Editorial-глубина в остальных админ-страницах (RequestsPage/OrdersPage table-стили, ClientsPage cards) — они уже унаследовали палитру, но editorial-eyebrows и hairline-разделители усилят единство
-- Заменить эмодзи (🌸 🚗) в DashboardPage на SVG-иконки того же стиля что в Sidebar
+- OrdersPage's `renderOrderCard` (~500 lines of the file) — inner cards still use inline styles; adding `.card-editorial` class + status pills would tighten it further. Skipped in this pass to keep scope minimal.
+- GalleryPage + TeamPage — same treatment as Requests/Clients (page-header + editorial-table). They already inherit the palette.

@@ -19,6 +19,7 @@ import XMarkIcon from '../../assets/icons/x-mark.svg';
 import PlusIcon from '../../assets/icons/plus.svg';
 import ShoppingIcon from '../../assets/icons/shopping-bag.svg';
 import DocumentIcon from '../../assets/icons/document.svg';
+import { PeonyIcon, PinIcon, DeliveryIcon } from '../../components/BotanicalIcons';
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
@@ -316,11 +317,14 @@ export const OrdersPage: React.FC = () => {
             }}
           >
             <div>
-              🚗 {order.deliveryAddress ? `Доставка: ${order.deliveryAddress}` : 'Самовывоз'}
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                <PinIcon size={12} color="var(--color-gold-deep)" />
+                {order.deliveryAddress ? `Доставка · ${order.deliveryAddress}` : 'Самовывоз'}
+              </div>
             </div>
             {order.deliveryTime && (
-              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '2px' }}>
-                📅 Время: {new Date(order.deliveryTime).toLocaleString()}
+              <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px', letterSpacing: '0.06em' }}>
+                {new Date(order.deliveryTime).toLocaleString('ru-RU')}
               </div>
             )}
           </div>
@@ -588,7 +592,10 @@ export const OrdersPage: React.FC = () => {
                 padding: '6px',
               }}
             >
-              Курьер в пути... Ожидаем отметки доставки. 🚚
+              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+                <DeliveryIcon size={18} color="var(--color-sage)" />
+                <span>Курьер в пути… ожидаем отметки о доставке.</span>
+              </div>
             </div>
           )}
 
@@ -615,20 +622,19 @@ export const OrdersPage: React.FC = () => {
     <div
       className="animated-fade-in"
       style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }}
+      data-testid="orders-page"
     >
-      <div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: 400 }}>
-          Управление заказами
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-          Управляйте этапами сборки букетов, согласования по фото, отправки оплаты и личной
-          курьерской доставки.
-        </p>
-      </div>
+      <header className="page-header">
+        <span className="eyebrow">Доска заказов</span>
+        <h1>Управление <em>заказами</em></h1>
+        <p>Сборка, согласование по фото, отправка оплаты и курьерская доставка — единой canvas.</p>
+      </header>
 
       {ordLoading ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          Загрузка доски заказов...
+        <div className="empty-state">
+          <PeonyIcon size={48} color="var(--color-gold-deep)" />
+          <div className="headline">Загрузка</div>
+          <p>Собираем доску заказов…</p>
         </div>
       ) : (
         /* Kanban Board Grid */
@@ -643,19 +649,23 @@ export const OrdersPage: React.FC = () => {
         >
           {/* Column 1: Assembly */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3
+            <div
               style={{
-                fontSize: '1.2rem',
-                paddingBottom: '10px',
-                borderBottom: '2px solid var(--color-info)',
+                paddingBottom: '12px',
+                borderBottom: '1px solid var(--border-light)',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                flexDirection: 'column',
+                gap: '2px',
               }}
             >
-              <ShoppingIcon style={{ width: '20px', height: '20px', color: 'var(--color-info)' }} />
-              Сборка ({colAssembly.length})
-            </h3>
+              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
+                Этап · {String(colAssembly.length).padStart(2, '0')}
+              </span>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <ShoppingIcon style={{ width: '18px', height: '18px', color: 'var(--color-sage)' }} />
+                Сборка
+              </h3>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {colAssembly.map(renderOrderCard)}
             </div>
@@ -663,21 +673,23 @@ export const OrdersPage: React.FC = () => {
 
           {/* Column 2: Approval & Payment */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3
+            <div
               style={{
-                fontSize: '1.2rem',
-                paddingBottom: '10px',
-                borderBottom: '2px solid var(--color-warning)',
+                paddingBottom: '12px',
+                borderBottom: '1px solid var(--border-light)',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                flexDirection: 'column',
+                gap: '2px',
               }}
             >
-              <DocumentIcon
-                style={{ width: '20px', height: '20px', color: 'var(--color-warning)' }}
-              />
-              Согласование / Оплата ({colApproval.length})
-            </h3>
+              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
+                Этап · {String(colApproval.length).padStart(2, '0')}
+              </span>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <DocumentIcon style={{ width: '18px', height: '18px', color: 'var(--color-warning)' }} />
+                Согласование
+              </h3>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {colApproval.map(renderOrderCard)}
             </div>
@@ -685,19 +697,23 @@ export const OrdersPage: React.FC = () => {
 
           {/* Column 3: Delivery */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3
+            <div
               style={{
-                fontSize: '1.2rem',
-                paddingBottom: '10px',
-                borderBottom: '2px solid var(--color-gold)',
+                paddingBottom: '12px',
+                borderBottom: '1px solid var(--border-light)',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                flexDirection: 'column',
+                gap: '2px',
               }}
             >
-              <TruckIcon style={{ width: '20px', height: '20px', color: 'var(--color-gold)' }} />
-              Доставка ({colDelivery.length})
-            </h3>
+              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
+                Этап · {String(colDelivery.length).padStart(2, '0')}
+              </span>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <TruckIcon style={{ width: '18px', height: '18px', color: 'var(--color-gold)' }} />
+                Доставка
+              </h3>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {colDelivery.map(renderOrderCard)}
             </div>
@@ -705,19 +721,23 @@ export const OrdersPage: React.FC = () => {
 
           {/* Column 4: Completed */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <h3
+            <div
               style={{
-                fontSize: '1.2rem',
-                paddingBottom: '10px',
-                borderBottom: '2px solid var(--color-success)',
+                paddingBottom: '12px',
+                borderBottom: '1px solid var(--border-light)',
                 display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                flexDirection: 'column',
+                gap: '2px',
               }}
             >
-              <CheckIcon style={{ width: '20px', height: '20px', color: 'var(--color-success)' }} />
-              Завершено ({colCompleted.length})
-            </h3>
+              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
+                Этап · {String(colCompleted.length).padStart(2, '0')}
+              </span>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+                <CheckIcon style={{ width: '18px', height: '18px', color: 'var(--color-success)' }} />
+                Завершено
+              </h3>
+            </div>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
               {colCompleted.map(renderOrderCard)}
             </div>

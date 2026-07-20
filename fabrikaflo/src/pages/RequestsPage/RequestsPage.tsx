@@ -10,6 +10,7 @@ import type { IRequest } from '../../types'
 import PlusIcon from '../../assets/icons/plus.svg'
 import CheckIcon from '../../assets/icons/check.svg'
 import XMarkIcon from '../../assets/icons/x-mark.svg'
+import { PeonyIcon, VanIcon, PickupIcon } from '../../components/BotanicalIcons'
 
 export const RequestsPage: React.FC = () => {
   const { data: requests = [], isLoading } = useRequestsQuery({ refetchInterval: 20_000 })
@@ -92,84 +93,83 @@ export const RequestsPage: React.FC = () => {
   }
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '24px', textAlign: 'left' }}>
-      <div>
-        <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', fontWeight: 400 }}>
-          Заявки на букеты
-        </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
-          Список обращений клиентов из Telegram-бота. Превращайте их в заказы.
-        </p>
-      </div>
+    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }} data-testid="requests-page">
+      <header className="page-header">
+        <span className="eyebrow">Из Telegram</span>
+        <h1>Заявки на <em>букеты</em></h1>
+        <p>Список обращений клиентов из Telegram-бота. Превращайте их в заказы.</p>
+      </header>
 
       {isLoading ? (
-        <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-          Загрузка списка заявок...
+        <div className="empty-state">
+          <PeonyIcon size={48} color="var(--color-gold-deep)" />
+          <div className="headline">Загрузка</div>
+          <p>Получаем список заявок…</p>
         </div>
       ) : (
         <div className="glass-card" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
           {requests.length === 0 ? (
-            <div style={{ padding: '40px', textAlign: 'center', color: 'var(--text-secondary)' }}>
-              Заявок пока нет. Заявки появятся, когда клиенты нажмут кнопку "🌸 Заказать букет" в боте.
+            <div className="empty-state">
+              <PeonyIcon size={64} color="var(--color-gold-deep)" />
+              <div className="headline">Заявок пока нет</div>
+              <p>Заявки появятся, когда клиенты нажмут кнопку «Заказать букет» в Telegram-боте.</p>
             </div>
           ) : (
             <div style={{ overflowX: 'auto' }}>
-              <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.95rem' }}>
+              <table className="editorial-table">
                 <thead>
-                  <tr style={{ borderBottom: '1px solid var(--border-light)', backgroundColor: '#FAF8F5' }}>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Клиент</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Повод / Пожелания</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Бюджет</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Доставка / Дата</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'left', fontWeight: 600 }}>Статус</th>
-                    <th style={{ padding: '16px 20px', textAlign: 'right', fontWeight: 600 }}>Действия</th>
+                  <tr>
+                    <th>Клиент</th>
+                    <th>Повод / Пожелания</th>
+                    <th>Бюджет</th>
+                    <th>Доставка / Дата</th>
+                    <th>Статус</th>
+                    <th className="right">Действия</th>
                   </tr>
                 </thead>
                 <tbody>
                   {requests.map((req) => (
-                    <tr
-                      key={req.id}
-                      style={{
-                        borderBottom: '1px solid var(--border-light)',
-                        transition: 'background-color 0.2s',
-                      }}
-                      onMouseEnter={(e) => (e.currentTarget.style.backgroundColor = 'rgba(239, 235, 229, 0.25)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.backgroundColor = 'transparent')}
-                    >
-                      <td style={{ padding: '18px 20px' }}>
-                        <div style={{ fontWeight: 600 }}>{req.client?.name || 'Клиент'}</div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+                    <tr key={req.id} data-testid={`request-${req.id}`}>
+                      <td>
+                        <div className="cell-primary">{req.client?.name || 'Клиент'}</div>
+                        <div className="cell-mute">
                           {req.client?.tgname ? `@${req.client.tgname}` : ''}
                         </div>
                       </td>
-                      <td style={{ padding: '18px 20px', maxWidth: '300px' }}>
-                        <div style={{ fontWeight: 500 }}>{req.occasion}</div>
+                      <td style={{ maxWidth: '300px' }}>
+                        <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{req.occasion}</div>
                         <div
+                          className="cell-mute"
                           style={{
-                            fontSize: '0.8rem',
-                            color: 'var(--text-secondary)',
                             textOverflow: 'ellipsis',
                             overflow: 'hidden',
                             whiteSpace: 'nowrap',
-                            marginTop: '4px',
+                            fontStyle: 'italic',
+                            fontFamily: 'var(--font-serif)',
                           }}
                         >
-                          {req.comment || 'без комментария'}
+                          {req.comment ? `«${req.comment}»` : 'без комментария'}
                         </div>
                       </td>
-                      <td style={{ padding: '18px 20px', fontWeight: 600 }}>{req.budget} руб.</td>
-                      <td style={{ padding: '18px 20px' }}>
-                        <div>{req.deliveryType === 'PICKUP' ? '🚗 Самовывоз' : '🚚 Доставка'}</div>
-                        <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                          Желаемая дата: {req.date ? new Date(req.date).toLocaleDateString() : '—'}
+                      <td>
+                        <div className="cell-mono-num">{req.budget} ₽</div>
+                      </td>
+                      <td>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontSize: '0.88rem' }}>
+                          {req.deliveryType === 'PICKUP'
+                            ? <><PickupIcon size={13} color="var(--color-gold-deep)" /> Самовывоз</>
+                            : <><VanIcon    size={13} color="var(--color-gold-deep)" /> Доставка</>}
+                        </div>
+                        <div className="cell-mute">
+                          {req.date ? new Date(req.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) : '—'}
                         </div>
                       </td>
-                      <td style={{ padding: '18px 20px' }}>
+                      <td>
                         <span className={getStatusBadgeClass(req.status)}>
                           {statusTranslations[req.status] || req.status}
                         </span>
                       </td>
-                      <td style={{ padding: '18px 20px', textAlign: 'right' }}>
+                      <td className="right">
                         <div style={{ display: 'inline-flex', gap: '8px' }}>
                           {req.status === 'PENDING' && (
                             <Button
@@ -203,8 +203,8 @@ export const RequestsPage: React.FC = () => {
                             </>
                           )}
                           {req.status === 'CONVERTED' && (
-                            <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', paddingRight: '8px' }}>
-                              Оформлен заказ ✅
+                            <span style={{ fontSize: '0.75rem', color: 'var(--color-success)', paddingRight: '8px', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600 }}>
+                              оформлен
                             </span>
                           )}
                         </div>

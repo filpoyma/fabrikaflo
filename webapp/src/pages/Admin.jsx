@@ -370,23 +370,39 @@ export default function Admin({ profile }) {
   };
 
   return (
-    <div className="container page-transition" style={{ position: 'relative' }}>
-      <h2 style={{ marginBottom: '1rem', color: '#ff4d4f' }}>🛡️ Админ-панель</h2>
+    <div className="container page-transition" style={{ position: 'relative' }} data-testid="admin-page">
+      <div className="page-title">
+        <div>
+          <span className="eyebrow" style={{ color: 'var(--champagne-lo)' }}>Служебное</span>
+          <h1 style={{ marginTop: '0.4rem' }}>Админ · <em>панель</em></h1>
+        </div>
+      </div>
 
       {(() => {
         const isOwner = [5082384607, 1005121723].includes(user?.id) || profile?.admin_permissions?.is_owner;
         const hasFullAccess = isOwner || profile?.admin_permissions?.has_full_access;
+        const tabs = [
+          ['orders', 'Заказы', true],
+          ['products', 'Товары', true],
+          ['stock', 'Склад', true],
+          ['stats', 'Аналитика', hasFullAccess],
+          ['users', 'Пользователи', hasFullAccess],
+          ['referrals', 'Рефералы', hasFullAccess],
+          ['audit', 'Логи', hasFullAccess],
+          ['settings', 'Оплата', isOwner],
+        ];
 
         return (
-          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '1.5rem' }}>
-            <button className={activeTab === 'orders' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('orders')}>Заказы</button>
-            <button className={activeTab === 'products' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('products')}>Товары</button>
-            <button className={activeTab === 'stock' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('stock')}>Склад</button>
-            {hasFullAccess && <button className={activeTab === 'stats' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('stats')}>Аналитика</button>}
-            {hasFullAccess && <button className={activeTab === 'users' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('users')}>Пользователи</button>}
-            {hasFullAccess && <button className={activeTab === 'referrals' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('referrals')}>Рефералы</button>}
-            {hasFullAccess && <button className={activeTab === 'audit' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('audit')}>Логи</button>}
-            {isOwner && <button className={activeTab === 'settings' ? 'primary' : 'secondary'} style={{ padding: '0.5rem 1rem', whiteSpace: 'nowrap' }} onClick={() => handleTabChange('settings')}>Оплата</button>}
+          <div className="filter-bar" style={{ marginBottom: '2rem' }} data-testid="admin-tabs">
+            {tabs.filter(t => t[2]).map(([key, label]) => (
+              <button
+                key={key}
+                type="button"
+                className={`chip ${activeTab === key ? 'active' : ''}`}
+                onClick={() => handleTabChange(key)}
+                data-testid={`admin-tab-${key}`}
+              >{label}</button>
+            ))}
           </div>
         );
       })()}

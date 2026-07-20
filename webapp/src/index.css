@@ -747,3 +747,104 @@ input[type=number] { -moz-appearance: textfield; }
   vertical-align: middle;
   color: var(--champagne-lo);
 }
+
+/* ==========================================================
+   Admin panel & legacy inline-style neutralisers
+   These override the many `rgba(0,0,0,x)`, `rgba(255,255,255,x)`
+   and `color:'#fff'` inline styles that live in Admin.jsx and a
+   few other pages so they render correctly on ivory theme.
+   ========================================================== */
+
+/* Dark translucent panels → warm ivory panels */
+[style*="rgba(0,0,0,0.1"],
+[style*="rgba(0,0,0,0.15"],
+[style*="rgba(0,0,0,0.2"],
+[style*="rgba(0,0,0,0.25"],
+[style*="rgba(0,0,0,0.3"],
+[style*="rgba(0,0,0,0.4"] {
+  background: var(--ivory-warm) !important;
+  color: var(--ink) !important;
+}
+
+/* Faint white overlays → subtle warm-ivory */
+[style*="rgba(255,255,255,0.02"],
+[style*="rgba(255,255,255,0.03"],
+[style*="rgba(255,255,255,0.05"],
+[style*="rgba(255,255,255,0.06"],
+[style*="rgba(255,255,255,0.08"] {
+  background: var(--ivory-warm) !important;
+}
+
+/* Faint white borders → hairline */
+[style*="rgba(255,255,255,0.05)"][style*="border"],
+[style*="rgba(255,255,255,0.08)"][style*="border"],
+[style*="rgba(255,255,255,0.1)"][style*="border"],
+[style*="rgba(255,255,255,0.15)"][style*="border"] {
+  border-color: var(--line) !important;
+}
+
+/* Gold-on-dark badges → wine on champagne */
+[style*="rgba(212,175,55"] {
+  background: var(--champagne-tint) !important;
+  color: var(--wine) !important;
+  border-color: var(--champagne) !important;
+}
+[style*="rgba(201,168,76"] {
+  background: var(--champagne-tint) !important;
+  color: var(--wine) !important;
+  border-color: var(--champagne) !important;
+}
+
+/* Emerald-tinted admin blocks → sage tint */
+[style*="rgba(74,117,89"] {
+  background: rgba(122, 139, 111, 0.14) !important;
+  color: var(--sage) !important;
+}
+
+/* Any explicit dark text on green backgrounds — force ink */
+[style*="color: '#0d2818'"],
+[style*="color:'#0d2818'"],
+[style*="color: #0d2818"],
+[style*="color:#0d2818"] { color: var(--ivory) !important; }
+
+/* Ensure that inputs styled with dark-theme background inline styles look ivory */
+input[style*="rgba(255,255,255,0.05"],
+select[style*="rgba(255,255,255,0.05"],
+textarea[style*="rgba(255,255,255,0.05"] {
+  background: transparent !important;
+  border: none !important;
+  border-bottom: 1px solid var(--line) !important;
+  color: var(--ink) !important;
+  border-radius: 0 !important;
+  padding: 0.65rem 0.15rem !important;
+}
+input[style*="rgba(255,255,255,0.05"]:focus,
+select[style*="rgba(255,255,255,0.05"]:focus,
+textarea[style*="rgba(255,255,255,0.05"]:focus {
+  border-bottom-color: var(--wine) !important;
+}
+
+/* Admin dashed borders remain, but ivory-friendly */
+[style*="1px dashed var(--gold)"] {
+  border-color: var(--champagne) !important;
+  background: var(--champagne-tint) !important;
+}
+
+/* Convert small red destructive text to wine when it sits on ivory */
+[style*="color: '#ff4d4f'"],
+[style*="color:'#ff4d4f'"],
+[style*="color: #ff4d4f"],
+[style*="color:#ff4d4f"] {
+  color: var(--error) !important;
+}
+
+/* Chart / SVG axis lines rendered on ivory */
+svg line[stroke="rgba(255,255,255,0.05)"],
+svg line[stroke="rgba(255,255,255,0.1)"] { stroke: var(--line) !important; }
+
+/* Admin "buddha" dark green splash backgrounds */
+[style*="background: '#1b4332'"],
+[style*="background:'#1b4332'"],
+[style*="background: #1b4332"],
+[style*="background:#1b4332"] { background: var(--champagne-tint) !important; color: var(--ink) !important; }
+

@@ -25,6 +25,7 @@ const ArticlePage = lazyWithRetry(() => import('./pages/Article'));
 const CartPage    = lazyWithRetry(() => import('./pages/Cart'));
 const CheckoutPage= lazyWithRetry(() => import('./pages/Checkout'));
 const ProfilePage = lazyWithRetry(() => import('./pages/Profile'));
+const OrdersPage  = lazyWithRetry(() => import('./pages/Orders'));
 const AdminPage   = lazyWithRetry(() => import('./pages/Admin'));
 const LoginPage   = lazyWithRetry(() => import('./pages/Login'));
 const AiGuidePage = lazyWithRetry(() => import('./pages/AiGuide'));
@@ -206,6 +207,7 @@ export default function App() {
 
               <Route path="/cart"     element={<ProtectedRoute><CartPage updateCart={updateCartCount} /></ProtectedRoute>} />
               <Route path="/checkout" element={<ProtectedRoute><CheckoutPage updateCart={updateCartCount} /></ProtectedRoute>} />
+              <Route path="/orders"   element={<ProtectedRoute><OrdersPage /></ProtectedRoute>} />
               <Route path="/ai-guide" element={<ProtectedRoute><AiGuidePage /></ProtectedRoute>} />
               <Route path="/profile"  element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               {isAdmin && <Route path="/admin" element={<ProtectedRoute><AdminPage profile={profile} /></ProtectedRoute>} />}

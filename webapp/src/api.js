@@ -1,4 +1,4 @@
-const API_BASE = import.meta.env.DEV ? 'http://localhost:3000/api/fabrika' : '/api/fabrika';
+const API_BASE = import.meta.env.DEV ? '/api/fabrika' : '/api/fabrika';
 
 let _initData = '';
 export function setInitData(data) { _initData = data; }

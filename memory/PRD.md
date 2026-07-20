@@ -70,11 +70,13 @@ Hero изображение — https://images.unsplash.com/photo-1572454591674-
 - P2: Добавить favorites, share-to-story, реальный AI-эндпоинт для флориста.
 - P2: Реальная монтированная страница `/orders` (сейчас есть Orders.jsx, но роут не подключён в App.jsx).
 
-## Testing status
-- Скриншот-проверка: Home, Catalog, Login, Checkout (mobile 390×844) — ✅
-- Desktop hero (1440×900) — ✅
-- Splash SVG анимация (self-drawing peony) — ✅
-- Backend API — не запущен в этом окружении, все запросы fail'ятся (ожидаемо, dev-time)
+## Iteration 2 (2026-01-20) — P1 tasks addressed
+- **Vite dev-proxy расширен** — `/api/fabrika` (real Fastify backend), плюс сохранены legacy proxy для `/products`, `/cart`, `/orders`, `/profile`, `/admin`. Указан порт бэкенда `3005` (env-переменная `BACKEND_URL` для override).
+- **api.js** — базовый URL приведён к единому виду `/api/fabrika` (одинаково в dev и prod).
+- **Admin.jsx** — editorial-редизайн верхнего уровня: новый page-title «Служебное / Админ · панель», editorial-chip табы, глобальные CSS-нейтрализаторы (см. `index.css`) заменяют все `rgba(0,0,0,x)`, `rgba(255,255,255,x)`, `rgba(212,175,55,x)` inline-паттерны на светлые ivory/wine — без переписывания 2844 строк.
+- **Orders.jsx** — полностью переписан в editorial: `StatusPill` (ivory/wine/sage/champagne по статусу), page-title, hairline-list, курсивные цитаты пожеланий и текста открытки, chip-actions (Правки / Одобрить), CreditCard-иконка для оплаты, editorial empty-state «пусто».
+- **Роут `/orders`** подключён в `App.jsx` как `ProtectedRoute`.
+- **Bot handle** в Login.jsx заменён на `fabrikaflo_bot` (placeholder с TODO).
 
 ## Auth credentials
-Не создавались — Telegram widget использует существующий bot handle `herbalspiritasia_bot` (нужно поменять на новый бот fabrika.flo при деплое).
+Не создавались — Telegram widget использует placeholder handle `fabrikaflo_bot` (нужно поменять на реальный fabrika.flo бот при деплое).

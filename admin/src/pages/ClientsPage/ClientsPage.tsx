@@ -1,8 +1,11 @@
 import React, { useState } from 'react'
+import clsx from 'clsx'
+import { pageStyles } from '../../shared/styles'
 import { useClientsQuery } from '../../api/clients'
 import { isInitialQueryLoad } from '../../api/queryUtils'
 import { PeonyIcon } from '../../components/BotanicalIcons'
 import { InlineQueryLoader, Input } from '../../shared/ui'
+import styles from './ClientsPage.module.css'
 
 export const ClientsPage: React.FC = () => {
   const { data, isPending } = useClientsQuery()
@@ -19,17 +22,17 @@ export const ClientsPage: React.FC = () => {
   })
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }} data-testid="clients-page">
+    <div className={clsx('animated-fade-in', pageStyles.page)} data-testid="clients-page">
       <header className="page-header">
         <span className="eyebrow">CRM</span>
         <h1>Клиенты <em>цветочного цеха</em></h1>
         <p>База клиентов из Telegram-бота: контакты, статистика заказов и средний чек.</p>
       </header>
 
-      <div style={{ display: 'flex', width: '100%', gap: '16px' }}>
+      <div className={styles.searchRow}>
         <Input
           type="text"
-          style={{ flex: 1, padding: '13px 18px', fontSize: '0.95rem' }}
+          className={styles.searchInput}
           placeholder="Поиск по имени, телефону или @username…"
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
@@ -37,7 +40,7 @@ export const ClientsPage: React.FC = () => {
         />
       </div>
 
-      <div className="glass-card" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
+      <div className={clsx('glass-card', pageStyles.surfaceCard)}>
         {!isInitialQueryLoad(isPending, data) && filteredClients.length === 0 ? (
           <div className="empty-state">
             <PeonyIcon size={64} color="var(--color-gold-deep)" />
@@ -49,7 +52,7 @@ export const ClientsPage: React.FC = () => {
             </p>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
+          <div className={pageStyles.tableScroll}>
             <table className="editorial-table">
               <thead>
                 <tr>
@@ -81,25 +84,25 @@ export const ClientsPage: React.FC = () => {
                           href={`https://t.me/${client.tgname}`}
                           target="_blank"
                           rel="noreferrer"
-                          style={{ color: 'var(--color-sage)', textDecoration: 'none', fontWeight: 500, borderBottom: '1px solid var(--color-gold-deep)', paddingBottom: '1px' }}
+                          className={styles.telegramLink}
                         >
                           @{client.tgname}
                         </a>
                       ) : (
-                        <span className="cell-mute" style={{ marginTop: 0 }}>отсутствует</span>
+                        <span className={clsx('cell-mute', styles.missingValue)}>отсутствует</span>
                       )}
                     </td>
-                    <td>{client.phone || <span className="cell-mute" style={{ marginTop: 0 }}>не указан</span>}</td>
-                    <td className="cell-mute" style={{ marginTop: 0 }}>
+                    <td>{client.phone || <span className={clsx('cell-mute', styles.missingValue)}>не указан</span>}</td>
+                    <td className={clsx('cell-mute', styles.joinedDate)}>
                       {new Date(client.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
                     </td>
                     <td className="center">
-                      <span style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 300, fontSize: '1.15rem', color: 'var(--text-primary)' }}>
+                      <span className={styles.ordersCount}>
                         {client.ordersCount}
                       </span>
                     </td>
                     <td className="right">
-                      <span style={{ fontWeight: 600 }}>{client.totalSpend} ₽</span>
+                      <span className={styles.totalSpend}>{client.totalSpend} ₽</span>
                     </td>
                     <td className="right">
                       <span className="cell-mono-num">{client.averageCheck} ₽</span>

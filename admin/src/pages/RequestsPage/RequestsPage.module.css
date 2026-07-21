@@ -1,0 +1,50 @@
+.occasionCell {
+  max-width: 300px;
+}
+
+.occasionTitle {
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.occasionComment {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+  font-style: italic;
+  font-family: var(--font-serif);
+}
+
+.deliveryType {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--text-primary);
+  font-size: 0.88rem;
+}
+
+.rowActions {
+  display: inline-flex;
+  gap: 8px;
+}
+
+.convertedLabel {
+  font-size: 0.75rem;
+  color: var(--color-success);
+  padding-right: 8px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.conversionSummary {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-light);
+  padding-bottom: 12px;
+}
+
+.recipientField,
+.commentField {
+  min-height: 60px;
+}

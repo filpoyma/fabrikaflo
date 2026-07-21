@@ -1,9 +1,12 @@
 import React from 'react'
+import clsx from 'clsx'
+import { pageStyles } from '../../shared/styles'
 import { Link } from 'react-router-dom'
 import { useRequestsQuery } from '../../api/requests'
 import { useOrdersQuery } from '../../api/orders'
 import { Button } from '../../shared/ui'
 import { PeonyIcon, DeliveryIcon, PinIcon } from '../../components/BotanicalIcons'
+import styles from './DashboardPage.module.css'
 
 const StatCard: React.FC<{
   label: string
@@ -15,48 +18,39 @@ const StatCard: React.FC<{
 }> = ({ label, value, hint, to, numberColor = 'var(--text-primary)', pending = false }) => {
   const inner = (
     <div
-      className="glass-card"
-      style={{
-        padding: '26px 26px 22px',
-        backgroundColor: '#FFFFFF',
-        textAlign: 'left',
-        cursor: to ? 'pointer' : 'default',
-        opacity: pending ? 0.55 : 1,
-      }}
+      className={clsx(
+        'glass-card',
+        styles.statCard,
+        to && styles.statCardLink,
+        pending && styles.statCardPending,
+      )}
     >
-      <span className="eyebrow" style={{ color: 'var(--text-secondary)', fontSize: '0.6rem', letterSpacing: '0.28em' }}>
+      <span className={clsx('eyebrow', styles.statLabel)}>
         {label}
       </span>
       <div
-        style={{
-          fontSize: '3rem',
-          fontFamily: 'var(--font-serif)',
-          fontStyle: 'italic',
-          fontWeight: 300,
-          color: numberColor,
-          marginTop: '10px',
-          lineHeight: 1,
-          letterSpacing: '-0.02em',
-        }}
+        className={clsx(
+          styles.statNumber,
+          numberColor === 'var(--color-sage)' && styles.statNumberSage,
+          numberColor === 'var(--color-gold-deep)' && styles.statNumberGold,
+          numberColor === 'var(--color-success)' && styles.statNumberSuccess,
+          numberColor !== 'var(--color-sage)' &&
+            numberColor !== 'var(--color-gold-deep)' &&
+            numberColor !== 'var(--color-success)' &&
+            styles.statNumberDefault,
+        )}
       >
         {pending ? '—' : value}
       </div>
       <div
-        style={{
-          marginTop: '14px',
-          paddingTop: '10px',
-          borderTop: '1px solid var(--border-light)',
-          fontSize: '0.72rem',
-          color: 'var(--text-secondary)',
-          letterSpacing: '0.04em',
-        }}
+        className={styles.statHint}
       >
         {hint}
       </div>
     </div>
   )
   return to ? (
-    <Link to={to} style={{ display: 'block', textDecoration: 'none' }} data-testid={`stat-${label}`}>
+    <Link to={to} className={styles.statLink} data-testid={`stat-${label}`}>
       {inner}
     </Link>
   ) : (
@@ -84,7 +78,7 @@ export const DashboardPage: React.FC = () => {
   const ordersLoading = ordersPending && orders === undefined
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px' }} data-testid="dashboard-page">
+    <div className={clsx('animated-fade-in', pageStyles.page)} data-testid="dashboard-page">
       <header className="page-header">
         <span className="eyebrow">Мастерская · Сегодня</span>
         <h1>
@@ -94,11 +88,7 @@ export const DashboardPage: React.FC = () => {
       </header>
 
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))',
-          gap: '20px',
-        }}
+        className={styles.statsGrid}
       >
         <StatCard
           label="Новые заявки"
@@ -133,46 +123,31 @@ export const DashboardPage: React.FC = () => {
       </div>
 
       <div
-        style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))',
-          gap: '20px',
-        }}
+        className={styles.overviewGrid}
       >
-        <div className="glass-card" style={{ padding: '28px 30px', backgroundColor: '#FFFFFF', textAlign: 'left' }} data-testid="inquiries-block">
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '12px', marginBottom: '18px', paddingBottom: '14px', borderBottom: '1px solid var(--border-light)' }}>
+        <div className={clsx('glass-card', styles.panel)} data-testid="inquiries-block">
+          <div className={styles.panelHeader}>
             <div>
               <span className="eyebrow">Из Telegram</span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.5rem', color: 'var(--text-primary)', marginTop: '4px' }}>
+              <h3 className={styles.panelTitle}>
                 Последние заявки
               </h3>
             </div>
             <Link
               to="/requests"
-              style={{
-                color: 'var(--color-sage)',
-                textDecoration: 'none',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.65rem',
-                letterSpacing: '0.24em',
-                textTransform: 'uppercase',
-                fontWeight: 600,
-                borderBottom: '1px solid var(--color-sage)',
-                paddingBottom: '2px',
-                whiteSpace: 'nowrap',
-              }}
+              className={styles.panelLink}
             >
               все заявки
             </Link>
           </div>
 
           {requestsLoading ? (
-            <div className="empty-state" style={{ padding: '24px 8px' }}>
+            <div className={clsx('empty-state', styles.emptyBlock)}>
               <PeonyIcon size={40} color="var(--color-gold-deep)" />
               <div className="headline">Загрузка заявок…</div>
             </div>
           ) : pendingRequests.length === 0 ? (
-            <div className="empty-state" style={{ padding: '24px 8px' }}>
+            <div className={clsx('empty-state', styles.emptyBlock)}>
               <PeonyIcon size={54} color="var(--color-gold-deep)" />
               <div className="headline">Все обработаны</div>
               <p>Нет новых заявок из бота. Флористы работают над текущими заказами.</p>
@@ -181,13 +156,13 @@ export const DashboardPage: React.FC = () => {
             <div className="hair-list">
               {pendingRequests.slice(0, 4).map((req) => (
                 <div key={req.id} className="item">
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="cell-eyebrow" style={{ marginBottom: '3px', fontSize: '0.6rem' }}>{req.deliveryType === 'PICKUP' ? 'Самовывоз' : 'Доставка'}</div>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-primary)' }}>
+                  <div className={styles.listItemContent}>
+                    <div className={clsx('cell-eyebrow', styles.listItemEyebrow)}>{req.deliveryType === 'PICKUP' ? 'Самовывоз' : 'Доставка'}</div>
+                    <div className={styles.requestClientName}>
                       {req.client?.name || 'Клиент'}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px' }}>
-                      {req.occasion} · <span style={{ color: 'var(--color-sage)' }}>{req.budget} ₽</span>
+                    <div className={styles.requestMeta}>
+                      {req.occasion} · <span className={styles.requestBudget}>{req.budget} ₽</span>
                     </div>
                   </div>
                   <Button to="/requests" variant="secondary" size="sm">Открыть</Button>
@@ -197,40 +172,29 @@ export const DashboardPage: React.FC = () => {
           )}
         </div>
 
-        <div className="glass-card" style={{ padding: '28px 30px', backgroundColor: '#FFFFFF', textAlign: 'left' }} data-testid="deliveries-block">
-          <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', gap: '12px', marginBottom: '18px', paddingBottom: '14px', borderBottom: '1px solid var(--border-light)' }}>
+        <div className={clsx('glass-card', styles.panel)} data-testid="deliveries-block">
+          <div className={styles.panelHeader}>
             <div>
               <span className="eyebrow">В пути</span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.5rem', color: 'var(--text-primary)', marginTop: '4px' }}>
+              <h3 className={styles.panelTitle}>
                 Активные доставки
               </h3>
             </div>
             <Link
               to="/orders"
-              style={{
-                color: 'var(--color-sage)',
-                textDecoration: 'none',
-                fontFamily: 'var(--font-sans)',
-                fontSize: '0.65rem',
-                letterSpacing: '0.24em',
-                textTransform: 'uppercase',
-                fontWeight: 600,
-                borderBottom: '1px solid var(--color-sage)',
-                paddingBottom: '2px',
-                whiteSpace: 'nowrap',
-              }}
+              className={styles.panelLink}
             >
               все заказы
             </Link>
           </div>
 
           {ordersLoading ? (
-            <div className="empty-state" style={{ padding: '24px 8px' }}>
+            <div className={clsx('empty-state', styles.emptyBlock)}>
               <DeliveryIcon size={44} color="var(--color-gold-deep)" />
               <div className="headline">Загрузка заказов…</div>
             </div>
           ) : deliveringOrders.length === 0 ? (
-            <div className="empty-state" style={{ padding: '24px 8px' }}>
+            <div className={clsx('empty-state', styles.emptyBlock)}>
               <DeliveryIcon size={56} color="var(--color-gold-deep)" />
               <div className="headline">Курьеры отдыхают</div>
               <p>В данный момент нет букетов в пути. Как только заказ будет отправлен курьеру — появится здесь.</p>
@@ -239,16 +203,16 @@ export const DashboardPage: React.FC = () => {
             <div className="hair-list">
               {deliveringOrders.slice(0, 4).map((ord) => (
                 <div key={ord.id} className="item">
-                  <div style={{ flex: 1, minWidth: 0 }}>
-                    <div className="cell-eyebrow" style={{ marginBottom: '3px', fontSize: '0.6rem' }}>
+                  <div className={styles.listItemContent}>
+                    <div className={clsx('cell-eyebrow', styles.listItemEyebrow)}>
                       Курьер · {ord.courier?.name || 'не назначен'}
                     </div>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '1.05rem', color: 'var(--text-primary)' }}>
+                    <div className={styles.deliveryRecipient}>
                       {ord.recipientName || 'Получатель не указан'}
                     </div>
-                    <div style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+                    <div className={styles.deliveryAddress}>
                       <PinIcon size={12} color="var(--color-gold-deep)" />
-                      <span style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span className={styles.addressText}>
                         {ord.deliveryAddress || 'Самовывоз'}
                       </span>
                     </div>

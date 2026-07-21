@@ -1,9 +1,12 @@
 import React, { useState } from 'react'
+import clsx from 'clsx'
+import { pageStyles } from '../../shared/styles'
 import {
   useRequestsQuery,
   useUpdateRequestStatusMutation,
   useConvertRequestMutation,
 } from '../../api/requests'
+import styles from './RequestsPage.module.css'
 import { isInitialQueryLoad } from '../../api/queryUtils'
 import { Button, Modal, InlineQueryLoader, Input, Textarea } from '../../shared/ui'
 import type { IRequest } from '../../types'
@@ -95,14 +98,14 @@ export const RequestsPage: React.FC = () => {
   }
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }} data-testid="requests-page">
+    <div className={clsx('animated-fade-in', pageStyles.page)} data-testid="requests-page">
       <header className="page-header">
         <span className="eyebrow">Из Telegram</span>
         <h1>Заявки на <em>букеты</em></h1>
         <p>Список обращений клиентов из Telegram-бота. Превращайте их в заказы.</p>
       </header>
 
-      <div className="glass-card" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
+      <div className={clsx('glass-card', pageStyles.surfaceCard)}>
         {!isInitialQueryLoad(isPending, data) && requests.length === 0 ? (
           <div className="empty-state">
             <PeonyIcon size={64} color="var(--color-gold-deep)" />
@@ -110,7 +113,7 @@ export const RequestsPage: React.FC = () => {
             <p>Заявки появятся, когда клиенты нажмут кнопку «Заказать букет» в Telegram-боте.</p>
           </div>
         ) : (
-          <div style={{ overflowX: 'auto' }}>
+          <div className={pageStyles.tableScroll}>
             <table className="editorial-table">
               <thead>
                 <tr>
@@ -138,17 +141,10 @@ export const RequestsPage: React.FC = () => {
                           {req.client?.tgname ? `@${req.client.tgname}` : ''}
                         </div>
                       </td>
-                      <td style={{ maxWidth: '300px' }}>
-                        <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{req.occasion}</div>
+                      <td className={styles.occasionCell}>
+                        <div className={styles.occasionTitle}>{req.occasion}</div>
                         <div
-                          className="cell-mute"
-                          style={{
-                            textOverflow: 'ellipsis',
-                            overflow: 'hidden',
-                            whiteSpace: 'nowrap',
-                            fontStyle: 'italic',
-                            fontFamily: 'var(--font-serif)',
-                          }}
+                          className={clsx('cell-mute', styles.occasionComment)}
                         >
                           {req.comment ? `«${req.comment}»` : 'без комментария'}
                         </div>
@@ -157,7 +153,7 @@ export const RequestsPage: React.FC = () => {
                         <div className="cell-mono-num">{req.budget} ₽</div>
                       </td>
                       <td>
-                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontSize: '0.88rem' }}>
+                        <div className={styles.deliveryType}>
                           {req.deliveryType === 'PICKUP'
                             ? <><PickupIcon size={13} color="var(--color-gold-deep)" /> Самовывоз</>
                             : <><VanIcon    size={13} color="var(--color-gold-deep)" /> Доставка</>}
@@ -172,7 +168,7 @@ export const RequestsPage: React.FC = () => {
                         </span>
                       </td>
                       <td className="right">
-                        <div style={{ display: 'inline-flex', gap: '8px' }}>
+                        <div className={styles.rowActions}>
                           {req.status === 'PENDING' && (
                             <Button
                               variant="secondary"
@@ -205,7 +201,7 @@ export const RequestsPage: React.FC = () => {
                             </>
                           )}
                           {req.status === 'CONVERTED' && (
-                            <span style={{ fontSize: '0.75rem', color: 'var(--color-success)', paddingRight: '8px', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600 }}>
+                            <span className={styles.convertedLabel}>
                               оформлен
                             </span>
                           )}
@@ -227,8 +223,8 @@ export const RequestsPage: React.FC = () => {
           onClose={() => setIsConvertModalOpen(false)}
           title={`Оформление заказа по заявке #${selectedRequest.id.substring(0, 8)}`}
         >
-          <form onSubmit={handleConvertSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-light)', paddingBottom: '12px' }}>
+          <form onSubmit={handleConvertSubmit} className={pageStyles.formStack}>
+            <div className={styles.conversionSummary}>
               Клиент: <strong>{selectedRequest.client?.name}</strong> • Повод: <strong>{selectedRequest.occasion}</strong>
             </div>
 
@@ -257,7 +253,7 @@ export const RequestsPage: React.FC = () => {
               <div className="form-group">
                 <label className="form-label">Адрес доставки</label>
                 <Textarea
-                  style={{ minHeight: '60px' }}
+                  className={styles.recipientField}
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
                   required
@@ -277,7 +273,7 @@ export const RequestsPage: React.FC = () => {
             <div className="form-group">
               <label className="form-label">Пожелания</label>
               <Textarea
-                style={{ minHeight: '60px' }}
+                className={styles.commentField}
                 value={wishes}
                 onChange={(e) => setWishes(e.target.value)}
                 required
@@ -314,7 +310,7 @@ export const RequestsPage: React.FC = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
+            <div className={pageStyles.formActions}>
               <Button variant="secondary" type="button" onClick={() => setIsConvertModalOpen(false)}>
                 Отмена
               </Button>

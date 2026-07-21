@@ -1,0 +1,139 @@
+.avatarFrame {
+  position: relative;
+  cursor: pointer;
+  border-radius: 50%;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.avatarFrame:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.15);
+}
+
+.avatarFrameDisabled {
+  cursor: default;
+}
+
+.avatarFrameDisabled:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.avatarOverlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.4);
+  opacity: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 0.65rem;
+  font-weight: 700;
+  transition: opacity 0.2s ease;
+  border-radius: 50%;
+}
+
+.avatarFrame:hover .avatarOverlay,
+.avatarOverlayUploading {
+  opacity: 1;
+}
+
+.connectionStatus {
+  font-size: 0.62rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.connectionStatusLinked {
+  color: var(--color-success);
+}
+
+.connectionStatusPending {
+  color: var(--text-secondary);
+}
+
+.memberCard {
+  background-color: #ffffff;
+  padding: 20px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.memberSummary {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+}
+
+.memberInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.memberName {
+  font-weight: 600;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.memberMeta {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.memberLogin {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  font-weight: 600;
+}
+
+.memberTelegramLink {
+  font-size: 0.85rem;
+  color: var(--color-accent-dark);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.memberPhone {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+}
+
+.memberRole {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.memberActions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+}
+
+.addMemberButton {
+  flex-shrink: 0;
+}
+
+.teamGroups {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.adminGroup,
+.courierGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

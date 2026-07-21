@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import clsx from 'clsx';
+import { pageStyles } from '../../shared/styles';
 import {
   useOrdersQuery,
   useUpdateOrderStatusMutation,
@@ -7,6 +9,7 @@ import {
   useSendOrderPaymentMutation,
   useAssignOrderCourierMutation,
 } from '../../api/orders';
+import styles from './OrdersPage.module.css'
 import { useCouriersQuery } from '../../api/clients';
 import type { IOrder } from '../../types';
 import { Button, getButtonClassName, Input, Select } from '../../shared/ui';
@@ -137,18 +140,13 @@ export const OrdersPage: React.FC = () => {
     return (
       <div key={order.id} className="card-editorial" data-testid={`order-card-${order.id}`}>
         {/* Card Header */}
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div className={styles.cardHeader}>
           <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              alignItems: 'flex-start',
-              gap: '10px',
-            }}
+            className={styles.cardTitleRow}
           >
-            <div style={{ flex: 1, minWidth: 0 }}>
+            <div className={styles.clientSummary}>
               <span className="card-eyebrow">№ {order.id.substring(0, 8)}</span>
-              <div className="card-title" style={{ marginTop: '4px' }}>
+              <div className={clsx('card-title', styles.clientName)}>
                 {order.client?.name || 'Клиент'}
               </div>
             </div>
@@ -157,14 +155,7 @@ export const OrdersPage: React.FC = () => {
 
           {(order.client?.phone || order.client?.tgname) && (
             <div
-              style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '10px',
-                flexWrap: 'wrap',
-                fontSize: '0.8rem',
-                color: 'var(--text-secondary)',
-              }}
+              className={styles.clientContacts}
             >
               {order.client?.phone && <span>{order.client.phone}</span>}
               {order.client?.tgname && (
@@ -172,13 +163,7 @@ export const OrdersPage: React.FC = () => {
                   href={`https://t.me/${order.client.tgname}`}
                   target="_blank"
                   rel="noreferrer"
-                  style={{
-                    color: 'var(--color-sage)',
-                    textDecoration: 'none',
-                    fontWeight: 500,
-                    borderBottom: '1px solid var(--color-gold-deep)',
-                    paddingBottom: '1px',
-                  }}
+                  className={styles.clientTelegramLink}
                 >
                   @{order.client.tgname}
                 </a>
@@ -196,22 +181,13 @@ export const OrdersPage: React.FC = () => {
               <img
                 src={order.request.examplePhotoUrl}
                 alt="Пример клиента"
-                style={{ opacity: 0.85 }}
+                className={styles.referenceThumbnail}
               />
               <span className="thumb-badge">Пример клиента</span>
             </>
           ) : (
             <div
-              style={{
-                display: 'grid',
-                placeItems: 'center',
-                width: '100%',
-                height: '100%',
-                color: 'var(--text-secondary)',
-                fontFamily: 'var(--font-serif)',
-                fontStyle: 'italic',
-                fontSize: '0.9rem',
-              }}
+              className={styles.emptyThumbnail}
             >
               {isUploading ? 'Загрузка…' : 'фото ещё нет'}
             </div>
@@ -220,12 +196,7 @@ export const OrdersPage: React.FC = () => {
 
         {/* Details */}
         <div
-          style={{
-            borderTop: '1px solid var(--border-light)',
-            paddingTop: '10px',
-            display: 'flex',
-            flexDirection: 'column',
-          }}
+          className={styles.cardDetails}
         >
           <div className="card-detail">
             <span className="k">Бюджет</span>
@@ -245,28 +216,21 @@ export const OrdersPage: React.FC = () => {
           )}
           {order.request?.examplePhotoUrl && (
             <div
-              className="card-detail"
-              style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}
+              className={clsx('card-detail', styles.referenceDetail)}
             >
-              <span className="k" style={{ flexShrink: 0 }}>
+              <span className={clsx('k', styles.detailLabel)}>
                 Референс
               </span>
               <a
                 href={order.request.examplePhotoUrl}
                 target="_blank"
                 rel="noreferrer"
-                style={{
-                  display: 'inline-flex',
-                  borderRadius: '3px',
-                  overflow: 'hidden',
-                  border: '1px solid var(--border-light)',
-                  lineHeight: 0,
-                }}
+                className={styles.referenceImageLink}
               >
                 <img
                   src={order.request.examplePhotoUrl}
                   alt="Reference"
-                  style={{ width: '32px', height: '32px', objectFit: 'cover' }}
+                  className={styles.referenceImage}
                 />
               </a>
             </div>
@@ -275,21 +239,14 @@ export const OrdersPage: React.FC = () => {
           <div className="card-detail">
             <span className="k">Куда</span>
             <span
-              className="v"
-              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+              className={clsx('v', styles.deliveryAddress)}
             >
               <PinIcon size={12} color="var(--color-gold-deep)" />
               {order.deliveryAddress ? order.deliveryAddress : 'Самовывоз'}
             </span>
             {order.deliveryTime && (
               <span
-                className="v"
-                style={{
-                  fontSize: '0.78rem',
-                  color: 'var(--text-secondary)',
-                  marginTop: '2px',
-                  letterSpacing: '0.04em',
-                }}
+                className={clsx('v', styles.deliveryTime)}
               >
                 {new Date(order.deliveryTime).toLocaleString('ru-RU')}
               </span>
@@ -297,44 +254,22 @@ export const OrdersPage: React.FC = () => {
           </div>
           {order.courier && (
             <div
-              style={{
-                fontFamily: 'var(--font-sans)',
-                color: 'var(--color-sage)',
-                fontSize: '0.72rem',
-                letterSpacing: '0.22em',
-                textTransform: 'uppercase',
-                fontWeight: 600,
-                marginTop: '2px',
-              }}
+              className={styles.courierLabel}
             >
               Курьер · {order.courier.name}
             </div>
           )}
           {order.comment && (
             <div
-              style={{
-                marginTop: '8px',
-                padding: '8px 12px',
-                backgroundColor: '#FAF8F5',
-                border: '1px solid var(--border-light)',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-              }}
+              className={styles.adminComment}
             >
               <strong
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '0.6rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.22em',
-                  textTransform: 'uppercase',
-                  color: 'var(--text-secondary)',
-                }}
+                className={styles.commentLabel}
               >
                 Комментарий
               </strong>
               <div
-                style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}
+                className={styles.commentText}
               >
                 {order.comment}
               </div>
@@ -342,29 +277,15 @@ export const OrdersPage: React.FC = () => {
           )}
           {order.clientFeedback && (
             <div
-              style={{
-                marginTop: '8px',
-                padding: '8px 12px',
-                backgroundColor: '#FFF5F5',
-                border: '1px solid #FFE3E3',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-              }}
+              className={styles.clientFeedback}
             >
               <strong
-                style={{
-                  fontFamily: 'var(--font-sans)',
-                  fontSize: '0.6rem',
-                  fontWeight: 600,
-                  letterSpacing: '0.22em',
-                  textTransform: 'uppercase',
-                  color: 'var(--color-error)',
-                }}
+                className={styles.feedbackLabel}
               >
                 Замечания клиента
               </strong>
               <div
-                style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}
+                className={styles.feedbackText}
               >
                 {order.clientFeedback}
               </div>
@@ -374,13 +295,7 @@ export const OrdersPage: React.FC = () => {
 
         {/* Action Controls */}
         <div
-          style={{
-            borderTop: '1px solid var(--border-light)',
-            paddingTop: '12px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '8px',
-          }}
+          className={styles.actionControls}
         >
           {/* CREATED state */}
           {order.status === 'CREATED' && (
@@ -395,8 +310,8 @@ export const OrdersPage: React.FC = () => {
 
           {/* ASSEMBLING state (Upload picture) */}
           {order.status === 'ASSEMBLING' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              <label className="form-label" style={{ fontSize: '0.75rem' }}>
+            <div className={styles.photoUploadControl}>
+              <label className={clsx('form-label', styles.photoUploadLabel)}>
                 Загрузить фото готового букета
               </label>
               <Input
@@ -409,14 +324,9 @@ export const OrdersPage: React.FC = () => {
               />
               <label
                 htmlFor={`order-photo-upload-${order.id}`}
-                className={getButtonClassName({ variant: 'secondary', size: 'sm' })}
-                style={{
-                  cursor: 'pointer',
-                  border: '1px dashed var(--color-sage)',
-                  backgroundColor: '#FAF9F6',
-                }}
+                className={clsx(getButtonClassName({ variant: 'secondary', size: 'sm' }), styles.uploadLabel)}
               >
-                <PlusIcon style={{ width: '16px', height: '16px', color: 'var(--color-sage)' }} />
+                <PlusIcon className={styles.photoUploadIcon} />
                 <span>{isUploading ? 'Загрузка...' : 'Выбрать фото'}</span>
               </label>
             </div>
@@ -446,13 +356,7 @@ export const OrdersPage: React.FC = () => {
           {/* WAITING_FOR_APPROVAL state */}
           {order.status === 'WAITING_FOR_APPROVAL' && (
             <div
-              style={{
-                fontSize: '0.8rem',
-                fontStyle: 'italic',
-                color: 'var(--text-secondary)',
-                textAlign: 'center',
-                padding: '6px',
-              }}
+              className={styles.approvalPending}
             >
               Согласование отправлено клиенту в Telegram... ⏳
             </div>
@@ -463,7 +367,7 @@ export const OrdersPage: React.FC = () => {
             order.status === 'WAITING_FOR_PAYMENT' ||
             order.status === 'ASSEMBLED' ||
             order.status === 'WAITING_FOR_APPROVAL') && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className={styles.paymentForm}>
               <Input
                 type="text"
                 fieldSize="sm"
@@ -524,7 +428,7 @@ export const OrdersPage: React.FC = () => {
 
           {/* PAID state (Courier Selection and dispatch) */}
           {order.status === 'PAID' && (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <div className={styles.courierForm}>
               <Select
                 fieldSize="sm"
                 value={selectedCouriers[order.id] || ''}
@@ -567,21 +471,10 @@ export const OrdersPage: React.FC = () => {
           {/* DELIVERING state */}
           {order.status === 'DELIVERING' && (
             <div
-              style={{
-                fontSize: '0.8rem',
-                fontStyle: 'italic',
-                color: 'var(--color-sage)',
-                textAlign: 'center',
-                padding: '6px',
-              }}
+              className={styles.deliveryStatus}
             >
               <div
-                style={{
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  justifyContent: 'center',
-                }}
+                className={styles.deliveryStatusContent}
               >
                 <DeliveryIcon size={18} color="var(--color-sage)" />
                 <span>Курьер в пути… ожидаем отметки о доставке.</span>
@@ -597,7 +490,7 @@ export const OrdersPage: React.FC = () => {
               variant="secondary"
               icon={XMarkIcon}
               dangerText
-              style={{ border: 'none', padding: '6px' }}
+              className={styles.cancelButton}
               onClick={() => mutateStatus(order.id, 'CANCELLED')}
             >
               Отменить заказ
@@ -610,8 +503,7 @@ export const OrdersPage: React.FC = () => {
 
   return (
     <div
-      className="animated-fade-in"
-      style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }}
+      className={clsx('animated-fade-in', pageStyles.page)}
       data-testid="orders-page"
     >
       <header className="page-header">
@@ -623,144 +515,78 @@ export const OrdersPage: React.FC = () => {
       </header>
 
       <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(4, 1fr)',
-            gap: '20px',
-            alignItems: 'flex-start',
-            boxSizing: 'border-box',
-          }}
+          className={styles.orderBoard}
         >
           {/* Column 1: Assembly */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className={styles.column}>
             <div
-              style={{
-                paddingBottom: '12px',
-                borderBottom: '1px solid var(--border-light)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px',
-              }}
+              className={styles.columnHeader}
             >
               <h3
-                style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontStyle: 'italic',
-                  fontWeight: 400,
-                  fontSize: '1.35rem',
-                  color: 'var(--text-primary)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
+                className={styles.columnTitle}
               >
                 <ShoppingIcon
-                  style={{ width: '18px', height: '18px', color: 'var(--color-sage)' }}
+                  className={clsx(styles.columnIcon, styles.columnIconSage)}
                 />
                 Сборка
               </h3>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className={styles.orderList}>
               {colAssembly.map(renderOrderCard)}
             </div>
           </div>
 
           {/* Column 2: Approval & Payment */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className={styles.column}>
             <div
-              style={{
-                paddingBottom: '12px',
-                borderBottom: '1px solid var(--border-light)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px',
-              }}
+              className={styles.columnHeader}
             >
               <h3
-                style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontStyle: 'italic',
-                  fontWeight: 400,
-                  fontSize: '1.35rem',
-                  color: 'var(--text-primary)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
+                className={styles.columnTitle}
               >
                 <DocumentIcon
-                  style={{ width: '18px', height: '18px', color: 'var(--color-warning)' }}
+                  className={clsx(styles.columnIcon, styles.columnIconWarn)}
                 />
                 Согласование
               </h3>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className={styles.orderList}>
               {colApproval.map(renderOrderCard)}
             </div>
           </div>
 
           {/* Column 3: Delivery */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className={styles.column}>
             <div
-              style={{
-                paddingBottom: '12px',
-                borderBottom: '1px solid var(--border-light)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px',
-              }}
+              className={styles.columnHeader}
             >
               <h3
-                style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontStyle: 'italic',
-                  fontWeight: 400,
-                  fontSize: '1.35rem',
-                  color: 'var(--text-primary)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
+                className={styles.columnTitle}
               >
-                <TruckIcon style={{ width: '18px', height: '18px', color: 'var(--color-gold)' }} />
+                <TruckIcon className={clsx(styles.columnIcon, styles.columnIconGold)} />
                 Доставка
               </h3>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className={styles.orderList}>
               {colDelivery.map(renderOrderCard)}
             </div>
           </div>
 
           {/* Column 4: Completed */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <div className={styles.column}>
             <div
-              style={{
-                paddingBottom: '12px',
-                borderBottom: '1px solid var(--border-light)',
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '2px',
-              }}
+              className={styles.columnHeader}
             >
               <h3
-                style={{
-                  fontFamily: 'var(--font-serif)',
-                  fontStyle: 'italic',
-                  fontWeight: 400,
-                  fontSize: '1.35rem',
-                  color: 'var(--text-primary)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '8px',
-                }}
+                className={styles.columnTitle}
               >
                 <CheckIcon
-                  style={{ width: '18px', height: '18px', color: 'var(--color-success)' }}
+                  className={clsx(styles.columnIcon, styles.columnIconSuccess)}
                 />
                 Завершено
               </h3>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div className={styles.orderList}>
               {colCompleted.map(renderOrderCard)}
             </div>
           </div>

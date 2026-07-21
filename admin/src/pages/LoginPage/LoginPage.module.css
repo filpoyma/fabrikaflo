@@ -1,0 +1,53 @@
+.page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100vw;
+  height: 100vh;
+  background-color: var(--bg-primary);
+  box-sizing: border-box;
+}
+
+.loginCard {
+  width: 420px;
+  padding: 40px;
+  background-color: #FFFFFF;
+  text-align: center;
+}
+
+.intro {
+  margin-bottom: 32px;
+}
+
+.brandTitle {
+  font-family: var(--font-serif);
+  font-size: 2.5rem;
+  margin-bottom: 8px;
+}
+
+.brandSubtitle {
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.loginForm {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.passwordField {
+  margin-bottom: 24px;
+}
+
+.errorMessage {
+  color: var(--color-error);
+  background-color: #FCE8E6;
+  border: 1px solid rgba(200, 92, 92, 0.2);
+  padding: 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  margin-bottom: 20px;
+}

@@ -1,0 +1,280 @@
+.uploadLabel {
+  cursor: pointer;
+  border: 1px dashed var(--color-sage);
+  background-color: #faf9f6;
+}
+
+.cardHeader {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.cardTitleRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 10px;
+}
+
+.clientSummary {
+  flex: 1;
+  min-width: 0;
+}
+
+.clientName {
+  margin-top: 4px;
+}
+
+.clientContacts {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+}
+
+.clientTelegramLink {
+  color: var(--color-sage);
+  text-decoration: none;
+  font-weight: 500;
+  border-bottom: 1px solid var(--color-gold-deep);
+  padding-bottom: 1px;
+}
+
+.referenceThumbnail {
+  opacity: 0.85;
+}
+
+.emptyThumbnail {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  color: var(--text-secondary);
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-size: 0.9rem;
+}
+
+.cardDetails {
+  border-top: 1px solid var(--border-light);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.referenceDetail {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+
+.detailLabel {
+  flex-shrink: 0;
+}
+
+.referenceImageLink {
+  display: inline-flex;
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border-light);
+  line-height: 0;
+}
+
+.referenceImage {
+  width: 32px;
+  height: 32px;
+  object-fit: cover;
+}
+
+.deliveryAddress {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.deliveryTime {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 2px;
+  letter-spacing: 0.04em;
+}
+
+.courierLabel {
+  font-family: var(--font-sans);
+  color: var(--color-sage);
+  font-size: 0.72rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-top: 2px;
+}
+
+.adminComment {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #faf8f5;
+  border: 1px solid var(--border-light);
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.commentLabel {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--text-secondary);
+}
+
+.commentText {
+  white-space: pre-line;
+  margin-top: 4px;
+  color: var(--text-primary);
+}
+
+.clientFeedback {
+  margin-top: 8px;
+  padding: 8px 12px;
+  background-color: #fff5f5;
+  border: 1px solid #ffe3e3;
+  border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.feedbackLabel {
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--color-error);
+}
+
+.feedbackText {
+  white-space: pre-line;
+  margin-top: 4px;
+  color: var(--text-primary);
+}
+
+.actionControls {
+  border-top: 1px solid var(--border-light);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.photoUploadControl {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.photoUploadLabel {
+  font-size: 0.75rem;
+}
+
+.photoUploadIcon {
+  width: 16px;
+  height: 16px;
+  color: var(--color-sage);
+}
+
+.approvalPending {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--text-secondary);
+  text-align: center;
+  padding: 6px;
+}
+
+.paymentForm,
+.courierForm {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.deliveryStatus {
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--color-sage);
+  text-align: center;
+  padding: 6px;
+}
+
+.deliveryStatusContent {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+}
+
+.cancelButton {
+  border: none;
+  padding: 6px;
+}
+
+.orderBoard {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 20px;
+  align-items: flex-start;
+  box-sizing: border-box;
+}
+
+.column {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.columnHeader {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-light);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.columnTitle {
+  font-family: var(--font-serif);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.35rem;
+  color: var(--text-primary);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.columnIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.columnIconSage {
+  color: var(--color-sage);
+}
+
+.columnIconWarn {
+  color: var(--color-warning);
+}
+
+.columnIconGold {
+  color: var(--color-gold);
+}
+
+.columnIconSuccess {
+  color: var(--color-success);
+}
+
+.orderList {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}

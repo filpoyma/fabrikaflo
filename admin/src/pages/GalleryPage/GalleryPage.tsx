@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
+import clsx from 'clsx'
+import { pageStyles } from '../../shared/styles'
 import {
   useGalleryQuery,
   useUploadGalleryItemMutation,
   useUpdateGalleryItemMutation,
   useDeleteGalleryItemMutation,
 } from '../../api/gallery'
+import styles from './GalleryPage.module.css'
 import { isInitialQueryLoad } from '../../api/queryUtils'
 import { IconButton, Button, Modal, InlineQueryLoader, Input, Textarea } from '../../shared/ui'
 import type { IPortfolioItem } from '../../types'
@@ -104,7 +107,7 @@ export const GalleryPage: React.FC = () => {
   }
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }} data-testid="gallery-page">
+    <div className={clsx('animated-fade-in', pageStyles.page)} data-testid="gallery-page">
       <header className="page-header with-action">
         <div className="head-text">
           <span className="eyebrow">Портфолио · fabrika.flo</span>
@@ -120,7 +123,7 @@ export const GalleryPage: React.FC = () => {
         {isInitialQueryLoad(isPending, data) ? (
           <InlineQueryLoader message="Собираем галерею работ…" />
         ) : items.length === 0 ? (
-            <div className="glass-card" style={{ backgroundColor: '#FFFFFF' }}>
+            <div className={clsx('glass-card', pageStyles.surfaceCard)}>
               <div className="empty-state">
                 <PeonyIcon size={64} color="var(--color-gold-deep)" />
                 <div className="headline">Портфолио пусто</div>
@@ -129,53 +132,29 @@ export const GalleryPage: React.FC = () => {
             </div>
           ) : (
             <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))',
-                gap: '24px',
-              }}
+              className={styles.galleryGrid}
             >
               {items.map((item) => (
                 <div
                   key={item.id}
-                  className="glass-card"
-                  style={{
-                    backgroundColor: '#FFFFFF',
-                    overflow: 'hidden',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    height: '380px',
-                    position: 'relative',
-                  }}
+                  className={clsx('glass-card', styles.galleryCard)}
                 >
                   {/* Photo Container */}
-                  <div style={{ width: '100%', height: '220px', overflow: 'hidden' }}>
+                  <div className={styles.galleryImageFrame}>
                     <img
                       src={item.photoUrl}
                       alt={item.title || 'Work'}
-                      style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s ease' }}
-                      onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.05)')}
-                      onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1.0)')}
+                      className={styles.galleryImage}
                     />
                   </div>
 
                   {/* Info Container */}
-                  <div style={{ padding: '16px', paddingRight: '48px', display: 'flex', flexDirection: 'column', gap: '6px', flex: 1 }}>
-                    <h4 style={{ fontSize: '1.25rem', fontFamily: 'var(--font-serif)', color: 'var(--text-primary)', fontWeight: 500 }}>
+                  <div className={styles.galleryCardContent}>
+                    <h4 className={styles.galleryItemTitle}>
                       {item.title || 'Оригинальный букет'}
                     </h4>
                     <p
-                      style={{
-                        fontSize: '0.85rem',
-                        color: 'var(--text-secondary)',
-                        textOverflow: 'ellipsis',
-                        overflow: 'hidden',
-                        display: '-webkit-box',
-                        WebkitLineClamp: 2,
-                        WebkitBoxOrient: 'vertical',
-                        lineHeight: '1.3',
-                        margin: 0,
-                      }}
+                      className={styles.galleryItemDescription}
                     >
                       {item.description || 'Работа нашей флористической мастерской.'}
                     </p>
@@ -185,7 +164,7 @@ export const GalleryPage: React.FC = () => {
                     variant="edit"
                     appearance="filled"
                     onClick={() => handleOpenEdit(item)}
-                    style={{ position: 'absolute', bottom: '12px', right: '12px', zIndex: 10 }}
+                    className={styles.editButton}
                   />
 
                   {(() => {
@@ -206,7 +185,7 @@ export const GalleryPage: React.FC = () => {
                             })
                           }
                         }}
-                        style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 10 }}
+                        className={styles.deleteButton}
                       />
                     )
                   })()}
@@ -222,7 +201,7 @@ export const GalleryPage: React.FC = () => {
         onClose={() => setIsUploadModalOpen(false)}
         title="Добавление работы в галерею"
       >
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleSubmit} className={pageStyles.formStack}>
           <div className="form-group">
             <label className="form-label">Фотография букета</label>
             <Input
@@ -233,58 +212,27 @@ export const GalleryPage: React.FC = () => {
               required={!file}
               hidden
             />
-            <label
-              htmlFor="portfolio-image-upload"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                width: '100%',
-                aspectRatio: '300 / 220',
-                border: '2px dashed var(--border-light)',
-                borderRadius: '8px',
-                backgroundColor: '#FAF9F6',
-                cursor: 'pointer',
-                transition: 'all 0.2s ease',
-                overflow: 'hidden',
-                position: 'relative',
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.borderColor = 'var(--color-sage)'
-                e.currentTarget.style.backgroundColor = '#F4F6F4'
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.borderColor = 'var(--border-light)'
-                e.currentTarget.style.backgroundColor = '#FAF9F6'
-              }}
+              <label
+                htmlFor="portfolio-image-upload"
+                className={styles.imagePicker}
             >
               {previewUrl ? (
                 <>
                   <img
                     src={previewUrl}
                     alt="Preview"
-                    style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                    className={styles.imagePreview}
                   />
                   <div
-                    style={{
-                      position: 'absolute',
-                      bottom: '8px',
-                      backgroundColor: 'rgba(43, 59, 48, 0.75)',
-                      color: 'white',
-                      padding: '4px 10px',
-                      borderRadius: '4px',
-                      fontSize: '0.75rem',
-                      fontWeight: 500,
-                    }}
+                    className={styles.imagePickerCaption}
                   >
                     Нажмите, чтобы изменить
                   </div>
                 </>
               ) : (
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)' }}>
-                  <PlusIcon style={{ width: '28px', height: '28px', color: 'var(--color-sage)' }} />
-                  <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>Выбрать изображение букета</span>
+                <div className={styles.imagePickerPlaceholder}>
+                  <PlusIcon className={styles.imagePickerIcon} />
+                  <span className={styles.imagePickerText}>Выбрать изображение букета</span>
                 </div>
               )}
             </label>
@@ -309,7 +257,7 @@ export const GalleryPage: React.FC = () => {
             />
           </div>
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
+          <div className={pageStyles.formActions}>
             <Button variant="secondary" type="button" onClick={() => setIsUploadModalOpen(false)}>
               Отмена
             </Button>
@@ -327,7 +275,7 @@ export const GalleryPage: React.FC = () => {
           onClose={() => setIsEditModalOpen(false)}
           title="Редактирование работы в галерее"
         >
-          <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form onSubmit={handleEditSubmit} className={pageStyles.formStack}>
             <div className="form-group">
               <label className="form-label">Фотография букета (необязательно)</label>
               <Input
@@ -339,56 +287,25 @@ export const GalleryPage: React.FC = () => {
               />
               <label
                 htmlFor="portfolio-image-edit"
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  width: '100%',
-                  aspectRatio: '300 / 220',
-                  border: '2px dashed var(--border-light)',
-                  borderRadius: '8px',
-                  backgroundColor: '#FAF9F6',
-                  cursor: 'pointer',
-                  transition: 'all 0.2s ease',
-                  overflow: 'hidden',
-                  position: 'relative',
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--color-sage)'
-                  e.currentTarget.style.backgroundColor = '#F4F6F4'
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.borderColor = 'var(--border-light)'
-                  e.currentTarget.style.backgroundColor = '#FAF9F6'
-                }}
+                className={styles.imagePicker}
               >
                 {previewUrl ? (
                   <>
                     <img
                       src={previewUrl}
                       alt="Preview"
-                      style={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                      className={styles.imagePreview}
                     />
                     <div
-                      style={{
-                        position: 'absolute',
-                        bottom: '8px',
-                        backgroundColor: 'rgba(43, 59, 48, 0.75)',
-                        color: 'white',
-                        padding: '4px 10px',
-                        borderRadius: '4px',
-                        fontSize: '0.75rem',
-                        fontWeight: 500,
-                      }}
+                      className={styles.imagePickerCaption}
                     >
                       Нажмите, чтобы заменить
                     </div>
                   </>
                 ) : (
-                  <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '10px', color: 'var(--text-secondary)' }}>
-                    <PlusIcon style={{ width: '28px', height: '28px', color: 'var(--color-sage)' }} />
-                    <span style={{ fontSize: '0.9rem', fontWeight: 500 }}>Выбрать новое изображение</span>
+                  <div className={styles.imagePickerPlaceholder}>
+                    <PlusIcon className={styles.imagePickerIcon} />
+                    <span className={styles.imagePickerText}>Выбрать новое изображение</span>
                   </div>
                 )}
               </label>
@@ -413,7 +330,7 @@ export const GalleryPage: React.FC = () => {
               />
             </div>
 
-            <div style={{ display: 'flex', gap: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
+            <div className={pageStyles.formActions}>
               <Button variant="secondary" type="button" onClick={() => setIsEditModalOpen(false)}>
                 Отмена
               </Button>

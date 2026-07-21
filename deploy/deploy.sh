@@ -46,8 +46,6 @@ fi
 
 pnpm_install() {
   local dir="$1"
-  log "Removing stale dependencies in $dir"
-  rm -rf "$dir/node_modules"
   (cd "$dir" && pnpm install --frozen-lockfile)
 }
 

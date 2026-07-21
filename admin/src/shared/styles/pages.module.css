@@ -1,0 +1,35 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  text-align: left;
+}
+
+.formStack {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.formActions {
+  display: flex;
+  gap: 12px;
+  margin-top: 12px;
+  justify-content: flex-end;
+}
+
+.fieldHint {
+  font-size: 0.78rem;
+  color: var(--text-secondary);
+  margin-top: 4px;
+  display: block;
+}
+
+.tableScroll {
+  overflow-x: auto;
+}
+
+.surfaceCard {
+  background-color: #ffffff;
+  overflow: hidden;
+}

@@ -1,4 +1,5 @@
 import React from 'react'
+import clsx from 'clsx'
 import { Link } from 'react-router-dom'
 import styles from './Button.module.css'
 import { getButtonClassName } from './getButtonClassName'
@@ -51,7 +52,7 @@ export const Button: React.FC<ButtonProps> = ({
 
   const content = (
     <>
-      {Icon && <Icon className={`${styles.icon} ${iconClassBySize[size]}`} />}
+      {Icon && <Icon className={clsx(styles.icon, iconClassBySize[size])} />}
       {children}
     </>
   )

@@ -1,4 +1,6 @@
 import React, { useState } from 'react'
+import clsx from 'clsx'
+import { pageStyles } from '../../shared/styles'
 import {
   useTeamQuery,
   useCreateTeamMemberMutation,
@@ -8,6 +10,7 @@ import {
   type ITeamMember,
   type ICreateTeamMember,
 } from '../../api/team'
+import styles from './TeamPage.module.css'
 import { isInitialQueryLoad } from '../../api/queryUtils'
 import { AvatarCircle, IconButton, Button, SegmentedControl, type SegmentedOption, Modal, InlineQueryLoader, Input } from '../../shared/ui'
 
@@ -173,38 +176,14 @@ export const TeamPage: React.FC = () => {
     return (
       <div
         key={member.id}
-        className="glass-card"
-        style={{
-          backgroundColor: '#FFFFFF',
-          padding: '20px 24px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '16px',
-        }}
+        className={clsx('glass-card', styles.memberCard)}
       >
         {/* Avatar + Info */}
-        <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flex: 1 }}>
+        <div className={styles.memberSummary}>
           <div
             onClick={isUploadingAvatar ? undefined : handleAvatarClick}
-            style={{
-              position: 'relative',
-              cursor: isUploadingAvatar ? 'default' : 'pointer',
-              borderRadius: '50%',
-              overflow: 'hidden',
-              transition: 'all 0.2s ease',
-            }}
+            className={clsx(styles.avatarFrame, isUploadingAvatar && styles.avatarFrameDisabled)}
             title={isUploadingAvatar ? 'Загрузка...' : 'Нажмите, чтобы изменить аватар'}
-            onMouseEnter={(e) => {
-              if (!isUploadingAvatar) {
-                e.currentTarget.style.transform = 'scale(1.05)'
-                e.currentTarget.style.boxShadow = '0 0 8px rgba(0,0,0,0.15)'
-              }
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = 'none'
-              e.currentTarget.style.boxShadow = 'none'
-            }}
           >
             <AvatarCircle
               name={member.name}
@@ -214,29 +193,7 @@ export const TeamPage: React.FC = () => {
             />
             {/* Hover overlay */}
             <div
-              style={{
-                position: 'absolute',
-                top: 0,
-                left: 0,
-                right: 0,
-                bottom: 0,
-                backgroundColor: 'rgba(0, 0, 0, 0.4)',
-                opacity: isUploadingAvatar ? 1 : 0,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                color: '#fff',
-                fontSize: '0.65rem',
-                fontWeight: 700,
-                transition: 'opacity 0.2s ease',
-                borderRadius: '50%',
-              }}
-              onMouseEnter={(e) => {
-                if (!isUploadingAvatar) e.currentTarget.style.opacity = '1'
-              }}
-              onMouseLeave={(e) => {
-                if (!isUploadingAvatar) e.currentTarget.style.opacity = '0'
-              }}
+              className={clsx(styles.avatarOverlay, isUploadingAvatar && styles.avatarOverlayUploading)}
             >
               {isUploadingAvatar ? '...' : 'ФОТО'}
             </div>
@@ -251,13 +208,13 @@ export const TeamPage: React.FC = () => {
           />
 
           {/* Name + tgname */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '2px' }}>
-            <span style={{ fontWeight: 600, fontSize: '1rem', color: 'var(--text-primary)' }}>
+          <div className={styles.memberInfo}>
+            <span className={styles.memberName}>
               {member.name || 'Без имени'}
             </span>
-            <div style={{ display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
+            <div className={styles.memberMeta}>
               {member.login && (
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', fontWeight: 600 }}>
+                <span className={styles.memberLogin}>
                   login: {member.login}
                 </span>
               )}
@@ -266,13 +223,13 @@ export const TeamPage: React.FC = () => {
                   href={`https://t.me/${member.tgname}`}
                   target="_blank"
                   rel="noreferrer"
-                  style={{ fontSize: '0.85rem', color: 'var(--color-accent-dark)', textDecoration: 'none', fontWeight: 500 }}
+                  className={styles.memberTelegramLink}
                 >
                   tg: @{member.tgname}
                 </a>
               )}
               {member.phone && (
-                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
+                <span className={styles.memberPhone}>
                   ph: {member.phone}
                 </span>
               )}
@@ -281,25 +238,19 @@ export const TeamPage: React.FC = () => {
         </div>
 
         {/* Role badge */}
-        <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '6px' }}>
+        <div className={styles.memberRole}>
           {/* Status pill (role) + Telegram link status */}
-          <span className={`status-pill ${member.role === 'ADMIN' ? 'status-pill--warn' : 'status-pill--sage'}`}>
+          <span className={clsx('status-pill', member.role === 'ADMIN' ? 'status-pill--warn' : 'status-pill--sage')}>
             {rl.label}
           </span>
           <span
-            style={{
-              fontSize: '0.62rem',
-              letterSpacing: '0.22em',
-              textTransform: 'uppercase',
-              fontWeight: 600,
-              color: isLinked ? 'var(--color-success)' : 'var(--text-secondary)',
-            }}
+            className={clsx(styles.connectionStatus, isLinked ? styles.connectionStatusLinked : styles.connectionStatusPending)}
           >
             {isLinked ? '● Telegram подключён' : '○ Ожидает подключения'}
           </span>
         </div>
 
-        <div style={{ display: 'flex', gap: '8px', flexShrink: 0 }}>
+        <div className={styles.memberActions}>
           <IconButton variant="edit" onClick={() => handleOpenEdit(member)} />
           <IconButton
             variant="delete"
@@ -322,7 +273,7 @@ export const TeamPage: React.FC = () => {
   }
 
   return (
-    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '32px', textAlign: 'left' }} data-testid="team-page">
+    <div className={clsx('animated-fade-in', pageStyles.page)} data-testid="team-page">
       {/* Header */}
       <header className="page-header with-action">
         <div className="head-text">
@@ -330,7 +281,7 @@ export const TeamPage: React.FC = () => {
           <h1>Команда <em>цеха</em></h1>
           <p>Управление сотрудниками: администраторы CRM и курьеры Telegram-бота.</p>
         </div>
-        <Button onClick={handleOpenCreate} icon={PlusIcon} style={{ flexShrink: 0 }} data-testid="add-member-btn">
+        <Button onClick={handleOpenCreate} icon={PlusIcon} className={styles.addMemberButton} data-testid="add-member-btn">
           Добавить сотрудника
         </Button>
       </header>
@@ -338,7 +289,7 @@ export const TeamPage: React.FC = () => {
       {isInitialQueryLoad(isPending, data) ? (
         <InlineQueryLoader message="Загружаем список сотрудников…" />
       ) : members.length === 0 ? (
-        <div className="glass-card" style={{ backgroundColor: '#FFFFFF' }}>
+        <div className={clsx('glass-card', pageStyles.surfaceCard)}>
           <div className="empty-state">
             <PeonyIcon size={64} color="var(--color-gold-deep)" />
             <div className="headline">Команда ещё не собрана</div>
@@ -346,7 +297,7 @@ export const TeamPage: React.FC = () => {
           </div>
         </div>
       ) : (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+        <div className={styles.teamGroups}>
           {/* Admins */}
           {admins.length > 0 && (
             <div>
@@ -354,7 +305,7 @@ export const TeamPage: React.FC = () => {
                 <span>Администраторы</span>
                 <span className="count">· {String(admins.length).padStart(2, '0')}</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div className={styles.adminGroup}>
                 {admins.map(renderMemberCard)}
               </div>
             </div>
@@ -367,7 +318,7 @@ export const TeamPage: React.FC = () => {
                 <span>Курьеры</span>
                 <span className="count">· {String(couriers.length).padStart(2, '0')}</span>
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <div className={styles.courierGroup}>
                 {couriers.map(renderMemberCard)}
               </div>
             </div>
@@ -381,7 +332,7 @@ export const TeamPage: React.FC = () => {
         onClose={() => { setIsCreateModalOpen(false); resetForm() }}
         title="Новый сотрудник"
       >
-        <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleCreateSubmit} className={pageStyles.formStack}>
           <div className="form-group">
             <label className="form-label">Роль</label>
             <SegmentedControl<TeamRole> value={role} options={roleOptions} onChange={handleRoleChange} />
@@ -406,7 +357,7 @@ export const TeamPage: React.FC = () => {
               value={tgname}
               onChange={(e) => setTgname(e.target.value)}
             />
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+            <span className={pageStyles.fieldHint}>
               {role === 'COURIER'
                 ? 'Курьер подключится автоматически, когда откроет бота.'
                 : 'Необязательно для администраторов.'}
@@ -448,7 +399,7 @@ export const TeamPage: React.FC = () => {
             </>
           )}
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '4px', justifyContent: 'flex-end' }}>
+          <div className={pageStyles.formActions}>
             <Button
               variant="secondary"
               type="button"
@@ -469,7 +420,7 @@ export const TeamPage: React.FC = () => {
         onClose={() => { setIsEditModalOpen(false); resetForm(); setEditingMember(null) }}
         title="Редактировать сотрудника"
       >
-        <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+        <form onSubmit={handleEditSubmit} className={pageStyles.formStack}>
           <div className="form-group">
             <label className="form-label">Роль</label>
             <SegmentedControl<TeamRole> value={role} options={roleOptions} onChange={handleRoleChange} />
@@ -494,7 +445,7 @@ export const TeamPage: React.FC = () => {
               value={tgname}
               onChange={(e) => setTgname(e.target.value)}
             />
-            <span style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '4px', display: 'block' }}>
+            <span className={pageStyles.fieldHint}>
               {role === 'COURIER'
                 ? 'Курьер подключится автоматически, когда откроет бота.'
                 : 'Необязательно для администраторов.'}
@@ -535,7 +486,7 @@ export const TeamPage: React.FC = () => {
             </>
           )}
 
-          <div style={{ display: 'flex', gap: '12px', marginTop: '4px', justifyContent: 'flex-end' }}>
+          <div className={pageStyles.formActions}>
             <Button
               variant="secondary"
               type="button"

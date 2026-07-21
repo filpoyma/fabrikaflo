@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
+import clsx from 'clsx';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../../api/auth';
 import { authActions } from '../../store/reducers/auth';
 import { setAccessToken } from '../../api/authSession.ts';
 import { Button, Input } from '../../shared/ui';
+import styles from './LoginPage.module.css'
 
 export const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -41,36 +43,17 @@ export const LoginPage: React.FC = () => {
 
   return (
     <div
-      style={{
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        width: '100vw',
-        height: '100vh',
-        backgroundColor: 'var(--bg-primary)',
-        boxSizing: 'border-box',
-      }}
+      className={styles.page}
     >
       <div
-        className="glass-card animated-fade-in"
-        style={{
-          width: '420px',
-          padding: '40px',
-          backgroundColor: '#FFFFFF',
-          textAlign: 'center',
-        }}
+        className={clsx('glass-card', 'animated-fade-in', styles.loginCard)}
       >
-        <div style={{ marginBottom: '32px' }}>
-          <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: '2.5rem', marginBottom: '8px' }}>
+        <div className={styles.intro}>
+          <h1 className={styles.brandTitle}>
             fabrika.flo
           </h1>
           <p
-            style={{
-              color: 'var(--text-secondary)',
-              fontSize: '0.9rem',
-              letterSpacing: '0.05em',
-              textTransform: 'uppercase',
-            }}
+            className={styles.brandSubtitle}
           >
             Система управления мастерской
           </p>
@@ -78,7 +61,7 @@ export const LoginPage: React.FC = () => {
 
         <form
           onSubmit={handleSubmit}
-          style={{ display: 'flex', flexDirection: 'column', textAlign: 'left' }}
+          className={styles.loginForm}
         >
           <div className="form-group">
             <label className="form-label">Логин</label>
@@ -90,7 +73,7 @@ export const LoginPage: React.FC = () => {
             />
           </div>
 
-          <div className="form-group" style={{ marginBottom: '24px' }}>
+          <div className={clsx('form-group', styles.passwordField)}>
             <label className="form-label">Пароль</label>
             <Input
               type="password"
@@ -102,15 +85,7 @@ export const LoginPage: React.FC = () => {
 
           {errorMsg && (
             <div
-              style={{
-                color: 'var(--color-error)',
-                backgroundColor: '#FCE8E6',
-                border: '1px solid rgba(200, 92, 92, 0.2)',
-                padding: '12px',
-                borderRadius: '6px',
-                fontSize: '0.85rem',
-                marginBottom: '20px',
-              }}
+              className={styles.errorMessage}
             >
               {errorMsg}
             </div>

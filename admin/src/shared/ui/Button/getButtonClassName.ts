@@ -1,3 +1,4 @@
+import clsx from 'clsx'
 import styles from './Button.module.css'
 import type { ButtonClassNameOptions } from './buttonTypes'
 
@@ -8,7 +9,7 @@ export function getButtonClassName({
   dangerText = false,
   className,
 }: ButtonClassNameOptions = {}) {
-  return [
+  return clsx(
     styles.button,
     styles[variant],
     size === 'sm' && styles.sm,
@@ -16,7 +17,5 @@ export function getButtonClassName({
     fullWidth && styles.fullWidth,
     dangerText && variant === 'secondary' && styles.dangerText,
     className,
-  ]
-    .filter(Boolean)
-    .join(' ')
+  )
 }

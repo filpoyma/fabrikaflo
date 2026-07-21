@@ -44,7 +44,6 @@ export default function Profile() {
   const [savingAddress, setSavingAddress] = useState(false);
   const [isEditingProfile, setIsEditingProfile] = useState(false);
   const [editName, setEditName] = useState('');
-  const [editUsername, setEditUsername] = useState('');
   const [activeRefLevel, setActiveRefLevel] = useState('all');
   const [showRefRules, setShowRefRules] = useState(false);
 
@@ -88,8 +87,7 @@ export default function Profile() {
     Promise.all([
       api.getProfile().then(p => {
         setProfile(p);
-        setEditName(p.full_name || '');
-        setEditUsername(p.username || '');
+        setEditName(p.name || '');
         setAddressText(p.address || '');
         if (p.address_lat && p.address_lng) {
           setMapPosition({ lat: p.address_lat, lng: p.address_lng });
@@ -106,8 +104,8 @@ export default function Profile() {
   const saveProfileData = async () => {
     try {
       haptic.impact('medium');
-      await api.updateProfile({ full_name: editName, username: editUsername });
-      setProfile({ ...profile, full_name: editName, username: editUsername.replace('@', '') });
+      const updatedProfile = await api.updateProfile({ name: editName });
+      setProfile(updatedProfile);
       setIsEditingProfile(false);
     } catch (e) {
       console.error(e);
@@ -137,17 +135,6 @@ export default function Profile() {
       cancelled: '❌ Отменён'
     };
     return mapRu[status] || status;
-  };
-
-  const updateSetting = async (key, value) => {
-    try {
-      haptic.impact('light');
-      const newProfile = { ...profile, [key]: value };
-      setProfile(newProfile);
-      await api.updateProfile({ [key]: value });
-    } catch (e) {
-      console.error(e);
-    }
   };
 
   const handlePositionChange = async (latlng) => {
@@ -326,7 +313,7 @@ export default function Profile() {
               style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
             />
           ) : (
-            profile.full_name?.charAt(0)?.toUpperCase() || '?'
+            profile.name?.charAt(0)?.toUpperCase() || '?'
           )}
           {uploadingAvatar && (
             <div style={{ 
@@ -354,13 +341,6 @@ export default function Profile() {
               onChange={e => setEditName(e.target.value)} 
               style={{ padding: '0.4rem 0.6rem', fontSize: '0.9rem', marginBottom: 0 }} 
             />
-            <input 
-              type="text" 
-              placeholder="Имя пользователя @username"
-              value={editUsername} 
-              onChange={e => setEditUsername(e.target.value)} 
-              style={{ padding: '0.4rem 0.6rem', fontSize: '0.9rem', marginBottom: 0 }} 
-            />
             <div style={{ display: 'flex', gap: '0.4rem', marginTop: '0.2rem' }}>
               <button 
                 className="primary" 
@@ -373,8 +353,7 @@ export default function Profile() {
                 className="secondary" 
                 style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem', flex: 1, marginBottom: 0 }}
                 onClick={() => {
-                  setEditName(profile.full_name || '');
-                  setEditUsername(profile.username || '');
+                  setEditName(profile.name || '');
                   setIsEditingProfile(false);
                 }}
               >
@@ -385,7 +364,7 @@ export default function Profile() {
         ) : (
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <h2 style={{ marginBottom: '0.2rem', fontSize: '1.2rem' }}>{profile.full_name || 'Имя не указано'}</h2>
+              <h2 style={{ marginBottom: '0.2rem', fontSize: '1.2rem' }}>{profile.name || 'Имя не указано'}</h2>
               <button 
                 type="button" 
                 style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', padding: '0.2rem', marginBottom: '0.2rem' }}
@@ -395,7 +374,7 @@ export default function Profile() {
               </button>
             </div>
             <p style={{ fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-muted)' }}>
-              {profile.username ? `@${profile.username}` : 'Логин не указан'}
+              {profile.tgname ? `@${profile.tgname}` : 'Telegram-ник не указан'}
             </p>
             {profile.discount_percent > 0 && (
               <span className="badge" style={{ background: '#ff4d4f', color: '#fff', fontSize: '0.8rem' }}>
@@ -436,26 +415,6 @@ export default function Profile() {
           </button>
         </div>
       )}
-
-      <div className="glass-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
-        <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Валюта</label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            {(profile?.active_payment_methods?.split(',').filter(Boolean) || ['usdt', 'idr', 'uah', 'vnd'])
-              .filter(curr => ['usdt', 'idr', 'uah', 'vnd'].includes(curr))
-              .map(curr => (
-                <button 
-                  key={curr}
-                  className={profile.preferred_currency === curr ? 'primary' : 'secondary'}
-                  onClick={() => updateSetting('preferred_currency', curr)}
-                  style={{ flex: 1, padding: '0.8rem' }}
-                >
-                  {curr === 'uah' ? 'RUB' : curr.toUpperCase()}
-                </button>
-              ))}
-          </div>
-        </div>
-      </div>
 
       <div className="glass-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
         <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>

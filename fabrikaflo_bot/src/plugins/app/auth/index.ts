@@ -85,6 +85,11 @@ export default fp(
                 role: 'CLIENT',
               },
             })
+          } else if (user.tgname !== (tgUsername || null)) {
+            user = await fastify.prisma.user.update({
+              where: { id: user.id },
+              data: { tgname: tgUsername || null },
+            })
           }
           request.user = user
           return

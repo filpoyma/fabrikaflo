@@ -5,7 +5,7 @@ export const getClientMainMenu = (miniAppUrl: string) => {
 
   if (isHttps) {
     return new Keyboard()
-      .webApp('📦 Мои заказы', `${miniAppUrl}/orders`)
+      .text('📦 Мои заказы')
       .text('📞 Контакты')
       .resized()
   }

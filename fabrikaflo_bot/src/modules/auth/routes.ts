@@ -4,6 +4,8 @@ import * as schema from './schema.ts'
 
 export const authRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
   fastify.post('/login', { schema: schema.loginSchema }, handlers.login)
+  fastify.post('/refresh', { schema: schema.refreshSchema }, handlers.refresh)
+  fastify.post('/logout', { schema: schema.logoutSchema }, handlers.logout)
   fastify.get('/me', { schema: schema.getMeSchema, preHandler: [fastify.authenticate] }, handlers.getMe)
 }
 

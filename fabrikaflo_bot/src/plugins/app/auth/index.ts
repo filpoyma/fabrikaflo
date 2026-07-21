@@ -1,9 +1,9 @@
 import fp from 'fastify-plugin'
 import type { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify'
-import jwt from 'jsonwebtoken'
 import crypto from 'node:crypto'
 import type { User } from '../../../generated/prisma/client.ts'
 import { UnauthorizedError, ForbiddenError } from '../../../lib/errors.ts'
+import { verifyAccessToken } from '../../../modules/auth/tokens.ts'
 
 declare module 'fastify' {
   interface FastifyRequest {
@@ -20,7 +20,11 @@ interface JwtPayload {
   role: string
 }
 
-function verifyTelegramInitData(initData: string, botToken: string): any {
+function asString(value: unknown): string {
+  return typeof value === 'string' ? value : ''
+}
+
+function verifyTelegramInitData(initData: string, botToken: string): Record<string, unknown> | null {
   if (!initData) return null
   try {
     const params = new URLSearchParams(initData)
@@ -51,7 +55,7 @@ function verifyTelegramInitData(initData: string, botToken: string): any {
         return JSON.parse(userJson)
       }
     }
-  } catch (err) {
+  } catch {
     // Ignore
   }
   return null
@@ -59,13 +63,16 @@ function verifyTelegramInitData(initData: string, botToken: string): any {
 
 export default fp(
   async (fastify: FastifyInstance) => {
-    fastify.decorate('authenticate', async (request: FastifyRequest, reply: FastifyReply) => {
+    fastify.decorate('authenticate', async (request: FastifyRequest) => {
       // 1. Check X-Init-Data header first (Telegram Mini App)
       const initDataHeader = request.headers['x-init-data'] as string
       if (initDataHeader) {
         const tgUser = verifyTelegramInitData(initDataHeader, fastify.config.TELEGRAM_BOT_TOKEN)
         if (tgUser && tgUser.id) {
           const telegramId = String(tgUser.id)
+          const tgUsername = asString(tgUser.username)
+          const tgFirst = asString(tgUser.first_name)
+          const tgLast = asString(tgUser.last_name)
           let user = await fastify.prisma.user.findUnique({
             where: { telegramId },
           })
@@ -73,8 +80,8 @@ export default fp(
             user = await fastify.prisma.user.create({
               data: {
                 telegramId,
-                tgname: tgUser.username || '',
-                name: [tgUser.first_name, tgUser.last_name].filter(Boolean).join(' ') || 'Client',
+                tgname: tgUsername,
+                name: [tgFirst, tgLast].filter(Boolean).join(' ') || 'Client',
                 role: 'CLIENT',
               },
             })
@@ -92,7 +99,7 @@ export default fp(
 
       const token = authHeader.substring(7)
       try {
-        const decoded = jwt.verify(token, fastify.config.JWT_SECRET) as JwtPayload
+        const decoded = verifyAccessToken(token, fastify.config) as JwtPayload
         const user = await fastify.prisma.user.findUnique({
           where: { id: decoded.userId },
         })
@@ -102,12 +109,12 @@ export default fp(
         }
 
         request.user = user
-      } catch (err) {
+      } catch {
         throw new UnauthorizedError()
       }
     })
 
-    fastify.decorate('requireAdmin', async (request: FastifyRequest, _reply: FastifyReply) => {
+    fastify.decorate('requireAdmin', async (request: FastifyRequest) => {
       if (!request.user) {
         throw new UnauthorizedError()
       }

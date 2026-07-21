@@ -1,7 +1,6 @@
 import React from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { logout, type RootState } from '../store';
 
 import HomeIcon from '../assets/icons/home.svg';
 import InboxIcon from '../assets/icons/inbox.svg';
@@ -10,15 +9,24 @@ import UsersIcon from '../assets/icons/users.svg';
 import PhotoIcon from '../assets/icons/photo.svg';
 import UserGroupIcon from '../assets/icons/user-group.svg';
 import LogoutIcon from '../assets/icons/logout.svg';
+import { authActions, selectAuthUser } from '../store/reducers/auth';
+import { useLogoutMutation } from '../api/auth';
+import { setAccessToken } from '../api/authSession.ts';
 
 export const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = useSelector((state: RootState) => state.auth.user);
+  const user = useSelector(selectAuthUser);
+  const logoutMutation = useLogoutMutation();
 
   const handleLogout = () => {
-    dispatch(logout());
-    navigate('/login');
+    logoutMutation.mutate(undefined, {
+      onSettled: () => {
+        setAccessToken(null);
+        dispatch(authActions.logout());
+        navigate('/login');
+      },
+    });
   };
 
   const activeStyle = ({ isActive }: { isActive: boolean }) => ({

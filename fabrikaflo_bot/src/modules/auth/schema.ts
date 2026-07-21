@@ -11,6 +11,11 @@ export const UserSchema = Type.Object({
   updatedAt: Type.Any(),
 })
 
+const authResponseSchema = Type.Object({
+  accessToken: Type.String(),
+  user: UserSchema,
+})
+
 export const loginSchema = {
   tags: ['auth'],
   body: Type.Object({
@@ -18,9 +23,22 @@ export const loginSchema = {
     password: Type.String(),
   }),
   response: {
+    200: authResponseSchema,
+  },
+}
+
+export const refreshSchema = {
+  tags: ['auth'],
+  response: {
+    200: authResponseSchema,
+  },
+}
+
+export const logoutSchema = {
+  tags: ['auth'],
+  response: {
     200: Type.Object({
-      token: Type.String(),
-      user: UserSchema,
+      ok: Type.Boolean(),
     }),
   },
 }

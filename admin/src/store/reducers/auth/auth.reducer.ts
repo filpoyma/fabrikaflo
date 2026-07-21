@@ -1,33 +1,38 @@
-import { createSlice, type PayloadAction } from '@reduxjs/toolkit';
-import type { IUser } from '../../../types';
+import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
+import type { IUser } from '../../../types'
+
+export type AuthStatus = 'unknown' | 'loading' | 'authenticated' | 'unauthenticated'
 
 interface AuthState {
-  token: string | null;
-  user: IUser | null;
+  user: IUser | null
+  status: AuthStatus
 }
 
 const initialState: AuthState = {
-  token: localStorage.getItem('token'),
-  user: localStorage.getItem('user') ? JSON.parse(localStorage.getItem('user')!) : null,
-};
+  user: null,
+  status: 'unknown',
+}
 
 const { reducer: authReducer, actions: authActions } = createSlice({
   name: 'auth',
   initialState,
   reducers: {
-    setCredentials(state, action: PayloadAction<{ token: string; user: IUser }>) {
-      state.token = action.payload.token;
-      state.user = action.payload.user;
-      localStorage.setItem('token', action.payload.token);
-      localStorage.setItem('user', JSON.stringify(action.payload.user));
+    setLoading(state) {
+      state.status = 'loading'
+    },
+    setSession(state, action: PayloadAction<IUser>) {
+      state.user = action.payload
+      state.status = 'authenticated'
+    },
+    setUnauthenticated(state) {
+      state.user = null
+      state.status = 'unauthenticated'
     },
     logout(state) {
-      state.token = null;
-      state.user = null;
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+      state.user = null
+      state.status = 'unauthenticated'
     },
   },
-});
+})
 
-export { authReducer, authActions };
+export { authReducer, authActions }

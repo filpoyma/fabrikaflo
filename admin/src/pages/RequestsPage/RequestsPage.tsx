@@ -4,7 +4,8 @@ import {
   useUpdateRequestStatusMutation,
   useConvertRequestMutation,
 } from '../../api/requests'
-import { Button, Modal } from '../../shared/ui'
+import { isInitialQueryLoad } from '../../api/queryUtils'
+import { Button, Modal, InlineQueryLoader, Input, Textarea } from '../../shared/ui'
 import type { IRequest } from '../../types'
 
 import PlusIcon from '../../assets/icons/plus.svg'
@@ -13,7 +14,8 @@ import XMarkIcon from '../../assets/icons/x-mark.svg'
 import { PeonyIcon, VanIcon, PickupIcon } from '../../components/BotanicalIcons'
 
 export const RequestsPage: React.FC = () => {
-  const { data: requests = [], isLoading } = useRequestsQuery({ refetchInterval: 20_000 })
+  const { data, isPending } = useRequestsQuery({ refetchInterval: 20_000 })
+  const requests = data ?? []
   const updateStatusMutation = useUpdateRequestStatusMutation()
   const convertMutation = useConvertRequestMutation()
 
@@ -100,35 +102,35 @@ export const RequestsPage: React.FC = () => {
         <p>Список обращений клиентов из Telegram-бота. Превращайте их в заказы.</p>
       </header>
 
-      {isLoading ? (
-        <div className="empty-state">
-          <PeonyIcon size={48} color="var(--color-gold-deep)" />
-          <div className="headline">Загрузка</div>
-          <p>Получаем список заявок…</p>
-        </div>
-      ) : (
-        <div className="glass-card" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
-          {requests.length === 0 ? (
-            <div className="empty-state">
-              <PeonyIcon size={64} color="var(--color-gold-deep)" />
-              <div className="headline">Заявок пока нет</div>
-              <p>Заявки появятся, когда клиенты нажмут кнопку «Заказать букет» в Telegram-боте.</p>
-            </div>
-          ) : (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="editorial-table">
-                <thead>
+      <div className="glass-card" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
+        {!isInitialQueryLoad(isPending, data) && requests.length === 0 ? (
+          <div className="empty-state">
+            <PeonyIcon size={64} color="var(--color-gold-deep)" />
+            <div className="headline">Заявок пока нет</div>
+            <p>Заявки появятся, когда клиенты нажмут кнопку «Заказать букет» в Telegram-боте.</p>
+          </div>
+        ) : (
+          <div style={{ overflowX: 'auto' }}>
+            <table className="editorial-table">
+              <thead>
+                <tr>
+                  <th>Клиент</th>
+                  <th>Повод / Пожелания</th>
+                  <th>Бюджет</th>
+                  <th>Доставка / Дата</th>
+                  <th>Статус</th>
+                  <th className="right">Действия</th>
+                </tr>
+              </thead>
+              <tbody>
+                {isInitialQueryLoad(isPending, data) ? (
                   <tr>
-                    <th>Клиент</th>
-                    <th>Повод / Пожелания</th>
-                    <th>Бюджет</th>
-                    <th>Доставка / Дата</th>
-                    <th>Статус</th>
-                    <th className="right">Действия</th>
+                    <td colSpan={6}>
+                      <InlineQueryLoader message="Получаем список заявок…" />
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {requests.map((req) => (
+                ) : (
+                  requests.map((req) => (
                     <tr key={req.id} data-testid={`request-${req.id}`}>
                       <td>
                         <div className="cell-primary">{req.client?.name || 'Клиент'}</div>
@@ -210,13 +212,13 @@ export const RequestsPage: React.FC = () => {
                         </div>
                       </td>
                     </tr>
-                  ))}
-                </tbody>
+                  ))
+                )}
+              </tbody>
               </table>
             </div>
           )}
-        </div>
-      )}
+      </div>
 
       {/* Convert Request Modal */}
       {selectedRequest && (
@@ -232,9 +234,8 @@ export const RequestsPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Получатель (Имя)</label>
-              <input
+              <Input
                 type="text"
-                className="form-input"
                 value={recipientName}
                 onChange={(e) => setRecipientName(e.target.value)}
                 required
@@ -243,9 +244,8 @@ export const RequestsPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Телефон получателя</label>
-              <input
+              <Input
                 type="text"
-                className="form-input"
                 placeholder="+7..."
                 value={recipientPhone}
                 onChange={(e) => setRecipientPhone(e.target.value)}
@@ -256,9 +256,8 @@ export const RequestsPage: React.FC = () => {
             {selectedRequest.deliveryType === 'DELIVERY' && (
               <div className="form-group">
                 <label className="form-label">Адрес доставки</label>
-                <textarea
-                  className="form-input"
-                  style={{ minHeight: '60px', resize: 'vertical' }}
+                <Textarea
+                  style={{ minHeight: '60px' }}
                   value={deliveryAddress}
                   onChange={(e) => setDeliveryAddress(e.target.value)}
                   required
@@ -268,9 +267,8 @@ export const RequestsPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Дата и время доставки / получения</label>
-              <input
+              <Input
                 type="datetime-local"
-                className="form-input"
                 value={deliveryTime}
                 onChange={(e) => setDeliveryTime(e.target.value)}
               />
@@ -278,9 +276,8 @@ export const RequestsPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Пожелания</label>
-              <textarea
-                className="form-input"
-                style={{ minHeight: '60px', resize: 'vertical' }}
+              <Textarea
+                style={{ minHeight: '60px' }}
                 value={wishes}
                 onChange={(e) => setWishes(e.target.value)}
                 required
@@ -289,9 +286,8 @@ export const RequestsPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Текст открытки (если нужна)</label>
-              <input
+              <Input
                 type="text"
-                className="form-input"
                 placeholder="С днем рождения!..."
                 value={postcardText}
                 onChange={(e) => setPostcardText(e.target.value)}
@@ -300,9 +296,8 @@ export const RequestsPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Комментарии к доставке / курьеру</label>
-              <input
+              <Input
                 type="text"
-                className="form-input"
                 placeholder="Позвонить получателю за 15 мин..."
                 value={comment}
                 onChange={(e) => setComment(e.target.value)}
@@ -311,9 +306,8 @@ export const RequestsPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Бюджет заказа (руб.)</label>
-              <input
+              <Input
                 type="number"
-                className="form-input"
                 value={budget}
                 onChange={(e) => setBudget(Number(e.target.value))}
                 required

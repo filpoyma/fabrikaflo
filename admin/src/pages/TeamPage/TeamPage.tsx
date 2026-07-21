@@ -8,7 +8,8 @@ import {
   type ITeamMember,
   type ICreateTeamMember,
 } from '../../api/team'
-import { AvatarCircle, IconButton, Button, SegmentedControl, type SegmentedOption, Modal } from '../../shared/ui'
+import { isInitialQueryLoad } from '../../api/queryUtils'
+import { AvatarCircle, IconButton, Button, SegmentedControl, type SegmentedOption, Modal, InlineQueryLoader, Input } from '../../shared/ui'
 
 import PlusIcon from '../../assets/icons/plus.svg'
 import { PeonyIcon } from '../../components/BotanicalIcons'
@@ -18,7 +19,9 @@ const roleLabels: Record<string, { label: string; color: string; bg: string }> =
   COURIER: { label: 'Курьер', color: '#282321', bg: '#EFE6D9' },
 }
 
-const roleOptions: SegmentedOption<'ADMIN' | 'COURIER'>[] = [
+type TeamRole = 'ADMIN' | 'COURIER'
+
+const roleOptions: SegmentedOption<TeamRole>[] = [
   { value: 'COURIER', label: roleLabels.COURIER.label },
   { value: 'ADMIN', label: roleLabels.ADMIN.label },
 ]
@@ -28,7 +31,8 @@ const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error)
 
 export const TeamPage: React.FC = () => {
-  const { data: members = [], isLoading } = useTeamQuery()
+  const { data, isPending } = useTeamQuery()
+  const members = data ?? []
 
   const createMutation = useCreateTeamMemberMutation()
   const updateMutation = useUpdateTeamMemberMutation()
@@ -45,8 +49,10 @@ export const TeamPage: React.FC = () => {
   const [tgname, setTgname] = useState('')
   const [login, setLogin] = useState('')
   const [phone, setPhone] = useState('')
-  const [role, setRole] = useState<'ADMIN' | 'COURIER'>('COURIER')
+  const [role, setRole] = useState<TeamRole>('COURIER')
   const [password, setPassword] = useState('')
+
+  const handleRoleChange = (value: TeamRole) => setRole(value)
 
   const resetForm = () => {
     setName('')
@@ -236,11 +242,11 @@ export const TeamPage: React.FC = () => {
             </div>
           </div>
 
-          <input
+          <Input
             id={fileInputId}
             type="file"
             accept="image/*"
-            style={{ display: 'none' }}
+            hidden
             onChange={handleAvatarFileChange}
           />
 
@@ -329,12 +335,8 @@ export const TeamPage: React.FC = () => {
         </Button>
       </header>
 
-      {isLoading ? (
-        <div className="empty-state">
-          <PeonyIcon size={48} color="var(--color-gold-deep)" />
-          <div className="headline">Загрузка</div>
-          <p>Загружаем список сотрудников…</p>
-        </div>
+      {isInitialQueryLoad(isPending, data) ? (
+        <InlineQueryLoader message="Загружаем список сотрудников…" />
       ) : members.length === 0 ? (
         <div className="glass-card" style={{ backgroundColor: '#FFFFFF' }}>
           <div className="empty-state">
@@ -382,14 +384,13 @@ export const TeamPage: React.FC = () => {
         <form onSubmit={handleCreateSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="form-group">
             <label className="form-label">Роль</label>
-            <SegmentedControl value={role} options={roleOptions} onChange={setRole} />
+            <SegmentedControl<TeamRole> value={role} options={roleOptions} onChange={handleRoleChange} />
           </div>
 
           <div className="form-group">
             <label className="form-label">Имя *</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               placeholder="Иван Петров"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -399,9 +400,8 @@ export const TeamPage: React.FC = () => {
 
           <div className="form-group">
             <label className="form-label">Telegram username</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               placeholder="@tgname"
               value={tgname}
               onChange={(e) => setTgname(e.target.value)}
@@ -415,9 +415,8 @@ export const TeamPage: React.FC = () => {
 
           <div className="form-group">
             <label className="form-label">Телефон</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               placeholder="+7 999 000 00 00"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -428,9 +427,8 @@ export const TeamPage: React.FC = () => {
             <>
               <div className="form-group">
                 <label className="form-label">Логин *</label>
-                <input
+                <Input
                   type="text"
-                  className="form-input"
                   placeholder="Например: elena"
                   value={login}
                   onChange={(e) => setLogin(e.target.value)}
@@ -439,9 +437,8 @@ export const TeamPage: React.FC = () => {
               </div>
               <div className="form-group">
                 <label className="form-label">Пароль для входа в CRM *</label>
-                <input
+                <Input
                   type="password"
-                  className="form-input"
                   placeholder="Минимум 8 символов"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -475,14 +472,13 @@ export const TeamPage: React.FC = () => {
         <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="form-group">
             <label className="form-label">Роль</label>
-            <SegmentedControl value={role} options={roleOptions} onChange={setRole} />
+            <SegmentedControl<TeamRole> value={role} options={roleOptions} onChange={handleRoleChange} />
           </div>
 
           <div className="form-group">
             <label className="form-label">Имя *</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               placeholder="Иван Петров"
               value={name}
               onChange={(e) => setName(e.target.value)}
@@ -492,9 +488,8 @@ export const TeamPage: React.FC = () => {
 
           <div className="form-group">
             <label className="form-label">Telegram username</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               placeholder="@tgname"
               value={tgname}
               onChange={(e) => setTgname(e.target.value)}
@@ -508,9 +503,8 @@ export const TeamPage: React.FC = () => {
 
           <div className="form-group">
             <label className="form-label">Телефон</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               placeholder="+7 999 000 00 00"
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
@@ -521,9 +515,8 @@ export const TeamPage: React.FC = () => {
             <>
               <div className="form-group">
                 <label className="form-label">Логин *</label>
-                <input
+                <Input
                   type="text"
-                  className="form-input"
                   placeholder="Например: elena"
                   value={login}
                   onChange={(e) => setLogin(e.target.value)}
@@ -532,9 +525,8 @@ export const TeamPage: React.FC = () => {
               </div>
               <div className="form-group">
                 <label className="form-label">Новый пароль (оставьте пустым, чтобы не менять)</label>
-                <input
+                <Input
                   type="password"
-                  className="form-input"
                   placeholder="Минимум 8 символов"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}

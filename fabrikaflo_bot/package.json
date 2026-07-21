@@ -21,6 +21,7 @@
   },
   "dependencies": {
     "@fastify/autoload": "^6.4.0",
+    "@fastify/cookie": "^11.1.2",
     "@fastify/cors": "^11.3.0",
     "@fastify/error": "^4.2.0",
     "@fastify/helmet": "^13.1.0",
@@ -54,6 +55,6 @@
     "typescript-eslint": "^8.63.0"
   },
   "prisma": {
-    "seed": "tsx prisma/seed.ts"
+    "seed": "node prisma/seed.ts"
   }
 }

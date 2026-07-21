@@ -3,7 +3,8 @@ import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useLoginMutation } from '../../api/auth';
 import { authActions } from '../../store/reducers/auth';
-import { Button } from '../../shared/ui';
+import { setAccessToken } from '../../api/authSession.ts';
+import { Button, Input } from '../../shared/ui';
 
 export const LoginPage: React.FC = () => {
   const dispatch = useDispatch();
@@ -25,7 +26,8 @@ export const LoginPage: React.FC = () => {
       { login, password },
       {
         onSuccess: (data) => {
-          dispatch(authActions.setCredentials(data));
+          setAccessToken(data.accessToken);
+          dispatch(authActions.setSession(data.user));
           navigate('/');
         },
         onError: (err) => {
@@ -80,9 +82,8 @@ export const LoginPage: React.FC = () => {
         >
           <div className="form-group">
             <label className="form-label">Логин</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               value={login}
               onChange={(e) => setLogin(e.target.value)}
               disabled={loginMutation.isPending}
@@ -91,9 +92,8 @@ export const LoginPage: React.FC = () => {
 
           <div className="form-group" style={{ marginBottom: '24px' }}>
             <label className="form-label">Пароль</label>
-            <input
+            <Input
               type="password"
-              className="form-input"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               disabled={loginMutation.isPending}

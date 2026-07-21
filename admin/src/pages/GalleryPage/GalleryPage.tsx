@@ -5,7 +5,8 @@ import {
   useUpdateGalleryItemMutation,
   useDeleteGalleryItemMutation,
 } from '../../api/gallery'
-import { IconButton, Button, Modal } from '../../shared/ui'
+import { isInitialQueryLoad } from '../../api/queryUtils'
+import { IconButton, Button, Modal, InlineQueryLoader, Input, Textarea } from '../../shared/ui'
 import type { IPortfolioItem } from '../../types'
 
 import PlusIcon from '../../assets/icons/plus.svg'
@@ -15,7 +16,8 @@ const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error)
 
 export const GalleryPage: React.FC = () => {
-  const { data: items = [], isLoading } = useGalleryQuery()
+  const { data, isPending } = useGalleryQuery()
+  const items = data ?? []
 
   const uploadMutation = useUploadGalleryItemMutation()
   const deleteMutation = useDeleteGalleryItemMutation()
@@ -114,16 +116,10 @@ export const GalleryPage: React.FC = () => {
         </Button>
       </header>
 
-      {isLoading ? (
-        <div className="empty-state">
-          <PeonyIcon size={48} color="var(--color-gold-deep)" />
-          <div className="headline">Загрузка</div>
-          <p>Собираем галерею работ…</p>
-        </div>
-      ) : (
-        /* Portfolio Grid */
-        <div>
-          {items.length === 0 ? (
+      <div>
+        {isInitialQueryLoad(isPending, data) ? (
+          <InlineQueryLoader message="Собираем галерею работ…" />
+        ) : items.length === 0 ? (
             <div className="glass-card" style={{ backgroundColor: '#FFFFFF' }}>
               <div className="empty-state">
                 <PeonyIcon size={64} color="var(--color-gold-deep)" />
@@ -218,8 +214,7 @@ export const GalleryPage: React.FC = () => {
               ))}
             </div>
           )}
-        </div>
-      )}
+      </div>
 
       {/* Upload Modal */}
       <Modal
@@ -230,13 +225,13 @@ export const GalleryPage: React.FC = () => {
         <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
           <div className="form-group">
             <label className="form-label">Фотография букета</label>
-            <input
+            <Input
               id="portfolio-image-upload"
               type="file"
               accept="image/*"
               onChange={handleFileChange}
               required={!file}
-              style={{ display: 'none' }}
+              hidden
             />
             <label
               htmlFor="portfolio-image-upload"
@@ -297,9 +292,8 @@ export const GalleryPage: React.FC = () => {
 
           <div className="form-group">
             <label className="form-label">Название композиции</label>
-            <input
+            <Input
               type="text"
-              className="form-input"
               placeholder="Пастельный микс с гортензией..."
               value={title}
               onChange={(e) => setTitle(e.target.value)}
@@ -308,9 +302,7 @@ export const GalleryPage: React.FC = () => {
 
           <div className="form-group">
             <label className="form-label">Описание / Состав</label>
-            <textarea
-              className="form-input"
-              style={{ minHeight: '80px', resize: 'vertical' }}
+            <Textarea
               placeholder="Сезонные пионы, нежные ранункулюсы и ароматный эвкалипт..."
               value={description}
               onChange={(e) => setDescription(e.target.value)}
@@ -338,12 +330,12 @@ export const GalleryPage: React.FC = () => {
           <form onSubmit={handleEditSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div className="form-group">
               <label className="form-label">Фотография букета (необязательно)</label>
-              <input
+              <Input
                 id="portfolio-image-edit"
                 type="file"
                 accept="image/*"
                 onChange={handleFileChange}
-                style={{ display: 'none' }}
+                hidden
               />
               <label
                 htmlFor="portfolio-image-edit"
@@ -404,9 +396,8 @@ export const GalleryPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Название композиции</label>
-              <input
+              <Input
                 type="text"
-                className="form-input"
                 placeholder="Пастельный микс с гортензией..."
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
@@ -415,9 +406,7 @@ export const GalleryPage: React.FC = () => {
 
             <div className="form-group">
               <label className="form-label">Описание / Состав</label>
-              <textarea
-                className="form-input"
-                style={{ minHeight: '80px', resize: 'vertical' }}
+              <Textarea
                 placeholder="Сезонные пионы, нежные ранункулюсы..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}

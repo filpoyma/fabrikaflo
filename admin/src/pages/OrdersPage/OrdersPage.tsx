@@ -9,7 +9,7 @@ import {
 } from '../../api/orders';
 import { useCouriersQuery } from '../../api/clients';
 import type { IOrder } from '../../types';
-import { Button } from '../../shared/ui';
+import { Button, getButtonClassName, Input, Select } from '../../shared/ui';
 
 import InboxIcon from '../../assets/icons/inbox.svg';
 import ShoppingBagIcon from '../../assets/icons/shopping-bag.svg';
@@ -19,13 +19,14 @@ import XMarkIcon from '../../assets/icons/x-mark.svg';
 import PlusIcon from '../../assets/icons/plus.svg';
 import ShoppingIcon from '../../assets/icons/shopping-bag.svg';
 import DocumentIcon from '../../assets/icons/document.svg';
-import { PeonyIcon, PinIcon, DeliveryIcon } from '../../components/BotanicalIcons';
+import { PinIcon, DeliveryIcon } from '../../components/BotanicalIcons';
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
 
 export const OrdersPage: React.FC = () => {
-  const { data: orders = [], isLoading: ordLoading } = useOrdersQuery({ refetchInterval: 20_000 });
+  const { data } = useOrdersQuery({ refetchInterval: 20_000 });
+  const orders = data ?? [];
   const { data: couriers = [] } = useCouriersQuery();
 
   const updateStatusMutation = useUpdateOrderStatusMutation();
@@ -398,28 +399,21 @@ export const OrdersPage: React.FC = () => {
               <label className="form-label" style={{ fontSize: '0.75rem' }}>
                 Загрузить фото готового букета
               </label>
-              <input
+              <Input
                 id={`order-photo-upload-${order.id}`}
                 type="file"
                 accept="image/*"
                 onChange={(e) => handlePhotoSelect(order.id, e)}
-                style={{ display: 'none' }}
+                hidden
                 disabled={isUploading}
               />
               <label
                 htmlFor={`order-photo-upload-${order.id}`}
-                className="btn btn-secondary"
+                className={getButtonClassName({ variant: 'secondary', size: 'sm' })}
                 style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  gap: '8px',
                   cursor: 'pointer',
-                  padding: '8px 12px',
-                  fontSize: '0.85rem',
                   border: '1px dashed var(--color-sage)',
                   backgroundColor: '#FAF9F6',
-                  transition: 'all 0.2s',
                 }}
               >
                 <PlusIcon style={{ width: '16px', height: '16px', color: 'var(--color-sage)' }} />
@@ -470,11 +464,10 @@ export const OrdersPage: React.FC = () => {
             order.status === 'ASSEMBLED' ||
             order.status === 'WAITING_FOR_APPROVAL') && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <input
+              <Input
                 type="text"
-                className="form-input"
+                fieldSize="sm"
                 placeholder="Ссылка на оплату..."
-                style={{ padding: '6px 10px', fontSize: '0.8rem' }}
                 value={paymentLinks[order.id] || ''}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -532,9 +525,8 @@ export const OrdersPage: React.FC = () => {
           {/* PAID state (Courier Selection and dispatch) */}
           {order.status === 'PAID' && (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <select
-                className="form-input"
-                style={{ padding: '6px 10px', fontSize: '0.8rem' }}
+              <Select
+                fieldSize="sm"
                 value={selectedCouriers[order.id] || ''}
                 onChange={(e) => {
                   const val = e.target.value;
@@ -547,7 +539,7 @@ export const OrdersPage: React.FC = () => {
                     {c.name} · @{c.tgname || 'нет'}
                   </option>
                 ))}
-              </select>
+              </Select>
               <Button
                 fullWidth
                 size="sm"
@@ -630,15 +622,7 @@ export const OrdersPage: React.FC = () => {
         <p>Сборка, согласование по фото, отправка оплаты и курьерская доставка — единой canvas.</p>
       </header>
 
-      {ordLoading ? (
-        <div className="empty-state">
-          <PeonyIcon size={48} color="var(--color-gold-deep)" />
-          <div className="headline">Загрузка</div>
-          <p>Собираем доску заказов…</p>
-        </div>
-      ) : (
-        /* Kanban Board Grid */
-        <div
+      <div
           style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
@@ -780,8 +764,7 @@ export const OrdersPage: React.FC = () => {
               {colCompleted.map(renderOrderCard)}
             </div>
           </div>
-        </div>
-      )}
+      </div>
     </div>
   );
 };

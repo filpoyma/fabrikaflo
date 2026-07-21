@@ -6,3 +6,8 @@ export const useLoginMutation = () =>
     mutationFn: ({ login, password }: { login: string; password: string }) =>
       authApi.login(login, password),
   })
+
+export const useLogoutMutation = () =>
+  useMutation({
+    mutationFn: () => authApi.logout(),
+  })

@@ -1,7 +1,7 @@
 import React from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import { useSelector } from 'react-redux'
-import { selectIsAuthenticated } from './store/reducers/auth'
+import { selectAuthStatus, selectIsAuthenticated } from './store/reducers/auth'
 
 import { Sidebar } from './components/Sidebar.tsx'
 import { LoginPage } from './pages/LoginPage/LoginPage.tsx'
@@ -12,8 +12,30 @@ import { ClientsPage } from './pages/ClientsPage/ClientsPage.tsx'
 import { GalleryPage } from './pages/GalleryPage/GalleryPage.tsx'
 import { TeamPage } from './pages/TeamPage/TeamPage.tsx'
 
+const AuthLoadingScreen: React.FC = () => (
+  <div
+    style={{
+      minHeight: '100vh',
+      display: 'grid',
+      placeItems: 'center',
+      color: 'var(--text-secondary)',
+      fontFamily: 'var(--font-sans)',
+      letterSpacing: '0.12em',
+      textTransform: 'uppercase',
+      fontSize: '0.75rem',
+    }}
+  >
+    Проверка сессии...
+  </div>
+)
+
 export const App: React.FC = () => {
+  const authStatus = useSelector(selectAuthStatus)
   const isAuthenticated = useSelector(selectIsAuthenticated)
+
+  if (authStatus === 'unknown' || authStatus === 'loading') {
+    return <AuthLoadingScreen />
+  }
 
   if (!isAuthenticated) {
     return (

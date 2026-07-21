@@ -18,7 +18,7 @@ Unified across both frontends of the project:
 | App | Path | Vite port | Purpose |
 | --- | --- | --- | --- |
 | `webapp` | `/app/webapp/` | 5173 | Telegram Mini App (mobile-first) |
-| `fabrikaflo` | `/app/fabrikaflo/` | 5174 | Admin panel (desktop-first) |
+| `admin` | `/app/admin/` | 5173 | Admin panel (desktop-first) |
 | `fabrikaflo_bot` | `/app/fabrikaflo_bot/` | 3000 | Fastify + Prisma backend |
 
 Both frontends share the same tokens/fonts/spacing/aesthetics so the whole product feels

@@ -10,7 +10,7 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <StoreProvider>
       <QueryProvider>
-        <BrowserRouter basename="/fabrikaflo">
+        <BrowserRouter basename="/admin">
           <App />
         </BrowserRouter>
       </QueryProvider>

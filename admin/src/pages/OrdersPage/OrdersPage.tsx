@@ -104,29 +104,6 @@ export const OrdersPage: React.FC = () => {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'CREATED':
-      case 'ASSEMBLING':
-        return 'var(--color-info)';
-      case 'ASSEMBLED':
-      case 'APPROVED':
-        return 'var(--color-sage)';
-      case 'WAITING_FOR_APPROVAL':
-      case 'WAITING_FOR_PAYMENT':
-        return 'var(--color-warning)';
-      case 'PAID':
-      case 'DELIVERING':
-        return 'var(--color-gold)';
-      case 'DELIVERED':
-        return 'var(--color-success)';
-      case 'CANCELLED':
-        return 'var(--color-error)';
-      default:
-        return 'var(--text-primary)';
-    }
-  };
-
   const getStatusPillClass = (status: string) => {
     switch (status) {
       case 'CREATED':
@@ -157,27 +134,37 @@ export const OrdersPage: React.FC = () => {
     const currentPhoto = hasPhotos ? order.photos![order.photos!.length - 1].photoUrl : null;
 
     return (
-      <div
-        key={order.id}
-        className="card-editorial"
-        data-testid={`order-card-${order.id}`}
-      >
+      <div key={order.id} className="card-editorial" data-testid={`order-card-${order.id}`}>
         {/* Card Header */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '10px' }}>
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'space-between',
+              alignItems: 'flex-start',
+              gap: '10px',
+            }}
+          >
             <div style={{ flex: 1, minWidth: 0 }}>
               <span className="card-eyebrow">№ {order.id.substring(0, 8)}</span>
               <div className="card-title" style={{ marginTop: '4px' }}>
                 {order.client?.name || 'Клиент'}
               </div>
             </div>
-            <span className={getStatusPillClass(order.status)}>
-              {getStatusLabel(order.status)}
-            </span>
+            <span className={getStatusPillClass(order.status)}>{getStatusLabel(order.status)}</span>
           </div>
 
           {(order.client?.phone || order.client?.tgname) && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '10px', flexWrap: 'wrap', fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '10px',
+                flexWrap: 'wrap',
+                fontSize: '0.8rem',
+                color: 'var(--text-secondary)',
+              }}
+            >
               {order.client?.phone && <span>{order.client.phone}</span>}
               {order.client?.tgname && (
                 <a
@@ -205,18 +192,40 @@ export const OrdersPage: React.FC = () => {
             <img src={currentPhoto} alt="Готовый букет" />
           ) : order.request?.examplePhotoUrl ? (
             <>
-              <img src={order.request.examplePhotoUrl} alt="Пример клиента" style={{ opacity: 0.85 }} />
+              <img
+                src={order.request.examplePhotoUrl}
+                alt="Пример клиента"
+                style={{ opacity: 0.85 }}
+              />
               <span className="thumb-badge">Пример клиента</span>
             </>
           ) : (
-            <div style={{ display: 'grid', placeItems: 'center', width: '100%', height: '100%', color: 'var(--text-secondary)', fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontSize: '0.9rem' }}>
+            <div
+              style={{
+                display: 'grid',
+                placeItems: 'center',
+                width: '100%',
+                height: '100%',
+                color: 'var(--text-secondary)',
+                fontFamily: 'var(--font-serif)',
+                fontStyle: 'italic',
+                fontSize: '0.9rem',
+              }}
+            >
               {isUploading ? 'Загрузка…' : 'фото ещё нет'}
             </div>
           )}
         </div>
 
         {/* Details */}
-        <div style={{ borderTop: '1px solid var(--border-light)', paddingTop: '10px', display: 'flex', flexDirection: 'column' }}>
+        <div
+          style={{
+            borderTop: '1px solid var(--border-light)',
+            paddingTop: '10px',
+            display: 'flex',
+            flexDirection: 'column',
+          }}
+        >
           <div className="card-detail">
             <span className="k">Бюджет</span>
             <span className="v number">{order.budget} ₽</span>
@@ -234,13 +243,24 @@ export const OrdersPage: React.FC = () => {
             </div>
           )}
           {order.request?.examplePhotoUrl && (
-            <div className="card-detail" style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}>
-              <span className="k" style={{ flexShrink: 0 }}>Референс</span>
+            <div
+              className="card-detail"
+              style={{ flexDirection: 'row', alignItems: 'center', gap: '10px' }}
+            >
+              <span className="k" style={{ flexShrink: 0 }}>
+                Референс
+              </span>
               <a
                 href={order.request.examplePhotoUrl}
                 target="_blank"
                 rel="noreferrer"
-                style={{ display: 'inline-flex', borderRadius: '3px', overflow: 'hidden', border: '1px solid var(--border-light)', lineHeight: 0 }}
+                style={{
+                  display: 'inline-flex',
+                  borderRadius: '3px',
+                  overflow: 'hidden',
+                  border: '1px solid var(--border-light)',
+                  lineHeight: 0,
+                }}
               >
                 <img
                   src={order.request.examplePhotoUrl}
@@ -253,12 +273,23 @@ export const OrdersPage: React.FC = () => {
 
           <div className="card-detail">
             <span className="k">Куда</span>
-            <span className="v" style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}>
+            <span
+              className="v"
+              style={{ display: 'inline-flex', alignItems: 'center', gap: '6px' }}
+            >
               <PinIcon size={12} color="var(--color-gold-deep)" />
               {order.deliveryAddress ? order.deliveryAddress : 'Самовывоз'}
             </span>
             {order.deliveryTime && (
-              <span className="v" style={{ fontSize: '0.78rem', color: 'var(--text-secondary)', marginTop: '2px', letterSpacing: '0.04em' }}>
+              <span
+                className="v"
+                style={{
+                  fontSize: '0.78rem',
+                  color: 'var(--text-secondary)',
+                  marginTop: '2px',
+                  letterSpacing: '0.04em',
+                }}
+              >
                 {new Date(order.deliveryTime).toLocaleString('ru-RU')}
               </span>
             )}
@@ -289,7 +320,18 @@ export const OrdersPage: React.FC = () => {
                 fontSize: '0.85rem',
               }}
             >
-              <strong style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Комментарий</strong>
+              <strong
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.6rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  color: 'var(--text-secondary)',
+                }}
+              >
+                Комментарий
+              </strong>
               <div
                 style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}
               >
@@ -308,7 +350,18 @@ export const OrdersPage: React.FC = () => {
                 fontSize: '0.85rem',
               }}
             >
-              <strong style={{ fontFamily: 'var(--font-sans)', fontSize: '0.6rem', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--color-error)' }}>Замечания клиента</strong>
+              <strong
+                style={{
+                  fontFamily: 'var(--font-sans)',
+                  fontSize: '0.6rem',
+                  fontWeight: 600,
+                  letterSpacing: '0.22em',
+                  textTransform: 'uppercase',
+                  color: 'var(--color-error)',
+                }}
+              >
+                Замечания клиента
+              </strong>
               <div
                 style={{ whiteSpace: 'pre-line', marginTop: '4px', color: 'var(--text-primary)' }}
               >
@@ -530,7 +583,14 @@ export const OrdersPage: React.FC = () => {
                 padding: '6px',
               }}
             >
-              <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', justifyContent: 'center' }}>
+              <div
+                style={{
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  justifyContent: 'center',
+                }}
+              >
                 <DeliveryIcon size={18} color="var(--color-sage)" />
                 <span>Курьер в пути… ожидаем отметки о доставке.</span>
               </div>
@@ -564,7 +624,9 @@ export const OrdersPage: React.FC = () => {
     >
       <header className="page-header">
         <span className="eyebrow">Доска заказов</span>
-        <h1>Управление <em>заказами</em></h1>
+        <h1>
+          Управление <em>заказами</em>
+        </h1>
         <p>Сборка, согласование по фото, отправка оплаты и курьерская доставка — единой canvas.</p>
       </header>
 
@@ -596,11 +658,21 @@ export const OrdersPage: React.FC = () => {
                 gap: '2px',
               }}
             >
-              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
-                Этап · {String(colAssembly.length).padStart(2, '0')}
-              </span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                <ShoppingIcon style={{ width: '18px', height: '18px', color: 'var(--color-sage)' }} />
+              <h3
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  fontSize: '1.35rem',
+                  color: 'var(--text-primary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <ShoppingIcon
+                  style={{ width: '18px', height: '18px', color: 'var(--color-sage)' }}
+                />
                 Сборка
               </h3>
             </div>
@@ -620,11 +692,21 @@ export const OrdersPage: React.FC = () => {
                 gap: '2px',
               }}
             >
-              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
-                Этап · {String(colApproval.length).padStart(2, '0')}
-              </span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                <DocumentIcon style={{ width: '18px', height: '18px', color: 'var(--color-warning)' }} />
+              <h3
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  fontSize: '1.35rem',
+                  color: 'var(--text-primary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <DocumentIcon
+                  style={{ width: '18px', height: '18px', color: 'var(--color-warning)' }}
+                />
                 Согласование
               </h3>
             </div>
@@ -644,10 +726,18 @@ export const OrdersPage: React.FC = () => {
                 gap: '2px',
               }}
             >
-              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
-                Этап · {String(colDelivery.length).padStart(2, '0')}
-              </span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
+              <h3
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  fontSize: '1.35rem',
+                  color: 'var(--text-primary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
                 <TruckIcon style={{ width: '18px', height: '18px', color: 'var(--color-gold)' }} />
                 Доставка
               </h3>
@@ -668,11 +758,21 @@ export const OrdersPage: React.FC = () => {
                 gap: '2px',
               }}
             >
-              <span className="eyebrow" style={{ color: 'var(--color-gold-deep)' }}>
-                Этап · {String(colCompleted.length).padStart(2, '0')}
-              </span>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontStyle: 'italic', fontWeight: 400, fontSize: '1.35rem', color: 'var(--text-primary)', display: 'inline-flex', alignItems: 'center', gap: '8px' }}>
-                <CheckIcon style={{ width: '18px', height: '18px', color: 'var(--color-success)' }} />
+              <h3
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontStyle: 'italic',
+                  fontWeight: 400,
+                  fontSize: '1.35rem',
+                  color: 'var(--text-primary)',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '8px',
+                }}
+              >
+                <CheckIcon
+                  style={{ width: '18px', height: '18px', color: 'var(--color-success)' }}
+                />
                 Завершено
               </h3>
             </div>

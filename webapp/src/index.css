@@ -645,20 +645,6 @@ input[type=number] { -moz-appearance: textfield; }
     height: 1px;
     background: var(--wine);
   }
-  .lang-toggle-btn {
-    background: transparent;
-    color: var(--ink-soft);
-    border: 1px solid var(--line);
-    padding: 0.42rem 0.9rem;
-    border-radius: 999px;
-    font-size: 0.66rem;
-    font-weight: 600;
-    letter-spacing: 0.16em;
-    cursor: pointer;
-    transition: color .25s ease, border-color .25s ease;
-    font-family: var(--font-sans);
-  }
-  .lang-toggle-btn:hover { color: var(--wine); border-color: var(--wine); }
 }
 
 /* Product grids */
@@ -847,4 +833,3 @@ svg line[stroke="rgba(255,255,255,0.1)"] { stroke: var(--line) !important; }
 [style*="background:'#1b4332'"],
 [style*="background: #1b4332"],
 [style*="background:#1b4332"] { background: var(--champagne-tint) !important; color: var(--ink) !important; }
-

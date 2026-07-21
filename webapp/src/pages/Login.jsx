@@ -2,12 +2,10 @@ import React, { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { api } from '../api';
 import { useTelegram } from '../hooks/useTelegram';
-import { useLanguage } from '../hooks/useLanguage';
 
 export default function Login() {
   const navigate = useNavigate();
   const { haptic } = useTelegram();
-  const { language } = useLanguage();
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const widgetContainerRef = useRef(null);
@@ -25,10 +23,10 @@ export default function Login() {
           localStorage.setItem('auth_token', res.token);
           localStorage.setItem('user_info', JSON.stringify(res.user));
           navigate('/profile');
-        } else setError(language === 'ru' ? 'Ошибка входа' : 'Login failed');
+        } else setError('Ошибка входа');
       } catch (e) {
         console.error(e);
-        setError(language === 'ru' ? 'Не удалось авторизоваться: ' + e.message : 'Auth failed: ' + e.message);
+        setError('Не удалось авторизоваться: ' + e.message);
       } finally { setLoading(false); }
     };
 
@@ -47,7 +45,7 @@ export default function Login() {
       if (widgetContainerRef.current) widgetContainerRef.current.innerHTML = '';
       delete window.onTelegramAuth;
     };
-  }, [navigate, haptic, language]);
+  }, [navigate, haptic]);
 
   return (
     <div className="container page-transition" style={{
@@ -67,9 +65,7 @@ export default function Login() {
         </div>
 
         <p style={{ color: 'var(--ink-soft)', fontSize: '0.9rem', margin: '2rem auto 2rem', lineHeight: 1.65, maxWidth: '32ch' }}>
-          {language === 'ru'
-            ? 'Войдите через Telegram — чтобы видеть историю заказов, избранное и адреса доставки.'
-            : 'Sign in with Telegram to view your order history, favorites and delivery addresses.'}
+          Войдите через Telegram — чтобы видеть историю заказов, избранное и адреса доставки.
         </p>
 
         {loading

@@ -5,7 +5,6 @@ import { api } from '../api';
 import { useTelegram } from '../hooks/useTelegram';
 import { MapContainer, TileLayer, Marker, useMapEvents, useMap } from 'react-leaflet';
 import L from 'leaflet';
-import { useLanguage } from '../hooks/useLanguage';
 
 const customIcon = new L.DivIcon({
   className: 'custom-marker',
@@ -34,7 +33,6 @@ function LocationPicker({ position, onPositionChange }) {
 
 export default function Profile() {
   const navigate = useNavigate();
-  const { t, language } = useLanguage();
   const [profile, setProfile] = useState(null);
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -69,13 +67,13 @@ export default function Profile() {
       if (res.ok && res.url) {
         await api.updateProfile({ photo_url: res.url });
         setProfile(prev => ({ ...prev, photo_url: res.url }));
-        showAlert(language === 'ru' ? 'Аватар успешно обновлен!' : 'Avatar updated successfully!');
+        showAlert('Аватар успешно обновлен!');
       } else {
-        showAlert(language === 'ru' ? 'Ошибка загрузки аватара' : 'Failed to upload avatar');
+        showAlert('Ошибка загрузки аватара');
       }
     } catch (err) {
       console.error(err);
-      showAlert(language === 'ru' ? 'Ошибка при загрузке аватара' : 'Error uploading avatar');
+      showAlert('Ошибка при загрузке аватара');
     } finally {
       setUploadingAvatar(false);
     }
@@ -113,7 +111,7 @@ export default function Profile() {
       setIsEditingProfile(false);
     } catch (e) {
       console.error(e);
-      alert(language === 'ru' ? 'Ошибка сохранения данных' : 'Failed to save profile');
+      alert('Ошибка сохранения данных');
     }
   };
 
@@ -138,16 +136,7 @@ export default function Profile() {
       done: '🎉 Завершён',
       cancelled: '❌ Отменён'
     };
-    const mapEn = {
-      pending: '⏳ Pending payment',
-      paid: '💰 Paid',
-      confirmed: '✅ Confirmed',
-      shipped: '🚚 Shipped',
-      done: '🎉 Completed',
-      cancelled: '❌ Cancelled'
-    };
-    const map = language === 'ru' ? mapRu : mapEn;
-    return map[status] || status;
+    return mapRu[status] || status;
   };
 
   const updateSetting = async (key, value) => {
@@ -305,7 +294,7 @@ export default function Profile() {
   };
 
   if (loading) return <div className="spinner"></div>;
-  if (!profile) return <div className="container"><p>{language === 'ru' ? 'Ошибка загрузки профиля' : 'Failed to load profile'}</p></div>;
+  if (!profile) return <div className="container"><p>Ошибка загрузки профиля</p></div>;
 
   const lastOrder = Array.isArray(orders) ? orders.find(o => o?.status !== 'cancelled') : null;
 
@@ -360,14 +349,14 @@ export default function Profile() {
           <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
             <input 
               type="text" 
-              placeholder={language === 'ru' ? "Ваше имя" : "Your name"} 
+              placeholder="Ваше имя"
               value={editName} 
               onChange={e => setEditName(e.target.value)} 
               style={{ padding: '0.4rem 0.6rem', fontSize: '0.9rem', marginBottom: 0 }} 
             />
             <input 
               type="text" 
-              placeholder={language === 'ru' ? "Имя пользователя @username" : "Username @username"} 
+              placeholder="Имя пользователя @username"
               value={editUsername} 
               onChange={e => setEditUsername(e.target.value)} 
               style={{ padding: '0.4rem 0.6rem', fontSize: '0.9rem', marginBottom: 0 }} 
@@ -378,7 +367,7 @@ export default function Profile() {
                 style={{ padding: '0.3rem 0.8rem', fontSize: '0.8rem', flex: 1, marginBottom: 0 }}
                 onClick={saveProfileData}
               >
-                💾 {language === 'ru' ? "Сохранить" : "Save"}
+                💾 Сохранить
               </button>
               <button 
                 className="secondary" 
@@ -389,14 +378,14 @@ export default function Profile() {
                   setIsEditingProfile(false);
                 }}
               >
-                {language === 'ru' ? "Отмена" : "Cancel"}
+                Отмена
               </button>
             </div>
           </div>
         ) : (
           <div style={{ flex: 1 }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <h2 style={{ marginBottom: '0.2rem', fontSize: '1.2rem' }}>{profile.full_name || (language === 'ru' ? 'Имя не указано' : 'Name not set')}</h2>
+              <h2 style={{ marginBottom: '0.2rem', fontSize: '1.2rem' }}>{profile.full_name || 'Имя не указано'}</h2>
               <button 
                 type="button" 
                 style={{ background: 'none', border: 'none', color: 'var(--gold)', cursor: 'pointer', padding: '0.2rem', marginBottom: '0.2rem' }}
@@ -406,11 +395,11 @@ export default function Profile() {
               </button>
             </div>
             <p style={{ fontSize: '0.85rem', marginBottom: '0.3rem', color: 'var(--text-muted)' }}>
-              {profile.username ? `@${profile.username}` : (language === 'ru' ? 'Логин не указан' : 'Username not set')}
+              {profile.username ? `@${profile.username}` : 'Логин не указан'}
             </p>
             {profile.discount_percent > 0 && (
               <span className="badge" style={{ background: '#ff4d4f', color: '#fff', fontSize: '0.8rem' }}>
-                {t('profile_discount').replace('{percent}', profile.discount_percent)}
+                Скидка {profile.discount_percent}%
               </span>
             )}
           </div>
@@ -425,10 +414,10 @@ export default function Profile() {
           padding: '1.2rem',
         }}>
           <h3 style={{ color: 'var(--wine)', fontSize: '1rem', marginBottom: '0.4rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-            {t('profile_quick_repeat')}
+            🔄 Быстрый повтор заказа
           </h3>
           <p style={{ fontSize: '0.85rem', color: 'var(--ink-soft)', marginBottom: '0.8rem' }}>
-            {t('profile_repeat_desc').replace('{id}', lastOrder.id).replace('{date}', new Date(lastOrder.created_at).toLocaleDateString())}
+            Повторить ваш прошлый заказ #{lastOrder.id} от {new Date(lastOrder.created_at).toLocaleDateString()}:
           </p>
           <div style={{ fontSize: '0.85rem', marginBottom: '1rem', background: 'var(--ivory)', padding: '0.6rem 0.8rem', borderRadius: '4px', border: '1px solid var(--line)' }}>
             {Array.isArray(lastOrder.items) && lastOrder.items.map((item, idx) => (
@@ -443,30 +432,14 @@ export default function Profile() {
             onClick={() => handleRepeatOrder(lastOrder.id)}
             disabled={repeating}
           >
-            {repeating ? t('profile_adding_to_cart') : t('profile_repeat_btn')}
+            {repeating ? 'Добавление в корзину...' : '🛒 Повторить заказ'}
           </button>
         </div>
       )}
 
       <div className="glass-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
-        <div style={{ marginBottom: '1rem' }}>
-          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>{t('profile_region')}</label>
-          <div style={{ display: 'flex', gap: '0.5rem' }}>
-            {['bali', 'vietnam'].map(loc => (
-              <button 
-                key={loc}
-                className={profile.location === loc ? 'primary' : 'secondary'}
-                onClick={() => updateSetting('location', loc)}
-                style={{ flex: 1, padding: '0.8rem' }}
-              >
-                {loc === 'bali' ? (language === 'ru' ? '🌴 Бали' : '🌴 Bali') : (language === 'ru' ? '🇻🇳 Вьетнам' : '🇻🇳 Vietnam')}
-              </button>
-            ))}
-          </div>
-        </div>
-
         <div>
-          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>{t('profile_currency')}</label>
+          <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-muted)' }}>Валюта</label>
           <div style={{ display: 'flex', gap: '0.5rem' }}>
             {(profile?.active_payment_methods?.split(',').filter(Boolean) || ['usdt', 'idr', 'uah', 'vnd'])
               .filter(curr => ['usdt', 'idr', 'uah', 'vnd'].includes(curr))
@@ -486,10 +459,10 @@ export default function Profile() {
 
       <div className="glass-card" style={{ marginBottom: '1.5rem', padding: '1.5rem' }}>
         <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <MapPin size={20} /> {t('profile_address')}
+          <MapPin size={20} /> Адрес доставки
         </h3>
         <p style={{ fontSize: '0.85rem', color: 'var(--text-muted)', marginBottom: '1rem' }}>
-          {t('profile_address_sub')}
+          Укажите точку на карте или впишите адрес вручную. Он будет подставляться при заказах.
         </p>
 
 
@@ -511,12 +484,12 @@ export default function Profile() {
           style={{ width: '100%', padding: '0.6rem', fontSize: '0.9rem', marginBottom: '0.8rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem', borderRadius: '8px' }} 
           onClick={locateMe}
         >
-          {t('profile_locate_me')}
+          📍 Найти меня на карте
         </button>
 
         <textarea
           className="input"
-          placeholder={t('profile_address')}
+          placeholder="Адрес доставки"
           value={addressText}
           onChange={e => setAddressText(e.target.value)}
           rows={3}
@@ -530,7 +503,7 @@ export default function Profile() {
             onClick={saveAddress}
             disabled={savingAddress}
           >
-            {savingAddress ? '...' : t('profile_confirm_address')}
+            {savingAddress ? '...' : '✅ Подтвердить адрес'}
           </button>
         )}
       </div>
@@ -542,20 +515,14 @@ export default function Profile() {
       }}>
         <div className="flex-between" style={{ marginBottom: '1rem' }}>
           <h3 style={{ color: 'var(--wine)', display: 'flex', alignItems: 'center', gap: '0.5rem', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 400 }}>
-            <Gift size={18} strokeWidth={1.5} /> {profile?.is_partner 
-              ? (language === 'ru' ? 'Партнёрская программа' : 'Personal Partner Program')
-              : t('profile_referral')}
+            <Gift size={18} strokeWidth={1.5} /> Партнёрская программа
           </h3>
         </div>
         
         <p style={{ marginBottom: '1rem', fontSize: '0.9rem', lineHeight: '1.4' }}>
-          {profile?.is_partner 
-            ? (language === 'ru' 
-                ? 'Вы являетесь участником персональной партнерской программы (MLM).' 
-                : 'You are a member of the Personal Partner Program (MLM).')
-            : (language === 'ru' 
-                ? 'Приглашайте друзей и получайте бонусы с их покупок!' 
-                : 'Invite friends and earn bonuses from their purchases!')}
+          {profile?.is_partner
+            ? 'Вы являетесь участником персональной партнерской программы (MLM).'
+            : 'Приглашайте друзей и получайте бонусы с их покупок!'}
         </p>
 
         {/* Collapsible Info Accordion on Profile Page */}
@@ -582,11 +549,9 @@ export default function Profile() {
               setShowRefRules(!showRefRules);
             }}
           >
-            <span>ℹ️ {language === 'ru' ? 'Как работают начисления?' : 'How do bonuses work?'}</span>
+            <span>ℹ️ Как работают начисления?</span>
             <span style={{ fontSize: '0.75rem', opacity: 0.8 }}>
-              {showRefRules 
-                ? (language === 'ru' ? '▲ Свернуть' : '▲ Collapse') 
-                : (language === 'ru' ? '▼ Показать условия' : '▼ View terms')}
+              {showRefRules ? '▲ Свернуть' : '▼ Показать условия'}
             </span>
           </button>
 
@@ -607,39 +572,21 @@ export default function Profile() {
                   <strong style={{ color: 'var(--gold)', display: 'block', marginBottom: '0.3rem' }}>
                     👑 MLM-партнерская программа (5 ступеней)
                   </strong>
-                  {language === 'ru' ? (
-                    <>
-                      Вам подключена многоуровневая партнерская программа. Вы получаете бонусы со всей своей реферальной сети:
-                      <ul style={{ margin: '0.3rem 0 0.5rem 1rem', padding: 0 }}>
-                        <li>Бонусы выплачиваются со <strong style={{ color: 'var(--text)' }}>всех заказов пожизненно</strong> (без лимита на 3 заказа).</li>
-                        <li>Начисления по 5 уровням глубины:
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem 1rem', marginTop: '0.3rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem', borderRadius: '6px' }}>
-                            <div>1️⃣ Ур. (прямые): <strong>{profile?.referral_percent || 10}%</strong></div>
-                            <div>2️⃣ Уровень: <strong>3%</strong></div>
-                            <div>3️⃣ Уровень: <strong>2%</strong></div>
-                            <div>4️⃣ Уровень: <strong>1%</strong></div>
-                            <div>5️⃣ Уровень: <strong>1%</strong></div>
-                          </div>
-                        </li>
-                      </ul>
-                    </>
-                  ) : (
-                    <>
-                      You have a multi-level affiliate program enabled. You earn bonuses from your entire referral network:
-                      <ul style={{ margin: '0.3rem 0 0.5rem 1rem', padding: 0 }}>
-                        <li>Bonuses are paid from <strong style={{ color: 'var(--text)' }}>all orders lifetime</strong> (no 3-order limit).</li>
-                        <li>Bonuses by 5 levels deep:
-                          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem 1rem', marginTop: '0.3rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem', borderRadius: '6px' }}>
-                            <div>1️⃣ Lvl 1 (direct): <strong>{profile?.referral_percent || 10}%</strong></div>
-                            <div>2️⃣ Lvl 2: <strong>3%</strong></div>
-                            <div>3️⃣ Lvl 3: <strong>2%</strong></div>
-                            <div>4️⃣ Lvl 4: <strong>1%</strong></div>
-                            <div>5️⃣ Lvl 5: <strong>1%</strong></div>
-                          </div>
-                        </li>
-                      </ul>
-                    </>
-                  )}
+                  <>
+                    Вам подключена многоуровневая партнерская программа. Вы получаете бонусы со всей своей реферальной сети:
+                    <ul style={{ margin: '0.3rem 0 0.5rem 1rem', padding: 0 }}>
+                      <li>Бонусы выплачиваются со <strong style={{ color: 'var(--text)' }}>всех заказов пожизненно</strong> (без лимита на 3 заказа).</li>
+                      <li>Начисления по 5 уровням глубины:
+                        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.2rem 1rem', marginTop: '0.3rem', background: 'rgba(255,255,255,0.02)', padding: '0.4rem', borderRadius: '6px' }}>
+                          <div>1️⃣ Ур. (прямые): <strong>{profile?.referral_percent || 10}%</strong></div>
+                          <div>2️⃣ Уровень: <strong>3%</strong></div>
+                          <div>3️⃣ Уровень: <strong>2%</strong></div>
+                          <div>4️⃣ Уровень: <strong>1%</strong></div>
+                          <div>5️⃣ Уровень: <strong>1%</strong></div>
+                        </div>
+                      </li>
+                    </ul>
+                  </>
                 </div>
               ) : (
                 // Rules for regular users
@@ -647,25 +594,14 @@ export default function Profile() {
                   <strong style={{ color: 'var(--gold)', display: 'block', marginBottom: '0.3rem' }}>
                     🌱 Стандартная реферальная программа
                   </strong>
-                  {language === 'ru' ? (
-                    <>
-                      Делитесь своей реферальной ссылкой и копите бонусы:
-                      <ul style={{ margin: '0.3rem 0 0 1rem', padding: 0 }}>
-                        <li>Вы получаете <strong style={{ color: 'var(--text)' }}>{profile?.referral_percent || 10}%</strong> от суммы покупок приглашённых друзей.</li>
-                        <li>Начисления производятся <strong style={{ color: 'var(--text)' }}>только с первых 3-х заказов</strong> каждого друга.</li>
-                        <li>Накопленные бонусы можно использовать для полной или частичной оплаты ваших собственных заказов.</li>
-                      </ul>
-                    </>
-                  ) : (
-                    <>
-                      Share your referral link and collect bonus points:
-                      <ul style={{ margin: '0.3rem 0 0 1rem', padding: 0 }}>
-                        <li>You get <strong style={{ color: 'var(--text)' }}>{profile?.referral_percent || 10}%</strong> from purchases of invited friends.</li>
-                        <li>Bonuses are credited <strong style={{ color: 'var(--text)' }}>only for their first 3 orders</strong>.</li>
-                        <li>Accumulated bonuses can be used to pay for your own orders.</li>
-                      </ul>
-                    </>
-                  )}
+                  <>
+                    Делитесь своей реферальной ссылкой и копите бонусы:
+                    <ul style={{ margin: '0.3rem 0 0 1rem', padding: 0 }}>
+                      <li>Вы получаете <strong style={{ color: 'var(--text)' }}>{profile?.referral_percent || 10}%</strong> от суммы покупок приглашённых друзей.</li>
+                      <li>Начисления производятся <strong style={{ color: 'var(--text)' }}>только с первых 3-х заказов</strong> каждого друга.</li>
+                      <li>Накопленные бонусы можно использовать для полной или частичной оплаты ваших собственных заказов.</li>
+                    </ul>
+                  </>
                 </div>
               )}
             </div>
@@ -690,15 +626,9 @@ export default function Profile() {
                 color: 'var(--text-color)',
                 lineHeight: '1.4'
               }}>
-                📢 {refName ? (
-                  language === 'ru' 
-                    ? `Вас пригласил в программу: ${refName}. Администратор @Rus_Buch активировал вам персональную партнерскую программу.` 
-                    : `You were invited by: ${refName}. Administrator @Rus_Buch activated your Personal Partner Program.`
-                ) : (
-                  language === 'ru'
-                    ? 'Администратор @Rus_Buch активировал вам персональную партнерскую программу.'
-                    : 'Administrator @Rus_Buch activated your Personal Partner Program.'
-                )}
+                📢 {refName
+                  ? `Вас пригласил в программу: ${refName}. Администратор @Rus_Buch активировал вам персональную партнерскую программу.`
+                  : 'Администратор @Rus_Buch активировал вам персональную партнерскую программу.'}
               </div>
             );
           } else if (refName) {
@@ -713,7 +643,7 @@ export default function Profile() {
                 color: 'var(--text-muted)',
                 lineHeight: '1.4'
               }}>
-                🤝 {language === 'ru' ? `Вас пригласил в программу: ${refName}` : `You were invited by: ${refName}`}
+                🤝 Вас пригласил в программу: {refName}
               </div>
             );
           }
@@ -721,7 +651,7 @@ export default function Profile() {
         })()}
 
         <div style={{ background: 'var(--champagne-tint)', padding: '1rem', borderRadius: '4px', marginBottom: '1.5rem', border: '1px solid var(--champagne)' }}>
-          <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--ink-soft)', marginBottom: '0.4rem' }}>{t('profile_ref_balance')}</div>
+          <div style={{ fontSize: '0.72rem', letterSpacing: '0.22em', textTransform: 'uppercase', color: 'var(--ink-soft)', marginBottom: '0.4rem' }}>Ваш баланс:</div>
           <div style={{ fontSize: '2.2rem', fontFamily: 'var(--font-display)', fontStyle: 'italic', fontWeight: 300, color: 'var(--wine)' }}>${profile.bonus_balance}</div>
         </div>
 
@@ -763,7 +693,7 @@ export default function Profile() {
           </div>
         ) : (
           <button className="primary" style={{ width: '100%', padding: '1rem' }} onClick={copyRefLink}>
-            <Copy size={18} /> {t('profile_copy_ref_link')}
+            <Copy size={18} /> Скопировать ссылку
           </button>
         )}
 
@@ -776,17 +706,13 @@ export default function Profile() {
           return (
             <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1.2rem' }}>
               <h4 style={{ color: 'var(--gold)', fontSize: '0.95rem', marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                👥 {profile.is_partner 
-                  ? (language === 'ru' ? 'Реферальная сеть' : 'Referral Network')
-                  : (language === 'ru' ? `Приглашенные друзья (${profile.invitees.length})` : `Invited Friends (${profile.invitees.length})`)}
+                👥 {profile.is_partner ? 'Реферальная сеть' : `Приглашенные друзья (${profile.invitees.length})`}
               </h4>
               
               {profile.is_partner && (
                 <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1rem', overflowX: 'auto', paddingBottom: '0.4rem' }}>
                   {['all', '1', '2', '3', '4', '5'].map(lvl => {
-                    const label = lvl === 'all' 
-                      ? (language === 'ru' ? 'Все' : 'All') 
-                      : `${language === 'ru' ? 'Ур.' : 'Lvl'} ${lvl}`;
+                    const label = lvl === 'all' ? 'Все' : `Ур. ${lvl}`;
                     const count = lvl === 'all' 
                       ? profile.invitees.length 
                       : profile[`level_${lvl}_count`] || 0;
@@ -816,7 +742,7 @@ export default function Profile() {
 
               {filteredInvitees.length === 0 ? (
                 <div style={{ textAlign: 'center', color: 'var(--text-muted)', padding: '1rem 0', fontSize: '0.85rem' }}>
-                  {language === 'ru' ? 'Нет рефералов на этом уровне' : 'No referrals at this level'}
+                  Нет рефералов на этом уровне
                 </div>
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '200px', overflowY: 'auto', paddingRight: '0.3rem' }}>
@@ -844,18 +770,16 @@ export default function Profile() {
                               color: 'var(--gold)',
                               fontWeight: '500'
                             }}>
-                              {language === 'ru' ? `${friend.level}-й уровень` : `Lvl ${friend.level}`}
+                              {friend.level}-й уровень
                             </span>
                           )}
-                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>{language === 'ru' ? 'Регистрация' : 'Registered'}: {friend.created_at}</span>
+                          <span style={{ fontSize: '0.7rem', color: 'var(--text-muted)' }}>Регистрация: {friend.created_at}</span>
                         </div>
                       </div>
                       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-end', gap: '0.1rem' }}>
                         <span style={{ fontSize: '0.85rem', color: 'var(--gold)', fontWeight: 'bold' }}>+${friend.earned.toFixed(2)}</span>
                         <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>
-                          {profile.is_partner 
-                            ? (language === 'ru' ? 'кэшбек' : 'cashback')
-                            : (language === 'ru' ? `Заказов: ${friend.orders_count}/3` : `Orders: ${friend.orders_count}/3`)}
+                          {profile.is_partner ? 'кэшбек' : `Заказов: ${friend.orders_count}/3`}
                         </span>
                       </div>
                     </div>
@@ -869,7 +793,7 @@ export default function Profile() {
         {profile.transactions && profile.transactions.length > 0 && (
           <div style={{ marginTop: '1.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '1.2rem' }}>
             <h4 style={{ color: 'var(--gold)', fontSize: '0.95rem', marginBottom: '0.8rem', display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-              📜 {language === 'ru' ? 'История начислений' : 'Earnings History'}
+              📜 История начислений
             </h4>
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem', maxHeight: '150px', overflowY: 'auto', paddingRight: '0.3rem' }}>
               {profile.transactions.map((tx, idx) => (
@@ -884,7 +808,7 @@ export default function Profile() {
                 }}>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
                     <span style={{ fontSize: '0.8rem', fontWeight: '500' }}>
-                      {language === 'ru' ? `Заказ #${tx.order_id}` : `Order #${tx.order_id}`}
+                      Заказ #{tx.order_id}
                       <span style={{ 
                         marginLeft: '0.4rem',
                         fontSize: '0.65rem', 
@@ -894,7 +818,7 @@ export default function Profile() {
                         color: 'var(--gold)',
                         fontWeight: '500'
                       }}>
-                        {language === 'ru' ? `${tx.level}-й уровень` : `Lvl ${tx.level}`}
+                        {tx.level}-й уровень
                       </span>
                     </span>
                     <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)' }}>{tx.created_at}</span>
@@ -907,10 +831,10 @@ export default function Profile() {
         )}
       </div>
 
-      <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', marginTop: '2rem' }}>{t('profile_my_orders')}</h3>
+      <h3 style={{ marginBottom: '1rem', fontSize: '1.1rem', marginTop: '2rem' }}>📋 Мои заказы</h3>
       {(!Array.isArray(orders) || orders.length === 0) ? (
         <div className="glass-card" style={{ textAlign: 'center', padding: '2rem 1rem' }}>
-          <p style={{ color: 'var(--text-muted)' }}>{t('profile_orders_empty')}</p>
+          <p style={{ color: 'var(--text-muted)' }}>У вас пока нет заказов</p>
         </div>
       ) : (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -918,8 +842,8 @@ export default function Profile() {
             <div key={o?.id || Math.random()} className="glass-card">
               <div className="flex-between" style={{ marginBottom: '1rem', borderBottom: '1px solid var(--glass-border)', paddingBottom: '0.8rem' }}>
                 <div>
-                  <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>{language === 'ru' ? 'Заказ' : 'Order'} #{o?.id}</div>
-                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{o?.created_at ? new Date(o.created_at).toLocaleDateString() : 'Unknown date'}</div>
+                  <div style={{ fontWeight: 'bold', fontSize: '1.1rem' }}>Заказ #{o?.id}</div>
+                  <div style={{ fontSize: '0.8rem', color: 'var(--text-muted)' }}>{o?.created_at ? new Date(o.created_at).toLocaleDateString('ru-RU') : 'Дата неизвестна'}</div>
                 </div>
                 <div className={`badge ${getStatusColor(o?.status)}`}>
                   {getStatusText(o?.status)}
@@ -936,7 +860,7 @@ export default function Profile() {
               </div>
               
               <div className="flex-between" style={{ marginTop: '1rem', fontWeight: 'bold' }}>
-                <span>{language === 'ru' ? 'Итого' : 'Total'} ({o?.currency ? (o.currency === 'uah' ? 'RUB' : o.currency.toUpperCase()) : 'UNKNOWN'}):</span>
+                <span>Итого ({o?.currency ? (o.currency === 'uah' ? 'RUB' : o.currency.toUpperCase()) : 'UNKNOWN'}):</span>
                 <span style={{ color: 'var(--gold)' }}>
                   {o?.currency === 'usd' || o?.currency === 'usdt' ? '$' : ''}
                   {o?.total_in_currency}
@@ -951,14 +875,11 @@ export default function Profile() {
                   className="primary" 
                   style={{ width: '100%', marginTop: '1rem', padding: '0.5rem' }} 
                   onClick={() => {
-                    showAlert(language === 'ru' 
-                      ? `Реквизиты для оплаты:\n\n${o?.payment_details || 'Реквизиты временно недоступны. Свяжитесь с поддержкой.'}`
-                      : `Payment Details:\n\n${o?.payment_details || 'Payment details are temporarily unavailable. Please contact support.'}`
-                    );
+                    showAlert(`Реквизиты для оплаты:\n\n${o?.payment_details || 'Реквизиты временно недоступны. Свяжитесь с поддержкой.'}`);
                     haptic.impact('medium');
                   }}
                 >
-                  {t('profile_order_details')}
+                  💳 Показать реквизиты
                 </button>
               )}
             </div>

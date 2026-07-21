@@ -11,15 +11,11 @@ export default function Product({ updateCart }) {
   const fileInputRef = useRef(null);
 
   const [product, setProduct] = useState(null);
-  const [profile, setProfile] = useState(null);
 
   const isOwner = [5082384607, 1005121723].includes(user?.id);
+  const [profile, setProfile] = useState(null);
   const canEdit = isOwner || (profile?.admin_permissions?.can_edit_products || profile?.admin_permissions?.has_full_access);
-  const isLocationAllowed = !profile?.admin_permissions?.location_restriction ||
-                            profile.admin_permissions.location_restriction === 'all' ||
-                            product?.location === 'all' ||
-                            product?.location === profile.admin_permissions.location_restriction;
-  const canEditProduct = canEdit && isLocationAllowed;
+  const canEditProduct = canEdit;
 
   const [similarProducts, setSimilarProducts] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -44,7 +40,7 @@ export default function Product({ updateCart }) {
         if (editParam === 'true') {
           setEditData({
             name: p.name, description: p.description, photo_url: p.photo_url,
-            in_stock: p.in_stock, location: p.location || 'all',
+            in_stock: p.in_stock,
             variants: JSON.parse(JSON.stringify(p.variants || [])),
             is_sale: p.is_sale || false, discount_percent: p.discount_percent || 0
           });
@@ -65,7 +61,7 @@ export default function Product({ updateCart }) {
     else {
       setEditData({
         name: product.name, description: product.description, photo_url: product.photo_url,
-        in_stock: product.in_stock, location: product.location || 'all',
+        in_stock: product.in_stock,
         variants: JSON.parse(JSON.stringify(product.variants || [])),
         is_sale: product.is_sale || false, discount_percent: product.discount_percent || 0
       });

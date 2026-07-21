@@ -39,11 +39,7 @@ git clean -fd
 
 pnpm_install() {
   local dir="$1"
-  if [ -f "$dir/pnpm-lock.yaml" ]; then
-    (cd "$dir" && pnpm install --frozen-lockfile)
-  else
-    (cd "$dir" && pnpm install)
-  fi
+  (cd "$dir" && pnpm install --frozen-lockfile)
 }
 
 install_deps() {

@@ -1,3 +1,4 @@
+# pnpm config for fabrikaflo_bot only (not a monorepo workspace)
 allowBuilds:
   '@prisma/engines': true
   bcrypt: true

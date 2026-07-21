@@ -15,9 +15,7 @@ export function registerOrderHandlers(bot: any, fastify: FastifyInstance, adminC
     });
 
     if (orders.length === 0) {
-      return ctx.reply(
-        'У вас пока нет заказов. Вы можете создать заявку, зайдя в \n\n"🌸 Магазин".'
-      );
+      return ctx.reply('У вас пока нет заказов. Вы можете создать заявку, зайдя в \n"🌸 Магазин".');
     }
 
     await ctx.reply(`Найдено заказов: ${orders.length}. Вот последние из них:`);

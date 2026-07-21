@@ -2,7 +2,6 @@
   "name": "fabrikaflo-bot",
   "version": "1.0.0",
   "private": true,
-  "packageManager": "pnpm@11.11.0",
   "type": "module",
   "engines": {
     "node": ">=22.6.0"

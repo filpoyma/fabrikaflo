@@ -23,6 +23,7 @@ export const configSchema = Type.Object({
   TELEGRAM_BOT_TOKEN: Type.String({ default: '' }),
   TELEGRAM_BOT_MODE: Type.String({ default: 'polling' }), // 'polling' or 'webhook'
   TELEGRAM_WEBHOOK_URL: Type.String({ default: '' }),
+  MINI_APP_URL: Type.String({ default: '' }),
   ADMIN_CHAT_ID: Type.String({ default: '' }),
   
   // Security

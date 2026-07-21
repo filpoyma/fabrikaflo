@@ -145,3 +145,65 @@ export const uploadPhotoSchema = {
     }),
   },
 }
+
+export const listMyOrdersSchema = {
+  tags: ['orders'],
+  response: {
+    200: Type.Object({
+      data: Type.Array(OrderSchema),
+    }),
+  },
+}
+
+export const clientGetOrderSchema = {
+  tags: ['orders'],
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  response: {
+    200: Type.Object({
+      data: OrderSchema,
+    }),
+  },
+}
+
+export const clientApproveOrderSchema = {
+  tags: ['orders'],
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  response: {
+    200: Type.Object({
+      success: Type.Boolean(),
+      status: Type.String(),
+    }),
+  },
+}
+
+export const clientDisapproveOrderSchema = {
+  tags: ['orders'],
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  body: Type.Object({
+    feedback: Type.String(),
+  }),
+  response: {
+    200: Type.Object({
+      success: Type.Boolean(),
+      status: Type.String(),
+    }),
+  },
+}
+
+export const clientUploadReceiptSchema = {
+  tags: ['orders'],
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  response: {
+    200: Type.Object({
+      success: Type.Boolean(),
+    }),
+  },
+}

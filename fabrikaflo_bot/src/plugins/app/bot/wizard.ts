@@ -80,7 +80,7 @@ export function registerWizardHandlers(
 
       await ctx.reply(
         `Правки приняты и переданы флористу! 🌸 Мы доработаем букет и пришлем вам новое фото.`,
-        { reply_markup: getClientMainMenu() }
+        { reply_markup: getClientMainMenu(fastify.config.MINI_APP_URL) }
       )
 
       // Notify Admins
@@ -437,7 +437,7 @@ export function registerWizardHandlers(
       })
       await ctx.editMessageReplyMarkup({ reply_markup: new InlineKeyboard() })
       await ctx.reply('Оформление заявки отменено.', {
-        reply_markup: getClientMainMenu(),
+        reply_markup: getClientMainMenu(fastify.config.MINI_APP_URL),
       })
       await ctx.answerCallbackQuery()
       return
@@ -508,7 +508,7 @@ export function registerWizardHandlers(
       `✨ Ваша заявка успешно отправлена!\n\n` +
         `Номер заявки: *${request.id.substring(0, 8)}*\n` +
         `Наш администратор изучит детали и свяжется с вами в Telegram или по телефону в ближайшее время. Спасибо! 🌸`,
-      { parse_mode: 'Markdown', reply_markup: getClientMainMenu() }
+      { parse_mode: 'Markdown', reply_markup: getClientMainMenu(fastify.config.MINI_APP_URL) }
     )
 
     // Notify Admins

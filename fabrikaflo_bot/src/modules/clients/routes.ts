@@ -13,6 +13,16 @@ export const clientsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     { schema: schema.listCouriersSchema, preHandler: [fastify.authenticate, fastify.requireAdmin] },
     handlers.listCouriers,
   )
+  fastify.get(
+    '/profile',
+    { schema: schema.profileSchema, preHandler: [fastify.authenticate] },
+    handlers.getProfile,
+  )
+  fastify.patch(
+    '/profile',
+    { schema: schema.updateProfileSchema, preHandler: [fastify.authenticate] },
+    handlers.updateProfile,
+  )
 }
 
 export default clientsRoutes

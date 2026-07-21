@@ -46,6 +46,33 @@ export const ordersRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     { schema: schema.assignCourierSchema, preHandler: [fastify.authenticate, fastify.requireAdmin] },
     handlers.assignCourier,
   )
+
+  // Client-facing orders routes
+  fastify.get(
+    '/my',
+    { schema: schema.listMyOrdersSchema, preHandler: [fastify.authenticate] },
+    handlers.listMyOrders,
+  )
+  fastify.get(
+    '/my/:id',
+    { schema: schema.clientGetOrderSchema, preHandler: [fastify.authenticate] },
+    handlers.clientGetOrder,
+  )
+  fastify.post(
+    '/my/:id/approve',
+    { schema: schema.clientApproveOrderSchema, preHandler: [fastify.authenticate] },
+    handlers.clientApproveOrder,
+  )
+  fastify.post(
+    '/my/:id/disapprove',
+    { schema: schema.clientDisapproveOrderSchema, preHandler: [fastify.authenticate] },
+    handlers.clientDisapproveOrder,
+  )
+  fastify.post(
+    '/my/:id/receipt',
+    { schema: schema.clientUploadReceiptSchema, preHandler: [fastify.authenticate] },
+    handlers.clientUploadReceipt,
+  )
 }
 
 export default ordersRoutes

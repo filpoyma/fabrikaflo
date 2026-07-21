@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Фабрика Flo — скоро</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&family=Manrope:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f5f1ea;
+        --ink: #282321;
+        --ink-soft: #736862;
+        --wine: #6a1a2b;
+        --champagne: #d5b47b;
+        --hairline: #e8dfd5;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        display: grid;
+        place-items: center;
+        padding: 2rem;
+        background: var(--bg);
+        color: var(--ink);
+        font-family: 'Manrope', system-ui, sans-serif;
+      }
+
+      main {
+        width: min(36rem, 100%);
+        padding: 2.5rem 2rem;
+        border: 1px solid var(--hairline);
+        background: #fdfbf7;
+        text-align: center;
+      }
+
+      .eyebrow {
+        margin: 0 0 1rem;
+        font-size: 0.68rem;
+        font-weight: 600;
+        letter-spacing: 0.28em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+      }
+
+      h1 {
+        margin: 0 0 1rem;
+        font-family: 'Fraunces', Georgia, serif;
+        font-size: clamp(2rem, 6vw, 3rem);
+        font-weight: 300;
+        line-height: 1.1;
+        color: var(--wine);
+      }
+
+      p {
+        margin: 0 0 2rem;
+        font-size: 1rem;
+        line-height: 1.7;
+        color: var(--ink-soft);
+      }
+
+      a {
+        display: inline-block;
+        padding: 0.85rem 1.4rem;
+        border: 1px solid var(--wine);
+        color: var(--wine);
+        text-decoration: none;
+        font-size: 0.78rem;
+        font-weight: 600;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+        transition: background 0.2s ease, color 0.2s ease;
+      }
+
+      a:hover {
+        background: var(--wine);
+        color: #fdfbf7;
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <p class="eyebrow">Фабрика Flo</p>
+      <h1>Лендинг в разработке</h1>
+      <p>
+        Здесь скоро появится основной сайт. А пока заказать букет можно в Telegram Mini App.
+      </p>
+      <a href="/webapp/">Перейти в приложение</a>
+    </main>
+  </body>
+</html>

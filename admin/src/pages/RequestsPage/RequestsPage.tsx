@@ -1,0 +1,336 @@
+import React, { useState } from 'react'
+import {
+  useRequestsQuery,
+  useUpdateRequestStatusMutation,
+  useConvertRequestMutation,
+} from '../../api/requests'
+import { Button, Modal } from '../../shared/ui'
+import type { IRequest } from '../../types'
+
+import PlusIcon from '../../assets/icons/plus.svg'
+import CheckIcon from '../../assets/icons/check.svg'
+import XMarkIcon from '../../assets/icons/x-mark.svg'
+import { PeonyIcon, VanIcon, PickupIcon } from '../../components/BotanicalIcons'
+
+export const RequestsPage: React.FC = () => {
+  const { data: requests = [], isLoading } = useRequestsQuery({ refetchInterval: 20_000 })
+  const updateStatusMutation = useUpdateRequestStatusMutation()
+  const convertMutation = useConvertRequestMutation()
+
+  // Modal and form states
+  const [isConvertModalOpen, setIsConvertModalOpen] = useState(false)
+  const [selectedRequest, setSelectedRequest] = useState<IRequest | null>(null)
+
+  // Order Form states
+  const [recipientName, setRecipientName] = useState('')
+  const [recipientPhone, setRecipientPhone] = useState('')
+  const [deliveryAddress, setDeliveryAddress] = useState('')
+  const [deliveryTime, setDeliveryTime] = useState('')
+  const [postcardText, setPostcardText] = useState('')
+  const [wishes, setWishes] = useState('')
+  const [comment, setComment] = useState('')
+  const [budget, setBudget] = useState(0)
+
+  const handleOpenConvert = (req: IRequest) => {
+    setSelectedRequest(req)
+    setRecipientName(req.client?.name || '')
+    setRecipientPhone(req.recipientPhone || req.client?.phone || '')
+    setDeliveryAddress(req.deliveryAddress || '')
+    setDeliveryTime('')
+    setPostcardText(req.postcardText || '')
+    setWishes(req.comment || '')
+    setComment('')
+    setBudget(req.budget)
+    setIsConvertModalOpen(true)
+  }
+
+  const handleConvertSubmit = (e: React.SubmitEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    if (!selectedRequest) return
+
+    const payload = {
+      recipientName,
+      recipientPhone,
+      deliveryAddress: selectedRequest.deliveryType === 'DELIVERY' ? deliveryAddress : '',
+      deliveryTime: deliveryTime || undefined,
+      postcardText: postcardText || undefined,
+      wishes,
+      comment: comment || undefined,
+      budget: Number(budget),
+    }
+
+    convertMutation.mutate(
+      { id: selectedRequest.id, data: payload },
+      {
+        onSuccess: () => {
+          setIsConvertModalOpen(false)
+          setSelectedRequest(null)
+        },
+      },
+    )
+  }
+
+  const statusTranslations: Record<string, string> = {
+    PENDING: 'Новая заявка',
+    CONTACTED: 'Связались с клиентом',
+    CONVERTED: 'Оформлен заказ',
+    CANCELLED: 'Отменено',
+  }
+
+  const getStatusBadgeClass = (status: string) => {
+    switch (status) {
+      case 'PENDING':
+        return 'badge badge-pending'
+      case 'CONTACTED':
+        return 'badge badge-warning'
+      case 'CONVERTED':
+        return 'badge badge-success'
+      case 'CANCELLED':
+        return 'badge badge-error'
+      default:
+        return 'badge'
+    }
+  }
+
+  return (
+    <div className="animated-fade-in" style={{ display: 'flex', flexDirection: 'column', gap: '28px', textAlign: 'left' }} data-testid="requests-page">
+      <header className="page-header">
+        <span className="eyebrow">Из Telegram</span>
+        <h1>Заявки на <em>букеты</em></h1>
+        <p>Список обращений клиентов из Telegram-бота. Превращайте их в заказы.</p>
+      </header>
+
+      {isLoading ? (
+        <div className="empty-state">
+          <PeonyIcon size={48} color="var(--color-gold-deep)" />
+          <div className="headline">Загрузка</div>
+          <p>Получаем список заявок…</p>
+        </div>
+      ) : (
+        <div className="glass-card" style={{ backgroundColor: '#FFFFFF', overflow: 'hidden' }}>
+          {requests.length === 0 ? (
+            <div className="empty-state">
+              <PeonyIcon size={64} color="var(--color-gold-deep)" />
+              <div className="headline">Заявок пока нет</div>
+              <p>Заявки появятся, когда клиенты нажмут кнопку «Заказать букет» в Telegram-боте.</p>
+            </div>
+          ) : (
+            <div style={{ overflowX: 'auto' }}>
+              <table className="editorial-table">
+                <thead>
+                  <tr>
+                    <th>Клиент</th>
+                    <th>Повод / Пожелания</th>
+                    <th>Бюджет</th>
+                    <th>Доставка / Дата</th>
+                    <th>Статус</th>
+                    <th className="right">Действия</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {requests.map((req) => (
+                    <tr key={req.id} data-testid={`request-${req.id}`}>
+                      <td>
+                        <div className="cell-primary">{req.client?.name || 'Клиент'}</div>
+                        <div className="cell-mute">
+                          {req.client?.tgname ? `@${req.client.tgname}` : ''}
+                        </div>
+                      </td>
+                      <td style={{ maxWidth: '300px' }}>
+                        <div style={{ fontWeight: 500, color: 'var(--text-primary)' }}>{req.occasion}</div>
+                        <div
+                          className="cell-mute"
+                          style={{
+                            textOverflow: 'ellipsis',
+                            overflow: 'hidden',
+                            whiteSpace: 'nowrap',
+                            fontStyle: 'italic',
+                            fontFamily: 'var(--font-serif)',
+                          }}
+                        >
+                          {req.comment ? `«${req.comment}»` : 'без комментария'}
+                        </div>
+                      </td>
+                      <td>
+                        <div className="cell-mono-num">{req.budget} ₽</div>
+                      </td>
+                      <td>
+                        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', color: 'var(--text-primary)', fontSize: '0.88rem' }}>
+                          {req.deliveryType === 'PICKUP'
+                            ? <><PickupIcon size={13} color="var(--color-gold-deep)" /> Самовывоз</>
+                            : <><VanIcon    size={13} color="var(--color-gold-deep)" /> Доставка</>}
+                        </div>
+                        <div className="cell-mute">
+                          {req.date ? new Date(req.date).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' }) : '—'}
+                        </div>
+                      </td>
+                      <td>
+                        <span className={getStatusBadgeClass(req.status)}>
+                          {statusTranslations[req.status] || req.status}
+                        </span>
+                      </td>
+                      <td className="right">
+                        <div style={{ display: 'inline-flex', gap: '8px' }}>
+                          {req.status === 'PENDING' && (
+                            <Button
+                              variant="secondary"
+                              size="sm"
+                              icon={CheckIcon}
+                              onClick={() => updateStatusMutation.mutate({ id: req.id, status: 'CONTACTED' })}
+                            >
+                              Связаться
+                            </Button>
+                          )}
+                          {(req.status === 'PENDING' || req.status === 'CONTACTED') && (
+                            <>
+                              <Button
+                                variant="primary"
+                                size="sm"
+                                icon={PlusIcon}
+                                onClick={() => handleOpenConvert(req)}
+                              >
+                                Создать заказ
+                              </Button>
+                              <Button
+                                variant="secondary"
+                                size="sm"
+                                icon={XMarkIcon}
+                                dangerText
+                                onClick={() => updateStatusMutation.mutate({ id: req.id, status: 'CANCELLED' })}
+                              >
+                                Отменить
+                              </Button>
+                            </>
+                          )}
+                          {req.status === 'CONVERTED' && (
+                            <span style={{ fontSize: '0.75rem', color: 'var(--color-success)', paddingRight: '8px', letterSpacing: '0.18em', textTransform: 'uppercase', fontWeight: 600 }}>
+                              оформлен
+                            </span>
+                          )}
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Convert Request Modal */}
+      {selectedRequest && (
+        <Modal
+          isOpen={isConvertModalOpen}
+          onClose={() => setIsConvertModalOpen(false)}
+          title={`Оформление заказа по заявке #${selectedRequest.id.substring(0, 8)}`}
+        >
+          <form onSubmit={handleConvertSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', borderBottom: '1px solid var(--border-light)', paddingBottom: '12px' }}>
+              Клиент: <strong>{selectedRequest.client?.name}</strong> • Повод: <strong>{selectedRequest.occasion}</strong>
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Получатель (Имя)</label>
+              <input
+                type="text"
+                className="form-input"
+                value={recipientName}
+                onChange={(e) => setRecipientName(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Телефон получателя</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="+7..."
+                value={recipientPhone}
+                onChange={(e) => setRecipientPhone(e.target.value)}
+                required
+              />
+            </div>
+
+            {selectedRequest.deliveryType === 'DELIVERY' && (
+              <div className="form-group">
+                <label className="form-label">Адрес доставки</label>
+                <textarea
+                  className="form-input"
+                  style={{ minHeight: '60px', resize: 'vertical' }}
+                  value={deliveryAddress}
+                  onChange={(e) => setDeliveryAddress(e.target.value)}
+                  required
+                />
+              </div>
+            )}
+
+            <div className="form-group">
+              <label className="form-label">Дата и время доставки / получения</label>
+              <input
+                type="datetime-local"
+                className="form-input"
+                value={deliveryTime}
+                onChange={(e) => setDeliveryTime(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Пожелания</label>
+              <textarea
+                className="form-input"
+                style={{ minHeight: '60px', resize: 'vertical' }}
+                value={wishes}
+                onChange={(e) => setWishes(e.target.value)}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Текст открытки (если нужна)</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="С днем рождения!..."
+                value={postcardText}
+                onChange={(e) => setPostcardText(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Комментарии к доставке / курьеру</label>
+              <input
+                type="text"
+                className="form-input"
+                placeholder="Позвонить получателю за 15 мин..."
+                value={comment}
+                onChange={(e) => setComment(e.target.value)}
+              />
+            </div>
+
+            <div className="form-group">
+              <label className="form-label">Бюджет заказа (руб.)</label>
+              <input
+                type="number"
+                className="form-input"
+                value={budget}
+                onChange={(e) => setBudget(Number(e.target.value))}
+                required
+              />
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px', marginTop: '12px', justifyContent: 'flex-end' }}>
+              <Button variant="secondary" type="button" onClick={() => setIsConvertModalOpen(false)}>
+                Отмена
+              </Button>
+              <Button type="submit" disabled={convertMutation.isPending} icon={CheckIcon}>
+                {convertMutation.isPending ? 'Оформление...' : 'Оформить заказ'}
+              </Button>
+            </div>
+          </form>
+        </Modal>
+      )}
+    </div>
+  )
+}

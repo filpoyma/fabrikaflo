@@ -90,5 +90,35 @@ export function createRequestsService(fastify: FastifyInstance) {
 
       return { success: true, orderId: order.id }
     },
+
+    async create(clientId: string, data: {
+      occasion: string
+      budget: number
+      date?: string | null
+      deliveryType: string
+      deliveryAddress?: string | null
+      recipientPhone?: string | null
+      postcardText?: string | null
+      comment?: string | null
+      examplePhotoUrl?: string | null
+    }) {
+      const parsedDate = data.date ? new Date(data.date) : null
+      return prisma.request.create({
+        data: {
+          clientId,
+          occasion: data.occasion,
+          budget: data.budget,
+          date: parsedDate,
+          deliveryType: data.deliveryType as any,
+          deliveryAddress: data.deliveryAddress,
+          recipientPhone: data.recipientPhone,
+          postcardText: data.postcardText,
+          comment: data.comment,
+          examplePhotoUrl: data.examplePhotoUrl,
+          status: 'PENDING',
+        },
+        include: { client: true },
+      })
+    },
   }
 }

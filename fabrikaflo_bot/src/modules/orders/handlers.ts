@@ -88,3 +88,52 @@ export async function assignCourier(
   const service = createOrdersService(request.server)
   return service.assignCourier(request.params.id, request.body.courierId)
 }
+
+export async function listMyOrders(request: FastifyRequest, _reply: FastifyReply) {
+  const service = createOrdersService(request.server)
+  const data = await service.getMyOrders(request.user.id)
+  return { data }
+}
+
+export async function clientGetOrder(
+  request: FastifyRequest<{ Params: { id: string } }>,
+  _reply: FastifyReply,
+) {
+  const service = createOrdersService(request.server)
+  const data = await service.clientGetById(request.params.id, request.user.id)
+  return { data }
+}
+
+export async function clientApproveOrder(
+  request: FastifyRequest<{ Params: { id: string } }>,
+  _reply: FastifyReply,
+) {
+  const service = createOrdersService(request.server)
+  return service.clientApproveOrder(request.params.id, request.user.id)
+}
+
+export async function clientDisapproveOrder(
+  request: FastifyRequest<{ Params: { id: string }; Body: { feedback: string } }>,
+  _reply: FastifyReply,
+) {
+  const service = createOrdersService(request.server)
+  return service.clientDisapproveOrder(request.params.id, request.user.id, request.body.feedback)
+}
+
+export async function clientUploadReceipt(
+  request: FastifyRequest<{ Params: { id: string } }>,
+  reply: FastifyReply,
+) {
+  const fileData = await request.file()
+  if (!fileData) {
+    return reply.badRequest('No file uploaded')
+  }
+
+  const buffer = await fileData.toBuffer()
+  const service = createOrdersService(request.server)
+
+  const photoUrl = await request.server.cloudinary.uploadBuffer(buffer, 'fabrikaflo_receipts')
+  await service.clientUploadReceipt(request.params.id, photoUrl, request.user.id)
+
+  return { success: true }
+}

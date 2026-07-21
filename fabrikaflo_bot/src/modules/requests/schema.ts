@@ -77,3 +77,32 @@ export const convertRequestSchema = {
     }),
   },
 }
+
+export const createRequestSchema = {
+  tags: ['requests'],
+  body: Type.Object({
+    occasion: Type.String(),
+    budget: Type.Number(),
+    date: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    deliveryType: Type.String(),
+    deliveryAddress: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    recipientPhone: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    postcardText: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    comment: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+    examplePhotoUrl: Type.Optional(Type.Union([Type.String(), Type.Null()])),
+  }),
+  response: {
+    201: Type.Object({
+      data: RequestSchema,
+    }),
+  },
+}
+
+export const uploadRequestPhotoSchema = {
+  tags: ['requests'],
+  response: {
+    200: Type.Object({
+      url: Type.String(),
+    }),
+  },
+}

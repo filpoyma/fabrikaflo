@@ -1,0 +1,172 @@
+{
+  "brand": {
+    "name": "fabrika.flo",
+    "tagline": "цветочный цех",
+    "vibe": "Aesop × The Line × Winston Flowers. Luxury, print-editorial, hand-crafted, exclusive."
+  },
+  "theme_preference": "light",
+  "colors": {
+    "background": {
+      "default": "#FDFBF7",
+      "alt": "#F5EFE7",
+      "glass": "rgba(253, 251, 247, 0.85)"
+    },
+    "primary": {
+      "DEFAULT": "#6A1A2B",
+      "hover": "#4F121F",
+      "light": "#8C273B"
+    },
+    "accent": {
+      "DEFAULT": "#D5B47B",
+      "hover": "#C29E5F",
+      "light": "#F2E8D5"
+    },
+    "text": {
+      "primary": "#282321",
+      "secondary": "#736862",
+      "inverse": "#FDFBF7"
+    },
+    "border": {
+      "DEFAULT": "#E8DFD5",
+      "light": "#F2EBE1",
+      "active": "#6A1A2B"
+    },
+    "status": {
+      "error": "#B53D3D",
+      "success": "#3D6B4E"
+    }
+  },
+  "typography": {
+    "fonts": {
+      "display": "Fraunces, 'Playfair Display', serif",
+      "sans": "Manrope, 'Inter Tight', sans-serif"
+    },
+    "hierarchy": {
+      "h1": "text-4xl sm:text-5xl font-display font-light tracking-tight text-text-primary",
+      "h2": "text-2xl sm:text-3xl font-display font-light tracking-tight text-text-primary",
+      "h3": "text-xl sm:text-2xl font-display font-normal text-text-primary",
+      "h4": "text-lg font-sans font-medium tracking-wide uppercase text-text-primary",
+      "body": "text-base font-sans font-normal text-text-secondary leading-relaxed",
+      "small": "text-sm font-sans font-normal text-text-secondary uppercase tracking-widest",
+      "overline": "text-xs font-sans font-semibold tracking-[0.2em] uppercase text-accent"
+    }
+  },
+  "spacing_and_layout": {
+    "philosophy": "Generous white space, ~1.5x-2x normal spacing. Create a museum/gallery feel.",
+    "container": "w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-8",
+    "grids": {
+      "catalog": "grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6 lg:gap-8",
+      "bento_home": "grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6"
+    }
+  },
+  "component_styles": {
+    "buttons": {
+      "primary": "rounded-full bg-primary text-text-inverse px-8 py-3.5 font-sans text-sm font-medium tracking-wide hover:bg-primary-hover transition-colors duration-300",
+      "secondary": "rounded-none border border-primary text-primary px-8 py-3.5 font-sans text-sm font-medium tracking-wide hover:bg-primary hover:text-text-inverse transition-colors duration-300",
+      "accent": "rounded-full bg-accent text-text-primary px-8 py-3.5 font-sans text-sm font-medium tracking-wide hover:bg-accent-hover transition-colors"
+    },
+    "cards": {
+      "product": "group cursor-pointer flex flex-col gap-3 bg-transparent border-none",
+      "article": "flex flex-col gap-4 border border-border p-6 sm:p-8 hover:border-primary transition-colors"
+    },
+    "inputs": {
+      "default": "border-b border-border bg-transparent py-3 px-0 font-sans text-text-primary focus:border-primary focus:outline-none focus:ring-0 transition-colors rounded-none placeholder:text-text-secondary/50",
+      "label": "font-sans text-xs uppercase tracking-widest text-text-secondary mb-1"
+    },
+    "bottom_nav": {
+      "container": "fixed bottom-0 left-0 right-0 z-50 backdrop-blur-xl bg-background-glass border-t border-border pb-safe pt-2 px-4 flex justify-around items-center",
+      "item": "flex flex-col items-center gap-1 p-2 text-text-secondary hover:text-primary transition-colors",
+      "item_active": "text-primary"
+    },
+    "tags": "px-3 py-1 text-xs font-sans uppercase tracking-wider border border-border text-text-secondary rounded-full hover:border-primary hover:text-primary transition-colors"
+  },
+  "visual_enhancers": {
+    "motifs": [
+      "Hand-drawn ranunculus/peony line-art SVGs (stroke width 1px, color: primary or accent)",
+      "Wax-seal monogram 'f.f' used as an avatar, loading state, or footer seal"
+    ],
+    "shadows": "Very minimal. Rely on 1px borders and generous spacing instead of drop shadows. Use subtle shadow-sm for sticky headers/bottom navs only.",
+    "borders": "1px solid #E8DFD5. Use for dividing sections, framing images, and elegant table lines.",
+    "loading": "Warm ivory shimmer skeletons, not standard dark grays. Monogram fading in/out."
+  },
+  "motion": {
+    "splash": {
+      "duration": "2.5s",
+      "sequence": "1. SVG line-art of peony/ranunculus self-draws (stroke-dasharray). 2. Monogram fades in center. 3. Tagline 'цветочный цех' reveals letter-by-letter."
+    },
+    "micro_interactions": [
+      "Staggered fade-up reveals for grid items on scroll",
+      "Subtle image scale up (1.05x) on product card hover within a hidden overflow container",
+      "Wine-colored underline expansion (width 0 to 100%) on editorial links hover"
+    ]
+  },
+  "page_blueprints": {
+    "Splash": "Full screen Ivory background. Center alignment. SVG drawing animation -> Monogram -> Tagline reveal -> Route to Home.",
+    "Home": "Desktop Header / Mobile Hamburger. Hero section: Large signature bouquet image with bold Fraunces typography overlay (or beside it), Primary CTA. Followed by curated collections (horizontal scroll or grid), Editorial articles (bento box), Quick order CTA.",
+    "Catalog": "Sticky filter bar (Occasion, Size, Palette, Price) below header. Grid of bouquets (2 col mobile, 4 col desktop). Each item has image (tall aspect ratio 4:5), name (serif), price (sans).",
+    "Product": "Large hero image (or Swiper gallery) taking 60% of viewport height on mobile. Product details sheet sliding up or below: Title, Price, Composition ('состав') list, Size/Price options (chips), sticky 'Add to Order' bottom bar.",
+    "Article": "Editorial blog layout. Large typography, drop caps, inline images, generous line-height. Author/florist bio at the bottom.",
+    "Cart_Checkout": "Clean, distraction-free. List of items. Address input (standardized), Delivery slot picker with map integration (Leaflet), Personal note card (textarea with script font preview), Payment selection.",
+    "Profile": "Simple tabs: Orders, Favorites, Addresses. Ivory background, clear typography.",
+    "Login": "Telegram-native button as primary. Fallback phone/email login. Minimal layout, focus on the brand monogram.",
+    "AiGuide": "Chat interface. Florist AI advisor. Chat bubbles with ivory/wine colors. Suggestions for bouquets based on occasion.",
+    "Admin": "Product CRUD, Orders table. Standard dashboard layout but styled with the same design system (ivory background, wine accents)."
+  },
+  "image_urls": [
+    {
+      "url": "https://images.unsplash.com/photo-1572454591674-2739f30d8c40?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NjV8MHwxfHNlYXJjaHwxfHxsdXh1cnklMjBmbG9yYWwlMjBib3VxdWV0fGVufDB8fHx8MTc4NDU0NzM4NXww&ixlib=rb-4.1.0&q=85",
+      "category": "Hero/Signature Bouquet",
+      "description": "Luxurious pink, beige, and red flower bouquet in clear glass vase. Perfect for home page hero."
+    },
+    {
+      "url": "https://images.pexels.com/photos/36268210/pexels-photo-36268210.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "category": "Catalog/Product",
+      "description": "Luxurious floral bouquet with dark burgundy orchids and pink roses in a chic setting."
+    },
+    {
+      "url": "https://images.pexels.com/photos/32257347/pexels-photo-32257347.jpeg?auto=compress&cs=tinysrgb&dpr=2&h=650&w=940",
+      "category": "Editorial/Article",
+      "description": "Detailed view of burgundy and white Scabiosa flowers with soft bokeh."
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1610599929507-fac366fb4252?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAzMjV8MHwxfHNlYXJjaHw0fHxlbGVnYW50JTIwcmFudW5jdWx1cyUyMGJvdXF1ZXR8ZW58MHx8fHwxNzg0NTQ3Mzg1fDA&ixlib=rb-4.1.0&q=85",
+      "category": "Catalog/Product",
+      "description": "Elegant pink and yellow ranunculus in white ceramic vase."
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1502089418555-ebcba08cb377?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NjV8MHwxfHNlYXJjaHwyfHxsdXh1cnklMjBmbG9yYWwlMjBib3VxdWV0fGVufDB8fHx8MTc4NDU0NzM4NXww&ixlib=rb-4.1.0&q=85",
+      "category": "Collection/Banner",
+      "description": "White and purple petaled flower arrangement on white vase."
+    },
+    {
+      "url": "https://images.unsplash.com/photo-1620752379460-d4adfe02a5ce?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjY2NjV8MHwxfHNlYXJjaHwzfHxlbGVnYW50JTIwcmFudW5jdWx1cyUyMGJvdXF1ZXR8ZW58MHx8fHwxNzg0NTQ3Mzg1fDA&ixlib=rb-4.1.0&q=85",
+      "category": "Catalog/Product",
+      "description": "Pink rose and white baby's breath flowers bouquet."
+    }
+  ],
+  "instructions_to_main_agent": [
+    "CRITICAL: Apply the exact colors: #FDFBF7 (Ivory bg), #6A1A2B (Burgundy primary), #D5B47B (Champagne accent), #282321 (Deep espresso text). DO NOT USE SLOP PASTEL PINKS OR GENERIC ROSE GOLD.",
+    "CRITICAL: Do NOT use Inter or Roboto for headings. Must use Fraunces (or Playfair Display) for an editorial, print-magazine look. Ensure you use .js/.jsx conventions in standard React, not TypeScript (.tsx).",
+    "CRITICAL: Ensure Mobile-first design for Telegram Mini App (~390px viewport), with elegant scaling for desktop (max 1200px container).",
+    "CRITICAL: Create the Monogram SVG for the splash screen (interlocked 'f.f') and animate the drawing of a botanical SVG alongside it.",
+    "CRITICAL: Avoid dark themes entirely; the background should be warm ivory throughout.",
+    "CRITICAL: Build the Bottom Navigation with glassmorphism over ivory (backdrop-blur-xl bg-[#FDFBF7]/80) and subtle wine accent for the active state.",
+    "CRITICAL: All interactive elements must include `data-testid` attributes (e.g., `data-testid=\"add-to-cart-btn\"`).",
+    "CRITICAL: Remove Shadcn default borders and box-shadows. Follow the provided `visual_enhancers` instructions-rely on 1px borders (#E8DFD5) and white space (p-6, p-8) instead of shadows.",
+    "CRITICAL: Do not use HTML `<select>` or native date pickers. Use customized UI components that match the luxury aesthetic.",
+    "CRITICAL: Implement smooth transitions and micro-animations, especially staggered load animations on the Catalog grid and hover effects on product images."
+  ],
+  "universal_guidelines_for_main_agent": [
+    "You tend to converge toward generic, 'on distribution' outputs. Make creative, distinctive frontends that surprise and delight.",
+    "Create depth through layered design elements with z-index hierarchy, but keep styling flat and print-like to match the editorial theme.",
+    "Use glass-morphism effects with backdrop filters (12-24px blur) strictly where needed (headers, bottom nav).",
+    "You MUST NOT apply universal transition. Eg: `transition: all`. Always add transitions for specific interactive elements like button, input excluding transforms.",
+    "You MUST NOT center align the app container, ie do not add `.App { text-align: center; }` in the css file.",
+    "Always use modern button styles matching the brand (pill-shaped primary, sharp secondary).",
+    "NEVER: use AI assistant Emoji characters like 🤖🧠💭💡🔮🎯 etc for icons.",
+    "Every interaction needs micro-animations - hover states, transitions, parallax effects, and entrance animations.",
+    "Use 2-3x more spacing than feels comfortable. Cramped designs look cheap.",
+    "Prioritize using pre-existing components from src/components/ui when applicable.",
+    "Use `sonner` for toasts located in `/app/src/components/ui/sonner.tsx`."
+  ]
+}

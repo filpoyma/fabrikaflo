@@ -37,6 +37,13 @@ git checkout "$DEPLOY_BRANCH"
 git reset --hard "origin/$DEPLOY_BRANCH"
 git clean -fd
 
+PNPM_REQUIRED_VERSION="11.11.0"
+PNPM_ACTUAL_VERSION="$(pnpm --version)"
+
+if [ "$PNPM_ACTUAL_VERSION" != "$PNPM_REQUIRED_VERSION" ]; then
+  die "pnpm $PNPM_REQUIRED_VERSION is required, found $PNPM_ACTUAL_VERSION"
+fi
+
 pnpm_install() {
   local dir="$1"
   log "Removing stale dependencies in $dir"

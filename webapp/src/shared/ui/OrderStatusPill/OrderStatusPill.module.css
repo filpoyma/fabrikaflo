@@ -1,0 +1,42 @@
+.pill {
+  display: inline-block;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid;
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.pill[data-status='CREATED'],
+.pill[data-status='ASSEMBLING'],
+.pill[data-status='ASSEMBLED'],
+.pill[data-status='WAITING_FOR_APPROVAL'],
+.pill[data-status='WAITING_FOR_PAYMENT'] {
+  background: var(--champagne-tint);
+  color: var(--wine);
+  border-color: var(--champagne);
+}
+
+.pill[data-status='APPROVED'],
+.pill[data-status='PAID'],
+.pill[data-status='DELIVERED'] {
+  background: rgba(122, 139, 111, 0.14);
+  color: var(--sage);
+  border-color: rgba(122, 139, 111, 0.32);
+}
+
+.pill[data-status='DELIVERING'] {
+  background: var(--ivory-warm);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.pill[data-status='CANCELLED'] {
+  background: rgba(181, 61, 61, 0.08);
+  color: var(--error);
+  border-color: rgba(181, 61, 61, 0.25);
+}

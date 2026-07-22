@@ -41,49 +41,6 @@
   margin-top: 0.4rem;
 }
 
-.statusPill {
-  display: inline-block;
-  padding: 0.32rem 0.75rem;
-  border-radius: 999px;
-  border: 1px solid;
-  font-family: var(--font-sans);
-  font-size: 0.6rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.statusPill[data-status='CREATED'],
-.statusPill[data-status='ASSEMBLING'],
-.statusPill[data-status='ASSEMBLED'],
-.statusPill[data-status='WAITING_FOR_APPROVAL'],
-.statusPill[data-status='WAITING_FOR_PAYMENT'] {
-  background: var(--champagne-tint);
-  color: var(--wine);
-  border-color: var(--champagne);
-}
-
-.statusPill[data-status='APPROVED'],
-.statusPill[data-status='PAID'],
-.statusPill[data-status='DELIVERED'] {
-  background: rgba(122, 139, 111, 0.14);
-  color: var(--sage);
-  border-color: rgba(122, 139, 111, 0.32);
-}
-
-.statusPill[data-status='DELIVERING'] {
-  background: var(--ivory-warm);
-  color: var(--ink);
-  border-color: var(--line);
-}
-
-.statusPill[data-status='CANCELLED'] {
-  background: rgba(181, 61, 61, 0.08);
-  color: var(--error);
-  border-color: rgba(181, 61, 61, 0.25);
-}
-
 .details {
   display: flex;
   flex-direction: column;

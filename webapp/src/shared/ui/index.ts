@@ -25,4 +25,7 @@ export type { IProductPlaceholderProps } from './ProductPlaceholder/index.ts'
 export { SaleBadge } from './SaleBadge/index.ts'
 export type { ISaleBadgeProps } from './SaleBadge/index.ts'
 
+export { OrderStatusPill } from './OrderStatusPill/index.ts'
+export type { IOrderStatusPillProps } from './OrderStatusPill/index.ts'
+
 export { cx } from './cx.ts'

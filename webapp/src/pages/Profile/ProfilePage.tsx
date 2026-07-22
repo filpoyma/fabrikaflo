@@ -8,13 +8,11 @@ import {
 } from '../../api/clients'
 import { useMyOrdersQuery, useRepeatOrderMutation } from '../../api/orders'
 import { useTelegram } from '../../hooks/useTelegram'
-import { Button, IconButton, PageTitle, cx } from '../../shared/ui'
-import type { IOrder } from '../../types/domain.ts'
-import type { IClientProfile, IProfileLegacyOrder } from '../../types/webapp.ts'
+import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat'
+import { Button, IconButton, OrderStatusPill, PageTitle, cx } from '../../shared/ui'
+import type { IClientProfile } from '../../types/webapp.ts'
 import { ProfileAddressSection } from './components/ProfileAddressSection'
 import styles from './ProfilePage.module.css'
-
-type TProfileOrder = Omit<IOrder, 'status'> & IProfileLegacyOrder
 
 export default function ProfilePage() {
   const navigate = useNavigate()
@@ -70,37 +68,6 @@ export default function ProfilePage() {
     }
   }
 
-  const getStatusColor = (status: string | undefined): string => {
-    switch (status) {
-      case 'pending':
-        return 'orange'
-      case 'paid':
-        return 'green'
-      case 'confirmed':
-        return 'green'
-      case 'shipped':
-        return 'gold'
-      case 'done':
-        return 'green'
-      case 'cancelled':
-        return 'red'
-      default:
-        return 'gold'
-    }
-  }
-
-  const getStatusText = (status: string | undefined): string => {
-    const mapRu: Record<string, string> = {
-      pending: '⏳ Ожидает оплаты',
-      paid: '💰 Оплачен',
-      confirmed: '✅ Подтверждён',
-      shipped: '🚚 Отправлен',
-      done: '🎉 Завершён',
-      cancelled: '❌ Отменён',
-    }
-    return mapRu[status ?? ''] || status || ''
-  }
-
   const handleRepeatOrder = async (orderId: string) => {
     try {
       setRepeating(true)
@@ -137,12 +104,7 @@ export default function ProfilePage() {
     )
   }
 
-  const profileOrders = orders as TProfileOrder[]
-  const lastOrder =
-    profileOrders.find((o) => {
-      const status = String(o?.status ?? '').toLowerCase()
-      return status !== 'cancelled'
-    }) ?? null
+  const lastOrder = orders.find((o) => o.status !== 'CANCELLED') ?? null
 
   return (
     <div
@@ -236,26 +198,23 @@ export default function ProfilePage() {
         <div className={cx('glass-card', styles.quickRepeatCard)}>
           <h3 className={styles.quickRepeatTitle}>🔄 Быстрый повтор заказа</h3>
           <p className={styles.quickRepeatDesc}>
-            Повторить ваш прошлый заказ #{lastOrder.id} от{' '}
-            {new Date(lastOrder.created_at ?? lastOrder.createdAt ?? '').toLocaleDateString()}:
+            Повторить заказ № {String(lastOrder.id).slice(-6)} от{' '}
+            {formatOrderDate(lastOrder.createdAt, { day: 'numeric', month: 'long' })}:
           </p>
           <div className={styles.quickRepeatItems}>
-            {Array.isArray(lastOrder.items) &&
-              lastOrder.items.map((item, idx) => (
-                <div
-                  key={idx}
-                  className={cx(
-                    styles.quickRepeatItem,
-                    idx < (lastOrder.items?.length ?? 0) - 1 && styles.quickRepeatItemSpaced,
-                  )}
-                >
-                  • {item.qty} × {item.name} ({item.variant})
-                </div>
-              ))}
+            {lastOrder.wishes && (
+              <div className={styles.quickRepeatItem}>«{lastOrder.wishes}»</div>
+            )}
+            <div className={styles.quickRepeatItem}>
+              Бюджет: {formatOrderBudget(lastOrder.budget)}
+            </div>
+            {lastOrder.deliveryAddress && (
+              <div className={styles.quickRepeatItem}>{lastOrder.deliveryAddress}</div>
+            )}
           </div>
           <Button
             fullWidth
-            onClick={() => handleRepeatOrder(String(lastOrder.id))}
+            onClick={() => handleRepeatOrder(lastOrder.id)}
             disabled={repeating}
           >
             {repeating ? 'Добавление в корзину...' : '🛒 Повторить заказ'}
@@ -265,74 +224,70 @@ export default function ProfilePage() {
 
       <ProfileAddressSection
         key={`${profile.address ?? ''}-${profile.address_lat ?? ''}-${profile.address_lng ?? ''}`}
-        profile={profile}
+        profile={profile as IClientProfile}
         haptic={haptic}
         showAlert={showAlert}
         updateProfileMutation={updateProfileMutation}
       />
 
       <h3 className={styles.ordersTitle}>📋 Мои заказы</h3>
-      {!Array.isArray(orders) || orders.length === 0 ? (
+      {orders.length === 0 ? (
         <div className={cx('glass-card', styles.emptyOrders)}>
           <p className={styles.emptyOrdersText}>У вас пока нет заказов</p>
         </div>
       ) : (
         <div className={styles.ordersList}>
-          {profileOrders.map((o, idx) => (
-            <div key={o?.id ?? `order-${idx}`} className="glass-card">
+          {orders.map((o) => (
+            <div key={o.id} className="glass-card">
               <div className={cx('flex-between', styles.orderHeader)}>
                 <div>
-                  <div className={styles.orderId}>Заказ #{o?.id}</div>
-                  <div className={styles.orderDate}>
-                    {o?.created_at
-                      ? new Date(o.created_at).toLocaleDateString('ru-RU')
-                      : 'Дата неизвестна'}
-                  </div>
+                  <div className={styles.orderId}>Заказ № {String(o.id).slice(-6)}</div>
+                  <div className={styles.orderDate}>{formatOrderDate(o.createdAt)}</div>
                 </div>
-                <div className={`badge ${getStatusColor(o?.status)}`}>
-                  {getStatusText(o?.status)}
-                </div>
+                <OrderStatusPill status={o.status} />
               </div>
 
               <div className={styles.orderItems}>
-                {Array.isArray(o?.items)
-                  ? o.items.map((item, itemIdx) => (
-                      <div key={itemIdx} className={cx('flex-between', styles.orderItemRow)}>
-                        <span>
-                          {item?.qty} × {item?.name} ({item?.variant})
-                        </span>
-                        <span>${item?.subtotal}</span>
-                      </div>
-                    ))
-                  : null}
+                {o.wishes && (
+                  <div className={styles.orderDetailRow}>
+                    <span className={styles.orderDetailLabel}>Пожелания</span>
+                    <span>«{o.wishes}»</span>
+                  </div>
+                )}
+                {o.recipientPhone && (
+                  <div className={styles.orderDetailRow}>
+                    <span className={styles.orderDetailLabel}>Телефон</span>
+                    <span>{o.recipientPhone}</span>
+                  </div>
+                )}
+                {o.deliveryAddress && o.deliveryAddress !== 'Самовывоз' && (
+                  <div className={styles.orderDetailRow}>
+                    <span className={styles.orderDetailLabel}>Адрес</span>
+                    <span>{o.deliveryAddress}</span>
+                  </div>
+                )}
+                {o.postcardText && (
+                  <div className={styles.orderDetailRow}>
+                    <span className={styles.orderDetailLabel}>Открытка</span>
+                    <span>«{o.postcardText}»</span>
+                  </div>
+                )}
               </div>
 
               <div className={cx('flex-between', styles.orderTotal)}>
-                <span>
-                  Итого ({o?.currency ? (o.currency === 'uah' ? 'RUB' : o.currency.toUpperCase()) : 'UNKNOWN'}
-                  ):
-                </span>
-                <span className={styles.orderTotalValue}>
-                  {o?.currency === 'usd' || o?.currency === 'usdt' ? '$' : ''}
-                  {o?.total_in_currency}
-                  {o?.currency === 'uah' ? ' ₽' : ''}
-                  {o?.currency === 'idr' ? ' Rp' : ''}
-                  {o?.currency === 'vnd' ? ' ₫' : ''}
-                </span>
+                <span>Бюджет:</span>
+                <span className={styles.orderTotalValue}>{formatOrderBudget(o.budget)}</span>
               </div>
 
-              {String(o?.status) === 'pending' && (
+              {(o.status === 'WAITING_FOR_PAYMENT' || o.status === 'APPROVED') && o.paymentLink && (
                 <Button
+                  href={o.paymentLink}
+                  target="_blank"
+                  rel="noopener noreferrer"
                   fullWidth
                   className={styles.payBtn}
-                  onClick={() => {
-                    showAlert(
-                      `Реквизиты для оплаты:\n\n${o?.payment_details || 'Реквизиты временно недоступны. Свяжитесь с поддержкой.'}`,
-                    )
-                    haptic.impact('medium')
-                  }}
                 >
-                  💳 Показать реквизиты
+                  💳 Перейти к оплате
                 </Button>
               )}
             </div>

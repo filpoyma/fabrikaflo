@@ -6,38 +6,13 @@ import {
   useUploadReceiptMutation,
 } from '../../api/orders'
 import { useTelegram } from '../../hooks/useTelegram'
-import { Button, EmptyState, PageTitle, cx } from '../../shared/ui'
-import type { TOrderStatus } from '../../types/domain.ts'
+import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat'
+import { Button, EmptyState, OrderStatusPill, PageTitle, cx } from '../../shared/ui'
 import CheckIcon from '../../assets/icons/check.svg'
 import XIcon from '../../assets/icons/x.svg'
 import UploadIcon from '../../assets/icons/upload.svg'
 import CreditCardIcon from '../../assets/icons/credit-card.svg'
 import styles from './OrdersPage.module.css'
-
-const STATUS_LABEL: Record<TOrderStatus, string> = {
-  CREATED: 'Создан',
-  ASSEMBLING: 'Сборка',
-  ASSEMBLED: 'Согласование',
-  WAITING_FOR_APPROVAL: 'Согласование',
-  APPROVED: 'Одобрен',
-  WAITING_FOR_PAYMENT: 'Ожидает оплаты',
-  PAID: 'Оплачен',
-  DELIVERING: 'В пути',
-  DELIVERED: 'Доставлен',
-  CANCELLED: 'Отменён',
-}
-
-function StatusPill({ status }: { status: TOrderStatus }) {
-  return (
-    <span
-      className={styles.statusPill}
-      data-status={status}
-      data-testid={`order-status-${status}`}
-    >
-      {STATUS_LABEL[status] || status}
-    </span>
-  )
-}
 
 export default function OrdersPage() {
   const { haptic, showAlert } = useTelegram()
@@ -155,18 +130,13 @@ export default function OrdersPage() {
                     Заказ № {String(o.id).slice(-6)}
                   </div>
                   <div className={styles.budget}>
-                    {o.budget ? `${Number(o.budget).toLocaleString('ru-RU')} ₽` : '—'}
+                    {formatOrderBudget(o.budget)}
                   </div>
                   <div className={styles.orderDate}>
-                    {o.createdAt
-                      ? new Date(o.createdAt).toLocaleDateString('ru-RU', {
-                          day: 'numeric',
-                          month: 'long',
-                        })
-                      : ''}
+                    {formatOrderDate(o.createdAt, { day: 'numeric', month: 'long' })}
                   </div>
                 </div>
-                <StatusPill status={o.status} />
+                <OrderStatusPill status={o.status} />
               </div>
 
               <div

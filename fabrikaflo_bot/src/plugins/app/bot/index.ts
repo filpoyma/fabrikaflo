@@ -1,12 +1,12 @@
+import type { FastifyInstance } from 'fastify';
 import fp from 'fastify-plugin';
 import { Bot, InlineKeyboard, webhookCallback } from 'grammy';
-import type { FastifyInstance } from 'fastify';
 
-import { getClientMainMenu, getCourierMainMenu } from './keyboards.ts';
-import { getOrCreateUser } from './utils.ts';
-import { registerPortfolioHandlers } from './portfolio.ts';
-import { registerOrderHandlers } from './orders.ts';
 import { registerCourierHandlers } from './courier.ts';
+import { getClientMainMenu, getCourierMainMenu } from './keyboards.ts';
+import { registerOrderHandlers } from './orders.ts';
+import { registerPortfolioHandlers } from './portfolio.ts';
+import { getOrCreateUser } from './utils.ts';
 import { registerWizardHandlers } from './wizard.ts';
 
 declare module 'fastify' {
@@ -92,8 +92,8 @@ export default fp(
     // Contacts
     bot.hears('📞 Контакты', async (ctx) => {
       await ctx.reply(
-        `💐 *Цветочная мастерская FabrikaFlo*\n\n` +
-          `📍 Адрес: Вифанская, 29, Sergiyev Posad 141300\n` +
+        `💐 *Цветочная мастерская fabrika.flo*\n\n` +
+          `📍 Адрес: Сергиев Посад, Вифанская, 29, 141300\n` +
           `📞 Телефон: 8 926 263-29-29\n` +
           `⏰ Режим работы: ежедневно с 08:30 до 21:00\n\n` +
           `Мы создаем только авторские оригинальные букеты, вдохновленные сезонной свежестью цветов. ✨`,

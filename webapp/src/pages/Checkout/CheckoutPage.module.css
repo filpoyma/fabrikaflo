@@ -69,15 +69,9 @@
 
 .dateTimeRow {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
   gap: 1rem;
   margin-bottom: 1.5rem;
-}
-
-@media (max-width: 480px) {
-  .dateTimeRow {
-    grid-template-columns: 1fr;
-  }
 }
 
 .deliveryOptions {

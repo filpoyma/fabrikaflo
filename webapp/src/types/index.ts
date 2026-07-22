@@ -13,8 +13,6 @@ export type {
   IProduct,
   IProductVariant,
   ICategory,
-  ICart,
-  ICartItem,
   IClientProfile,
   ICreateRequestPayload,
   IArticle,
@@ -24,14 +22,7 @@ export type {
   IAiChatResponse,
 } from './webapp.ts'
 
-export type {
-  PageWithCartProps,
-  SplashScreenProps,
-  ProtectedRouteProps,
-  NavShellProps,
-  LatLng,
-  UpdateCartFn,
-} from './pages.ts'
+export type { ProtectedRouteProps, LatLng } from './pages.ts'
 
 export type {
   IChatMessage,

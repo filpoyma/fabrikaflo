@@ -16,8 +16,6 @@ export type { IEmptyStateProps, TEmptyStateVariant } from './EmptyState/index.ts
 export { BackFloating } from './BackFloating/index.ts'
 export type { IBackFloatingProps } from './BackFloating/index.ts'
 
-export { QtyStepper } from './QtyStepper/index.ts'
-export type { IQtyStepperProps } from './QtyStepper/index.ts'
 
 export { ProductPlaceholder } from './ProductPlaceholder/index.ts'
 export type { IProductPlaceholderProps } from './ProductPlaceholder/index.ts'

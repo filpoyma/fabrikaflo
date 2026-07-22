@@ -26,10 +26,6 @@
   aspect-ratio: 4/5;
 }
 
-.splashAccent {
-  color: var(--champagne-lo);
-}
-
 .mainContent {
   padding-bottom: 80px;
 }

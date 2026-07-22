@@ -4,7 +4,6 @@ import { useProductsQuery } from '../../api/gallery'
 import { useTelegram } from '../../hooks/useTelegram'
 import { Button, ProductPlaceholder, cx } from '../../shared/ui'
 import type { IChatMessage } from '../../types/ui.ts'
-import type { PageWithCartProps } from '../../types/pages.ts'
 import ArrowRightIcon from '../../assets/icons/arrow-right.svg'
 import MessageSquareIcon from '../../assets/icons/message-square.svg'
 import SendIcon from '../../assets/icons/send.svg'
@@ -13,7 +12,7 @@ import styles from './HomePage.module.css'
 const HERO_IMG =
   'https://images.unsplash.com/photo-1572454591674-2739f30d8c40?crop=entropy&cs=srgb&fm=jpg&w=1200&q=85'
 
-export default function HomePage(_props: PageWithCartProps) {
+export default function HomePage() {
   const navigate = useNavigate()
   const { haptic } = useTelegram()
   const { data: products = [], isPending: loading } = useProductsQuery()

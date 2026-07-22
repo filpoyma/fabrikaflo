@@ -2,8 +2,6 @@ import { useEffect, useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import ArrowLeftIcon from '../../assets/icons/arrow-left.svg'
 import ArrowRightIcon from '../../assets/icons/arrow-right.svg'
-import MinusIcon from '../../assets/icons/minus.svg'
-import PlusIcon from '../../assets/icons/plus.svg'
 import { useProductQuery, useProductsQuery } from '../../api/gallery'
 import { useTelegram } from '../../hooks/useTelegram'
 import {
@@ -11,13 +9,11 @@ import {
   Button,
   Chip,
   ProductPlaceholder,
-  QtyStepper,
   SaleBadge,
 } from '../../shared/ui'
-import type { PageWithCartProps } from '../../types/pages.ts'
 import styles from './ProductPage.module.css'
 
-export default function ProductPage(_props: PageWithCartProps) {
+export default function ProductPage() {
   const { id } = useParams()
   const navigate = useNavigate()
   const { haptic } = useTelegram()
@@ -35,7 +31,6 @@ export default function ProductPage(_props: PageWithCartProps) {
     [allProducts, product],
   )
   const [variantIndex, setVariantIndex] = useState(0)
-  const [qty, setQty] = useState(1)
 
   useEffect(() => {
     window.scrollTo(0, 0)
@@ -119,18 +114,6 @@ export default function ProductPage(_props: PageWithCartProps) {
                 {priceStr}
               </div>
             </div>
-            <QtyStepper
-              size="sm"
-              value={qty}
-              onDecrease={() => setQty(Math.max(1, qty - 1))}
-              onIncrease={() => setQty(qty + 1)}
-              decreaseLabel="Уменьшить количество"
-              increaseLabel="Увеличить количество"
-              decreaseIcon={<MinusIcon width={13} height={13} strokeWidth={1.5} />}
-              increaseIcon={<PlusIcon width={13} height={13} strokeWidth={1.5} />}
-              decreaseTestId="qty-minus"
-              increaseTestId="qty-plus"
-            />
           </div>
 
           <Button

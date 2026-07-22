@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 220 220" preserveAspectRatio="xMidYMid meet" aria-hidden="true">
+  <path
+    class="stroke"
+    d="M110 40 C 80 55, 65 85, 78 118 C 55 118, 40 140, 55 165 C 80 178, 108 168, 115 145 C 135 165, 168 158, 176 132 C 190 106, 172 82, 150 82 C 158 60, 140 42, 110 40 Z"
+  />
+  <path
+    class="stroke accent-stroke"
+    d="M100 78 C 88 82, 82 96, 90 108 C 78 112, 76 128, 88 138 C 100 145, 118 138, 122 125 C 138 138, 158 128, 158 112 C 158 95, 140 88, 128 92 C 130 76, 116 72, 100 78 Z"
+  />
+  <path
+    class="stroke"
+    d="M110 110 C 102 112, 100 122, 108 128 C 116 132, 128 128, 128 118 C 128 108, 118 106, 110 110 Z"
+  />
+  <path class="stroke accent-stroke" d="M55 175 C 40 190, 30 200, 20 205" />
+  <path class="stroke accent-stroke" d="M175 155 C 190 170, 198 185, 200 200" />
+  <path class="stroke" d="M40 145 C 28 148, 20 155, 15 165" />
+  <path class="stroke" d="M185 105 C 198 108, 205 118, 205 130" />
+</svg>

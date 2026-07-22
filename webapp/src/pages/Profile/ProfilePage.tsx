@@ -6,10 +6,13 @@ import {
   useUpdateProfileMutation,
   useUploadAvatarMutation,
 } from '../../api/clients'
-import { useMyOrdersQuery, useRepeatOrderMutation } from '../../api/orders'
+import { useMyOrdersQuery } from '../../api/orders'
 import { useTelegram } from '../../hooks/useTelegram'
 import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat'
+import { isCompletedOrderStatus } from '../../shared/order/orderLabels'
+import { buildCheckoutRepeatState } from '../../shared/order/orderRepeat'
 import { Button, IconButton, OrderStatusPill, PageTitle, cx } from '../../shared/ui'
+import type { IOrder } from '../../types/domain.ts'
 import type { IClientProfile } from '../../types/webapp.ts'
 import { ProfileAddressSection } from './components/ProfileAddressSection'
 import styles from './ProfilePage.module.css'
@@ -20,9 +23,7 @@ export default function ProfilePage() {
   const { data: orders = [], isPending: ordersLoading } = useMyOrdersQuery()
   const updateProfileMutation = useUpdateProfileMutation()
   const uploadAvatarMutation = useUploadAvatarMutation()
-  const repeatOrderMutation = useRepeatOrderMutation()
   const loading = profileLoading || ordersLoading
-  const [repeating, setRepeating] = useState(false)
   const { haptic, showAlert } = useTelegram()
 
   const [isEditingProfile, setIsEditingProfile] = useState(false)
@@ -68,31 +69,9 @@ export default function ProfilePage() {
     }
   }
 
-  const handleRepeatOrder = async (orderId: string) => {
-    try {
-      setRepeating(true)
-      haptic.impact('heavy')
-      await repeatOrderMutation.mutateAsync(orderId)
-      haptic.success()
-      showAlert('Корзина успешно заполнена товарами из прошлого заказа!')
-      navigate('/cart')
-    } catch (e: unknown) {
-      console.error(e)
-      let errMsg = 'Ошибка при повторении заказа'
-      if (e instanceof Error) {
-        try {
-          const parsed = JSON.parse(e.message) as { detail?: string }
-          if (parsed.detail) {
-            errMsg = parsed.detail
-          }
-        } catch {
-          // ignore JSON parse errors
-        }
-      }
-      showAlert(errMsg)
-    } finally {
-      setRepeating(false)
-    }
+  const handleRepeatOrder = (order: IOrder) => {
+    haptic.impact('medium')
+    navigate('/checkout', { state: { repeatOrder: buildCheckoutRepeatState(order) } })
   }
 
   if (loading) return <div className="spinner" />
@@ -104,7 +83,8 @@ export default function ProfilePage() {
     )
   }
 
-  const lastOrder = orders.find((o) => o.status !== 'CANCELLED') ?? null
+  const lastCompletedOrder =
+    orders.find((o) => isCompletedOrderStatus(o.status)) ?? null
 
   return (
     <div
@@ -194,30 +174,26 @@ export default function ProfilePage() {
         )}
       </div>
 
-      {lastOrder && (
+      {lastCompletedOrder && (
         <div className={cx('glass-card', styles.quickRepeatCard)}>
           <h3 className={styles.quickRepeatTitle}>🔄 Быстрый повтор заказа</h3>
           <p className={styles.quickRepeatDesc}>
-            Повторить заказ № {String(lastOrder.id).slice(-6)} от{' '}
-            {formatOrderDate(lastOrder.createdAt, { day: 'numeric', month: 'long' })}:
+            Повторить заказ № {String(lastCompletedOrder.id).slice(-6)} от{' '}
+            {formatOrderDate(lastCompletedOrder.createdAt, { day: 'numeric', month: 'long' })}:
           </p>
           <div className={styles.quickRepeatItems}>
-            {lastOrder.wishes && (
-              <div className={styles.quickRepeatItem}>«{lastOrder.wishes}»</div>
+            {lastCompletedOrder.wishes && (
+              <div className={styles.quickRepeatItem}>«{lastCompletedOrder.wishes}»</div>
             )}
             <div className={styles.quickRepeatItem}>
-              Бюджет: {formatOrderBudget(lastOrder.budget)}
+              Бюджет: {formatOrderBudget(lastCompletedOrder.budget)}
             </div>
-            {lastOrder.deliveryAddress && (
-              <div className={styles.quickRepeatItem}>{lastOrder.deliveryAddress}</div>
+            {lastCompletedOrder.deliveryAddress && (
+              <div className={styles.quickRepeatItem}>{lastCompletedOrder.deliveryAddress}</div>
             )}
           </div>
-          <Button
-            fullWidth
-            onClick={() => handleRepeatOrder(lastOrder.id)}
-            disabled={repeating}
-          >
-            {repeating ? 'Добавление в корзину...' : '🛒 Повторить заказ'}
+          <Button fullWidth onClick={() => handleRepeatOrder(lastCompletedOrder)}>
+            Повторить заказ
           </Button>
         </div>
       )}

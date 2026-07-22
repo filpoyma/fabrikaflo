@@ -1,7 +1,7 @@
 import L from 'leaflet'
 import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
 import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useProfileQuery } from '../../api/clients'
 import { useCreateRequestMutation, useUploadRequestPhotoMutation } from '../../api/requests'
 import ArrowRightIcon from '../../assets/icons/arrow-right.svg'
@@ -10,7 +10,7 @@ import UploadIcon from '../../assets/icons/upload.svg'
 import XIcon from '../../assets/icons/x.svg'
 import { useTelegram } from '../../hooks/useTelegram'
 import { Button, Chip, IconButton, PageTitle, cx } from '../../shared/ui'
-import type { LatLng } from '../../types/pages.ts'
+import type { LatLng, ICheckoutLocationState } from '../../types/pages.ts'
 import type { ICheckoutFormState, ILocationPickerProps, INominatimReverseResponse } from '../../types/ui.ts'
 import { CheckoutSection } from './components/CheckoutSection'
 import styles from './CheckoutPage.module.css'
@@ -41,6 +41,7 @@ const OCCASIONS = [
 
 export default function CheckoutPage() {
   const navigate = useNavigate()
+  const location = useLocation()
   const [searchParams] = useSearchParams()
   const { haptic, showAlert } = useTelegram()
   const { data: profile } = useProfileQuery()
@@ -72,6 +73,19 @@ export default function CheckoutPage() {
   const [showErrors, setShowErrors] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
   const [appliedProfileKey, setAppliedProfileKey] = useState('')
+  const [appliedRepeatKey, setAppliedRepeatKey] = useState('')
+
+  const repeatPrefill = (location.state as ICheckoutLocationState | null)?.repeatOrder
+
+  if (repeatPrefill && appliedRepeatKey !== 'repeat') {
+    setAppliedRepeatKey('repeat')
+    setForm((f) => ({
+      ...f,
+      ...repeatPrefill,
+      date: '',
+      examplePhotoUrl: f.examplePhotoUrl || refPhoto || '',
+    }))
+  }
 
   const profileKey = profile
     ? `${profile.phone ?? ''}-${profile.address ?? ''}-${profile.address_lat ?? ''}-${profile.address_lng ?? ''}`
@@ -81,8 +95,8 @@ export default function CheckoutPage() {
     setAppliedProfileKey(profileKey)
     setForm((f) => ({
       ...f,
-      recipientPhone: profile.phone || '',
-      deliveryAddress: profile.address || '',
+      recipientPhone: f.recipientPhone || profile.phone || '',
+      deliveryAddress: f.deliveryAddress || profile.address || '',
     }))
     if (profile.address_lat && profile.address_lng) {
       setMapPosition({

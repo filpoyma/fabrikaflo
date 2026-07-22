@@ -27,29 +27,6 @@ export interface ICategory {
   slug: string
 }
 
-export interface ICartItem {
-  product_id: string
-  variant_index: number
-  quantity: number
-  price_usd: number
-  subtotal_display?: string
-  name?: string
-  product_name?: string
-  variant_name?: string
-  photo_url?: string
-  in_stock?: boolean
-}
-
-export interface ICart {
-  items: ICartItem[]
-  subtotal_usd: number
-  total_usd?: number
-  subtotal_display?: string
-  total_display?: string
-  discount_percent?: number
-  discount_usd?: number
-}
-
 export interface ILegacyOrderLineItem {
   qty?: number
   name?: string

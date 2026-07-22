@@ -1,24 +1,15 @@
 import type { ReactNode } from 'react'
-
-export type UpdateCartFn = () => void | Promise<void>
-
-export interface PageWithCartProps {
-  updateCart?: UpdateCartFn
-}
-
-export interface SplashScreenProps {
-  visible: boolean
-}
+import type { IRepeatCheckoutState } from '../shared/order/orderRepeat.ts'
 
 export interface ProtectedRouteProps {
   children: ReactNode
 }
 
-export interface NavShellProps {
-  cartCount?: number
-}
-
 export interface LatLng {
   lat: number
   lng: number
+}
+
+export interface ICheckoutLocationState {
+  repeatOrder?: IRepeatCheckoutState
 }

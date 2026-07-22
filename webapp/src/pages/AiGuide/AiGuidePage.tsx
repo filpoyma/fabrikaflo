@@ -38,7 +38,6 @@ export default function AiGuidePage() {
   useEffect(() => {
     const originalStyle = document.body.style.overflow
     document.body.style.overflow = 'hidden'
-    window.scrollTo(0, 0)
 
     return () => {
       document.body.style.overflow = originalStyle

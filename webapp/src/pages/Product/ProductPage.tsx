@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useMemo, useState } from 'react'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import ArrowLeftIcon from '../../assets/icons/arrow-left.svg'
 import ArrowRightIcon from '../../assets/icons/arrow-right.svg'
@@ -31,10 +31,6 @@ export default function ProductPage() {
     [allProducts, product],
   )
   const [variantIndex, setVariantIndex] = useState(0)
-
-  useEffect(() => {
-    window.scrollTo(0, 0)
-  }, [id])
 
   if (loading) return <div className="spinner" />
   if (!product) {

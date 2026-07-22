@@ -27,7 +27,12 @@
 }
 
 .mainContent {
-  padding-bottom: 80px;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  overscroll-behavior-y: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 .mainHidden {

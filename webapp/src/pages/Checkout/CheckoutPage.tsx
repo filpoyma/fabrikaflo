@@ -11,6 +11,7 @@ import MapPinIcon from '../../assets/icons/map-pin.svg';
 import UploadIcon from '../../assets/icons/upload.svg';
 import XIcon from '../../assets/icons/x.svg';
 import { useTelegram } from '../../hooks/useTelegram';
+import { formatDeliveryDateTime } from '../../shared/order/deliveryDateTime';
 import { Button, Chip, cx, IconButton, PageTitle } from '../../shared/ui';
 import type { ICheckoutLocationState, LatLng } from '../../types/pages.ts';
 import type {
@@ -60,7 +61,8 @@ export default function CheckoutPage() {
     occasion: 'День рождения',
     customOccasion: '',
     budget: 4000,
-    date: '',
+    deliveryDate: '',
+    deliveryTime: '',
     deliveryType: 'DELIVERY',
     deliveryAddress: '',
     recipientPhone: '',
@@ -87,7 +89,8 @@ export default function CheckoutPage() {
     setForm((f) => ({
       ...f,
       ...repeatPrefill,
-      date: '',
+      deliveryDate: '',
+      deliveryTime: '',
       examplePhotoUrl: f.examplePhotoUrl || refPhoto || '',
     }));
   }
@@ -181,7 +184,7 @@ export default function CheckoutPage() {
       await createRequestMutation.mutateAsync({
         occasion: finalOccasion,
         budget: Number(form.budget),
-        date: form.date || null,
+        date: formatDeliveryDateTime(form.deliveryDate, form.deliveryTime),
         deliveryType: form.deliveryType,
         deliveryAddress: form.deliveryType === 'DELIVERY' ? form.deliveryAddress : 'Самовывоз',
         recipientPhone: form.recipientPhone,
@@ -265,13 +268,21 @@ export default function CheckoutPage() {
             data-testid="budget-slider"
           />
 
-          <label className={cx('eyebrow', styles.fieldLabel)}>Дата и время доставки</label>
-          <input
-            type="datetime-local"
-            value={form.date}
-            onChange={(e) => setForm({ ...form, date: e.target.value })}
-            data-testid="date-input"
-          />
+          <label className={cx('eyebrow', styles.fieldLabel)}>Дата доставки</label>
+          <div className={styles.dateTimeRow}>
+            <input
+              type="date"
+              value={form.deliveryDate}
+              onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })}
+              data-testid="delivery-date-input"
+            />
+            <input
+              type="time"
+              value={form.deliveryTime}
+              onChange={(e) => setForm({ ...form, deliveryTime: e.target.value })}
+              data-testid="delivery-time-input"
+            />
+          </div>
         </CheckoutSection>
 
         <CheckoutSection eyebrow="Получение" title="Куда доставить">

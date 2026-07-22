@@ -67,6 +67,19 @@
   accent-color: var(--wine);
 }
 
+.dateTimeRow {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .dateTimeRow {
+    grid-template-columns: 1fr;
+  }
+}
+
 .deliveryOptions {
   display: flex;
   gap: 0.5rem;

@@ -16,7 +16,8 @@ export interface ICheckoutFormState {
   occasion: string
   customOccasion: string
   budget: number
-  date: string
+  deliveryDate: string
+  deliveryTime: string
   deliveryType: TDeliveryType
   deliveryAddress: string
   recipientPhone: string

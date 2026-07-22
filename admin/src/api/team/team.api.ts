@@ -22,21 +22,21 @@ export interface ICreateTeamMember {
 }
 
 export const teamApi = {
-  async list() {
-    return api.get('team').json<{ data: ITeamMember[] }>()
+  async list(): Promise<{ data: ITeamMember[] }> {
+    return api.get('team').json()
   },
-  async create(body: ICreateTeamMember) {
-    return api.post('team', { json: body }).json<{ data: ITeamMember }>()
+  async create(body: ICreateTeamMember): Promise<{ data: ITeamMember }> {
+    return api.post('team', { json: body }).json()
   },
-  async update(id: string, body: ICreateTeamMember) {
-    return api.put(`team/${id}`, { json: body }).json<{ data: ITeamMember }>()
+  async update(id: string, body: ICreateTeamMember): Promise<{ data: ITeamMember }> {
+    return api.put(`team/${id}`, { json: body }).json()
   },
-  async uploadAvatar(id: string, file: File) {
+  async uploadAvatar(id: string, file: File): Promise<{ data: ITeamMember }> {
     const formData = new FormData()
     formData.append('file', file)
-    return api.post(`team/${id}/avatar`, { body: formData }).json<{ data: ITeamMember }>()
+    return api.post(`team/${id}/avatar`, { body: formData }).json()
   },
-  async deleteItem(id: string) {
-    return api.delete(`team/${id}`).json<{ success: boolean }>()
+  async deleteItem(id: string): Promise<{ success: boolean }> {
+    return api.delete(`team/${id}`).json()
   },
 }

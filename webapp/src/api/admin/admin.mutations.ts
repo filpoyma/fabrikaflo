@@ -46,6 +46,7 @@ export const useAdminCreateProductMutation = () => {
     mutationFn: (data: IProductInput) => adminApi.createProduct(data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: galleryKeys.all })
+      queryClient.invalidateQueries({ queryKey: adminKeys.products() })
     },
   })
 }
@@ -58,6 +59,7 @@ export const useAdminUpdateProductMutation = () => {
       adminApi.updateProduct(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: galleryKeys.all })
+      queryClient.invalidateQueries({ queryKey: adminKeys.products() })
     },
   })
 }
@@ -69,7 +71,72 @@ export const useAdminDeleteProductMutation = () => {
     mutationFn: (id: string) => adminApi.deleteProduct(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: galleryKeys.all })
+      queryClient.invalidateQueries({ queryKey: adminKeys.products() })
     },
+  })
+}
+
+export const useAdminToggleProductMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (id: string) => adminApi.toggleProduct(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.products() })
+    },
+  })
+}
+
+export const useAdminCreateCategoryMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (data: Record<string, unknown>) => adminApi.createCategory(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.categories() })
+    },
+  })
+}
+
+export const useAdminDeleteCategoryMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (slug: string) => adminApi.deleteCategory(slug),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.categories() })
+    },
+  })
+}
+
+export const useAdminUpdateProductStockMutation = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({
+      id,
+      data,
+    }: {
+      id: string
+      data: Record<string, unknown>
+    }) => adminApi.updateProductStock(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: adminKeys.products() })
+    },
+  })
+}
+
+export const useAdminSetDiscountMutation = () => {
+  return useMutation({
+    mutationFn: ({ username, percent }: { username: string; percent: number }) =>
+      adminApi.setDiscount(username, percent),
+  })
+}
+
+export const useAdminSetPartnerMutation = () => {
+  return useMutation({
+    mutationFn: ({ username, isPartner }: { username: string; isPartner: boolean }) =>
+      adminApi.setPartner(username, isPartner),
   })
 }
 

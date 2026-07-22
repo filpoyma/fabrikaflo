@@ -3,14 +3,10 @@ import type { IPortfolioItem } from '../../types/domain.ts'
 import type { ICategory, IProduct, IProductInput } from '../../types/webapp.ts'
 import { galleryToProduct } from './gallery.mappers.ts'
 
-type GalleryListResponse = { data?: IPortfolioItem[] }
-type GalleryItemResponse = { data?: IPortfolioItem }
-type UploadResponse = { url?: string; photoUrl?: string }
-
 export const galleryApi = {
   async list(): Promise<IProduct[]> {
-    const response = await api.get('gallery').json<GalleryListResponse>()
-    return (response.data || []).map(galleryToProduct)
+    const response = await api.get('gallery').json<{ data: IPortfolioItem[] }>()
+    return (response.data ?? []).map(galleryToProduct)
   },
   async getById(id: string): Promise<IProduct> {
     const items = await galleryApi.list()
@@ -21,13 +17,13 @@ export const galleryApi = {
   async getCategories(): Promise<ICategory[]> {
     return [{ name: 'Авторские букеты', slug: 'bouquets' }]
   },
-  async uploadImage(file: File) {
+  async uploadImage(file: File): Promise<{ ok: true; url: string }> {
     const formData = new FormData()
     formData.append('file', file)
-    const response = await api.post('gallery/upload', { body: formData }).json<UploadResponse>()
-    return { ok: true as const, url: response.url || response.photoUrl || '' }
+    const response = await api.post('gallery/upload', { body: formData }).json<{ url?: string; photoUrl?: string }>()
+    return { ok: true, url: response.url || response.photoUrl || '' }
   },
-  async create(data: IProductInput) {
+  async create(data: IProductInput): Promise<IProduct> {
     const response = await api
       .post('gallery', {
         json: {
@@ -36,11 +32,10 @@ export const galleryApi = {
           photoUrl: data.photo_url,
         },
       })
-      .json<GalleryItemResponse | IPortfolioItem>()
-    const item = 'data' in response && response.data ? response.data : (response as IPortfolioItem)
-    return galleryToProduct(item)
+      .json<{ data: IPortfolioItem }>()
+    return galleryToProduct(response.data)
   },
-  async update(id: string, data: IProductInput) {
+  async update(id: string, data: IProductInput): Promise<IProduct> {
     const response = await api
       .patch(`gallery/${id}`, {
         json: {
@@ -49,11 +44,10 @@ export const galleryApi = {
           photoUrl: data.photo_url,
         },
       })
-      .json<GalleryItemResponse | IPortfolioItem>()
-    const item = 'data' in response && response.data ? response.data : (response as IPortfolioItem)
-    return galleryToProduct(item)
+      .json<{ data: IPortfolioItem }>()
+    return galleryToProduct(response.data)
   },
-  async delete(id: string) {
+  async delete(id: string): Promise<{ success: boolean }> {
     return api.delete(`gallery/${id}`).json()
   },
 }

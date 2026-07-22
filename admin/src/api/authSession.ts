@@ -1,4 +1,4 @@
-import type { IUser } from '../types'
+import type { IUser } from '../types/user'
 
 const API_URL = (import.meta.env.VITE_API_URL as string) || 'http://localhost:3000/api/fabrika'
 

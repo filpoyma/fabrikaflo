@@ -1,6 +1,33 @@
 // @ts-nocheck
 import React, { useEffect, useState } from 'react';
-import { api } from '../api';
+import { useQueryClient } from '@tanstack/react-query';
+import {
+  adminKeys,
+  useAdminAuditLogsQuery,
+  useAdminCategoriesQuery,
+  useAdminOrdersQuery,
+  useAdminProductsQuery,
+  useAdminReferralsQuery,
+  useAdminSettingsQuery,
+  useAdminStatsQuery,
+  useAdminTeamQuery,
+} from '../api/admin/admin.queries.ts';
+import {
+  useAdminAddTeamMemberMutation,
+  useAdminCreateCategoryMutation,
+  useAdminCreateProductMutation,
+  useAdminDeleteCategoryMutation,
+  useAdminDeleteProductMutation,
+  useAdminDeleteTeamMemberMutation,
+  useAdminSetDiscountMutation,
+  useAdminSetPartnerMutation,
+  useAdminToggleProductMutation,
+  useAdminUpdateOrderMutation,
+  useAdminUpdateProductStockMutation,
+  useAdminUpdateSettingsMutation,
+  useAdminUploadImageMutation,
+} from '../api/admin/admin.mutations.ts';
+import { adminApi } from '../api/admin/admin.api.ts';
 import { useTelegram } from '../hooks/useTelegram';
 import PlusIcon from '../assets/icons/plus.svg'
 import XIcon from '../assets/icons/x.svg'
@@ -72,25 +99,19 @@ const ProductImage = ({ src, categorySlug, name, size = '45px', fontSize = '1.4r
 };
 
 export default function Admin({ profile }) {
+  const queryClient = useQueryClient();
   const [searchParams, setSearchParams] = useSearchParams();
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'orders'); // orders | products | stats | settings
-  const [orders, setOrders] = useState([]);
-  const [products, setProducts] = useState([]);
-  const [teamMembers, setTeamMembers] = useState([]);
   const [settings, setSettings] = useState({});
-  const [stats, setStats] = useState(null);
   const [statsPeriod, setStatsPeriod] = useState('all');
   const [customStart, setCustomStart] = useState('');
   const [customEnd, setCustomEnd] = useState('');
   const [productLocationFilter, setProductLocationFilter] = useState('all'); // all | bali | vietnam
-  const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(searchParams.get('add') === 'true');
-  const [categories, setCategories] = useState([]);
   const [showAddCategoryForm, setShowAddCategoryForm] = useState(false);
   const [newCategory, setNewCategory] = useState({ name: '', slug: '' });
   const [tempCategory, setTempCategory] = useState({ name: '', slug: '' });
   const [activeNewProductVariantIdx, setActiveNewProductVariantIdx] = useState(0);
-  const [referralsData, setReferralsData] = useState(null);
   const [foundUserLink, setFoundUserLink] = useState('');
   const [foundUserName, setFoundUserName] = useState('');
   const [foundUserStats, setFoundUserStats] = useState(null);
@@ -104,8 +125,6 @@ export default function Admin({ profile }) {
   const [selectedClient, setSelectedClient] = useState(null);
   const [selectedClientOrders, setSelectedClientOrders] = useState([]);
   const [loadingClientOrders, setLoadingClientOrders] = useState(false);
-  const [auditLogs, setAuditLogs] = useState([]);
-  const [loadingLogs, setLoadingLogs] = useState(false);
   const [stockSearchQuery, setStockSearchQuery] = useState('');
   const [stockCategoryFilter, setStockCategoryFilter] = useState('');
   const [stockLocationFilter, setStockLocationFilter] = useState('all');
@@ -113,6 +132,80 @@ export default function Admin({ profile }) {
   const [savingStockId, setSavingStockId] = useState(null);
   const [editingStockData, setEditingStockData] = useState(null);
   const { haptic, user } = useTelegram();
+
+  const isOwner = [5082384607, 1005121723].includes(user?.id) || profile?.admin_permissions?.is_owner;
+
+  const ordersQuery = useAdminOrdersQuery(selectedOrderStatus || undefined, {
+    enabled: activeTab === 'orders',
+  });
+  const productsQuery = useAdminProductsQuery({
+    enabled: activeTab === 'products' || activeTab === 'stock',
+  });
+  const categoriesQuery = useAdminCategoriesQuery({
+    enabled: activeTab === 'products' || activeTab === 'stock',
+  });
+  const settingsQuery = useAdminSettingsQuery({
+    enabled: activeTab === 'settings' || activeTab === 'referrals',
+  });
+  const referralsQuery = useAdminReferralsQuery({
+    enabled: activeTab === 'referrals',
+  });
+  const statsQuery = useAdminStatsQuery(statsPeriod, customStart, customEnd, {
+    enabled: activeTab === 'stats',
+  });
+  const teamQuery = useAdminTeamQuery({
+    enabled: activeTab === 'users' && isOwner,
+  });
+  const auditLogsQuery = useAdminAuditLogsQuery({
+    enabled: activeTab === 'audit',
+  });
+
+  const updateOrderMutation = useAdminUpdateOrderMutation();
+  const toggleProductMutation = useAdminToggleProductMutation();
+  const deleteProductMutation = useAdminDeleteProductMutation();
+  const createCategoryMutation = useAdminCreateCategoryMutation();
+  const deleteCategoryMutation = useAdminDeleteCategoryMutation();
+  const uploadImageMutation = useAdminUploadImageMutation();
+  const createProductMutation = useAdminCreateProductMutation();
+  const updateProductStockMutation = useAdminUpdateProductStockMutation();
+  const updateSettingsMutation = useAdminUpdateSettingsMutation();
+  const setDiscountMutation = useAdminSetDiscountMutation();
+  const setPartnerMutation = useAdminSetPartnerMutation();
+  const deleteTeamMemberMutation = useAdminDeleteTeamMemberMutation();
+  const addTeamMemberMutation = useAdminAddTeamMemberMutation();
+
+  const orders = ordersQuery.data ?? [];
+  const products = productsQuery.data ?? [];
+  const categories = categoriesQuery.data ?? [];
+  const teamMembers = teamQuery.data ?? [];
+  const stats = statsQuery.data;
+  const referralsData = referralsQuery.data;
+  const auditLogs = auditLogsQuery.data ?? [];
+
+  const loading =
+    activeTab === 'orders' ? ordersQuery.isLoading
+    : activeTab === 'products' ? (productsQuery.isLoading || categoriesQuery.isLoading)
+    : activeTab === 'stock' ? (productsQuery.isLoading || categoriesQuery.isLoading)
+    : activeTab === 'settings' ? settingsQuery.isLoading
+    : activeTab === 'referrals' ? referralsQuery.isLoading
+    : activeTab === 'stats' ? statsQuery.isLoading
+    : activeTab === 'users' ? (isOwner ? teamQuery.isLoading : false)
+    : activeTab === 'audit' ? auditLogsQuery.isLoading
+    : false;
+
+  const loadingLogs = auditLogsQuery.isFetching && activeTab === 'audit';
+
+  useEffect(() => {
+    if (settingsQuery.data) {
+      setSettings(settingsQuery.data);
+    }
+  }, [settingsQuery.data]);
+
+  useEffect(() => {
+    if (referralsQuery.data?.referral_percent != null) {
+      setSettings((prev) => ({ ...prev, referral_percent: referralsQuery.data.referral_percent }));
+    }
+  }, [referralsQuery.data]);
 
   const [newProduct, setNewProduct] = useState({
     category_slug: searchParams.get('cat_slug') || 'rape', 
@@ -127,55 +220,6 @@ export default function Admin({ profile }) {
     is_sale: false,
     discount_percent: 0
   });
-
-  const loadData = () => {
-    setLoading(true);
-    if (activeTab === 'orders') {
-      api.adminGetOrders(selectedOrderStatus || undefined).then(setOrders).catch(console.error).finally(() => setLoading(false));
-    } else if (activeTab === 'products') {
-      Promise.all([
-        api.adminGetProducts(),
-        api.getCategories()
-      ]).then(([p, c]) => {
-        setProducts(p);
-        setCategories(c);
-      }).catch(console.error).finally(() => setLoading(false));
-    } else if (activeTab === 'settings') {
-      api.adminGetSettings().then(setSettings).catch(console.error).finally(() => setLoading(false));
-    } else if (activeTab === 'referrals') {
-      api.adminGetReferrals().then(data => {
-        setReferralsData(data);
-        setSettings(prev => ({ ...prev, referral_percent: data.referral_percent }));
-      }).catch(console.error).finally(() => setLoading(false));
-    } else if (activeTab === 'stats') {
-      api.adminGetStats(statsPeriod, customStart, customEnd).then(setStats).catch(console.error).finally(() => setLoading(false));
-    } else if (activeTab === 'users') {
-      const isOwner = [5082384607, 1005121723].includes(user?.id) || profile?.admin_permissions?.is_owner;
-      if (isOwner) {
-        api.adminGetTeamMembers().then(setTeamMembers).catch(console.error).finally(() => setLoading(false));
-      } else {
-        setLoading(false);
-      }
-    } else if (activeTab === 'stock') {
-      Promise.all([
-        api.adminGetProducts(),
-        api.getCategories()
-      ]).then(([p, c]) => {
-        setProducts(p);
-        setCategories(c);
-      }).catch(console.error).finally(() => setLoading(false));
-    } else if (activeTab === 'audit') {
-      setLoadingLogs(true);
-      api.adminGetAuditLogs().then(setAuditLogs).catch(console.error).finally(() => {
-        setLoading(false);
-        setLoadingLogs(false);
-      });
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-  }, [activeTab, statsPeriod, customStart, customEnd, selectedOrderStatus]);
 
   useEffect(() => {
     const tab = searchParams.get('tab');
@@ -257,8 +301,7 @@ export default function Admin({ profile }) {
   const updateOrderStatus = async (id, status) => {
     try {
       haptic.impact('medium');
-      await api.adminUpdateOrder(id, status);
-      loadData();
+      await updateOrderMutation.mutateAsync({ id, status });
     } catch (e) {
       console.error(e);
     }
@@ -269,8 +312,14 @@ export default function Admin({ profile }) {
       haptic.impact('light');
       setSelectedClient(u);
       setLoadingClientOrders(true);
-      const clientOrders = await api.adminGetOrders(undefined, u.id);
-      setSelectedClientOrders(clientOrders);
+      const allOrders = await queryClient.fetchQuery({
+        queryKey: adminKeys.orders('all'),
+        queryFn: async () => {
+          const response = await adminApi.getOrders();
+          return response.data ?? [];
+        },
+      });
+      setSelectedClientOrders(allOrders.filter((order) => order.clientId === u.id));
     } catch (err) {
       console.error(err);
     } finally {
@@ -281,8 +330,7 @@ export default function Admin({ profile }) {
   const toggleProduct = async (id) => {
     try {
       haptic.impact('light');
-      await api.adminToggleProduct(id);
-      loadData();
+      await toggleProductMutation.mutateAsync(id);
     } catch (e) {
       console.error(e);
     }
@@ -292,8 +340,7 @@ export default function Admin({ profile }) {
     if (!window.confirm('Точно удалить?')) return;
     try {
       haptic.impact('heavy');
-      await api.adminDeleteProduct(id);
-      loadData();
+      await deleteProductMutation.mutateAsync(id);
     } catch (e) {
       console.error(e);
     }
@@ -303,10 +350,9 @@ export default function Admin({ profile }) {
     e.preventDefault();
     try {
       haptic.impact('medium');
-      await api.adminCreateCategory(newCategory);
+      await createCategoryMutation.mutateAsync(newCategory);
       setNewCategory({ name: '', slug: '' });
       setShowAddCategoryForm(false);
-      loadData();
     } catch (err) {
       console.error(err);
       alert('Ошибка при добавлении категории: ' + err.message);
@@ -317,8 +363,7 @@ export default function Admin({ profile }) {
     if (!window.confirm(`Вы уверены, что хотите удалить категорию "${slug}"?`)) return;
     try {
       haptic.impact('heavy');
-      await api.adminDeleteCategory(slug);
-      loadData();
+      await deleteCategoryMutation.mutateAsync(slug);
     } catch (err) {
       console.error(err);
       alert('Ошибка при удалении категории: ' + err.message);
@@ -332,10 +377,8 @@ export default function Admin({ profile }) {
     if (!file) return;
     try {
       setUploadingImage(true);
-      const res = await api.adminUploadImage(file);
+      const res = await uploadImageMutation.mutateAsync(file);
       if (res.ok) {
-        // Assume API_BASE is the domain if needed, but since it's the same domain we can just use the relative URL returned, or prepend API_BASE
-        // For local development it uses localhost:8000, for prod it uses relative /api which Nginx proxies
         const fullUrl = import.meta.env.DEV ? `http://localhost:8000${res.url}` : `/api${res.url}`;
         setNewProduct({...newProduct, photo_url: fullUrl});
         haptic.success();
@@ -352,7 +395,7 @@ export default function Admin({ profile }) {
     e.preventDefault();
     try {
       haptic.impact('medium');
-      await api.adminCreateProduct(newProduct);
+      await createProductMutation.mutateAsync(newProduct);
       closeAddForm();
       setNewProduct({
         category_slug: newProduct.category_slug,
@@ -367,7 +410,6 @@ export default function Admin({ profile }) {
         is_sale: false,
         discount_percent: 0
       });
-      loadData();
     } catch (err) {
       console.error(err);
       alert('Ошибка при добавлении товара');
@@ -625,9 +667,7 @@ export default function Admin({ profile }) {
                             }
                             try {
                               haptic.impact('medium');
-                              await api.adminCreateCategory(tempCategory);
-                              const updatedCats = await api.getCategories();
-                              setCategories(updatedCats);
+                              await createCategoryMutation.mutateAsync(tempCategory);
                               setNewProduct({
                                 ...newProduct,
                                 category_slug: tempCategory.slug,
@@ -1101,19 +1141,15 @@ export default function Admin({ profile }) {
                   haptic.impact('medium');
                   setSavingStockId(p.id);
                   try {
-                    await api.adminUpdateProductStock(p.id, {
-                      stock_bali: editingStockData.stock_bali,
-                      stock_vietnam: editingStockData.stock_vietnam,
-                      is_weight_based: editingStockData.is_weight_based,
-                      variants: editingStockData.variants
+                    await updateProductStockMutation.mutateAsync({
+                      id: p.id,
+                      data: {
+                        stock_bali: editingStockData.stock_bali,
+                        stock_vietnam: editingStockData.stock_vietnam,
+                        is_weight_based: editingStockData.is_weight_based,
+                        variants: editingStockData.variants
+                      },
                     });
-                    setProducts(prev => prev.map(prod => prod.id === p.id ? { 
-                      ...prod, 
-                      stock_bali: editingStockData.stock_bali,
-                      stock_vietnam: editingStockData.stock_vietnam,
-                      is_weight_based: editingStockData.is_weight_based,
-                      variants: editingStockData.variants 
-                    } : prod));
                     haptic.success();
                     setExpandedStockId(null);
                     setEditingStockData(null);
@@ -1594,7 +1630,7 @@ export default function Admin({ profile }) {
                 const username = e.target.elements.username.value;
                 const percent = parseInt(e.target.elements.percent.value) || 0;
                 try {
-                  const res = await api.adminSetDiscount(username, percent);
+                  const res = await setDiscountMutation.mutateAsync({ username, percent });
                   if (res.ok) {
                     alert(`Скидка ${percent}% успешно установлена для пользователя!`);
                     e.target.reset();
@@ -1622,7 +1658,7 @@ export default function Admin({ profile }) {
                 const username = e.target.elements.partner_username.value;
                 const isPartner = e.target.elements.is_partner_toggle.value === 'true';
                 try {
-                  const res = await api.adminSetPartner(username, isPartner);
+                  const res = await setPartnerMutation.mutateAsync({ username, isPartner });
                   if (res.ok) {
                     alert(`Статус MLM-партнера успешно ${isPartner ? 'включен' : 'выключен'} для пользователя!`);
                     e.target.reset();
@@ -1668,8 +1704,7 @@ export default function Admin({ profile }) {
                             if (!window.confirm(`Удалить @${m.username} из команды?`)) return;
                             try {
                               haptic.impact('medium');
-                              await api.adminDeleteTeamMember(m.id);
-                              loadData();
+                              await deleteTeamMemberMutation.mutateAsync(m.id);
                               haptic.success();
                             } catch (err) {
                               console.error(err);
@@ -1700,14 +1735,13 @@ export default function Admin({ profile }) {
 
                   try {
                     haptic.impact('heavy');
-                    await api.adminAddTeamMember({
+                    await addTeamMemberMutation.mutateAsync({
                       username,
                       location_restriction: loc,
                       can_edit_products: canEdit,
                       has_full_access: fullAccess
                     });
                     e.target.reset();
-                    loadData();
                     haptic.success();
                   } catch (err) {
                     console.error(err);
@@ -1773,7 +1807,7 @@ export default function Admin({ profile }) {
           const handleSave = async (m) => {
             try {
               haptic.impact('heavy');
-              await api.adminUpdateSettings(settings);
+              await updateSettingsMutation.mutateAsync(settings);
               alert('Настройки успешно сохранены!');
               if (m) {
                 setEditingMethods(prev => ({ ...prev, [m]: false }));
@@ -2138,7 +2172,7 @@ export default function Admin({ profile }) {
                     <button className="primary" style={{ padding: '0.5rem 1rem', fontSize: '0.85rem', marginLeft: 'auto', marginBottom: 0 }} onClick={async () => {
                       try {
                         haptic.impact('heavy');
-                        await api.adminUpdateSettings({ referral_percent: settings.referral_percent });
+                        await updateSettingsMutation.mutateAsync({ referral_percent: settings.referral_percent });
                         alert('Процент реферального кэшбека сохранен!');
                       } catch (e) {
                         console.error(e);
@@ -2197,7 +2231,7 @@ export default function Admin({ profile }) {
                   <button className="primary" style={{ padding: '0.6rem 1.2rem', fontSize: '0.9rem', width: '100%', marginBottom: 0 }} onClick={async () => {
                     try {
                       haptic.impact('heavy');
-                      await api.adminUpdateSettings({ 
+                      await updateSettingsMutation.mutateAsync({ 
                         ai_custom_instructions: settings.ai_custom_instructions || '',
                         ai_voice: settings.ai_voice || 'nova'
                       });
@@ -2224,7 +2258,7 @@ export default function Admin({ profile }) {
                   e.preventDefault();
                   const username = e.target.elements.username.value;
                   try {
-                    const res = await api.adminGetUserReferral(username);
+                    const res = await adminApi.getUserReferral(username);
                     if (res.ok) {
                       setFoundUserLink(res.referral_link);
                       setFoundUserName(res.full_name || res.username);

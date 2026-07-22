@@ -62,7 +62,7 @@ export default function AiGuide() {
         audioRef.current.pause();
       }
       const fullUrl = url.startsWith("/")
-        ? `${api.API_BASE.replace("/api", "")}${url}`
+        ? `${API_URL.replace("/api", "")}${url}`
         : url;
       audioRef.current = new Audio(fullUrl);
       audioRef.current.play().catch((err) => {

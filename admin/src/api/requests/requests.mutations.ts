@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import { requestsApi, type TConvertRequestData } from './requests.api.ts'
+import type { TOrderDetailsPayload } from '../../types/order'
+import { requestsApi } from './requests.api.ts'
 import { requestKeys } from './requests.queries.ts'
 import { orderKeys } from '../orders/orders.queries.ts'
 
@@ -19,7 +20,7 @@ export const useConvertRequestMutation = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: ({ id, data }: { id: string; data: TConvertRequestData }) =>
+    mutationFn: ({ id, data }: { id: string; data: TOrderDetailsPayload }) =>
       requestsApi.convert(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: requestKeys.all })

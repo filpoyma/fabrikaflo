@@ -1,11 +1,12 @@
 import api from '../baseApi.ts'
-import type { IClientStats, IUser } from '../../types'
+import type { IClientStats } from '../../types/client'
+import type { IUser } from '../../types/user'
 
 export const clientsApi = {
-  async list() {
-    return api.get('clients').json<{ data: IClientStats[] }>()
+  async list(): Promise<{ data: IClientStats[] }> {
+    return api.get('clients').json()
   },
-  async listCouriers() {
-    return api.get('clients/couriers').json<{ data: IUser[] }>()
+  async listCouriers(): Promise<{ data: IUser[] }> {
+    return api.get('clients/couriers').json()
   },
 }

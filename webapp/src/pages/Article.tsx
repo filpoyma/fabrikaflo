@@ -7,9 +7,10 @@ import CheckIcon from '../assets/icons/check.svg'
 import XIcon from '../assets/icons/x.svg'
 import Trash2Icon from '../assets/icons/trash-2.svg'
 import UploadIcon from '../assets/icons/upload.svg'
-import { api } from '../api';
 import { useProfileQuery } from '../api/clients';
 import { useAdminUploadImageMutation } from '../api/admin';
+
+const articleNotImplemented = () => Promise.reject(new Error('Articles endpoint not implemented on backend'));
 import { useTelegram } from '../hooks/useTelegram';
 
 export default function Article() {
@@ -29,7 +30,7 @@ export default function Article() {
 
   const loadArticle = () => {
     setLoading(true);
-    api.getArticle(id)
+    articleNotImplemented()
       .then(a => {
         setArticle(a);
         setEditData({ title: a.title, short_description: a.short_description, content: a.content, photo_url: a.photo_url });
@@ -47,7 +48,7 @@ export default function Article() {
   const handleSave = async () => {
     try {
       setSaving(true); haptic.impact('medium');
-      await api.adminUpdateArticle(id, editData);
+      await articleNotImplemented();
       haptic.success(); setIsEditing(false); loadArticle();
     } catch (e) { console.error(e); haptic.error(); alert('Ошибка при сохранении статьи'); }
     finally { setSaving(false); }
@@ -57,7 +58,7 @@ export default function Article() {
     if (!window.confirm('Удалить эту заметку?')) return;
     try {
       setSaving(true); haptic.impact('heavy');
-      await api.adminDeleteArticle(id);
+      await articleNotImplemented();
       haptic.success(); alert('Заметка удалена'); navigate('/');
     } catch (e) { console.error(e); haptic.error(); alert('Ошибка при удалении'); }
     finally { setSaving(false); }

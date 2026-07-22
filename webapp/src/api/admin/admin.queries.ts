@@ -22,7 +22,10 @@ export const useAdminOrdersQuery = (
 ) =>
   useQuery({
     queryKey: adminKeys.orders(status),
-    queryFn: () => adminApi.getOrders(status),
+    queryFn: async () => {
+      const response = await adminApi.getOrders(status)
+      return response.data ?? []
+    },
     ...options,
   })
 
@@ -79,7 +82,10 @@ export const useAdminTeamQuery = (
 ) =>
   useQuery({
     queryKey: adminKeys.team(),
-    queryFn: () => adminApi.getTeamMembers(),
+    queryFn: async () => {
+      const response = await adminApi.getTeamMembers()
+      return response.data ?? []
+    },
     ...options,
   })
 

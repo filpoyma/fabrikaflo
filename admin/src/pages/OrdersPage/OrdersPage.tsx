@@ -11,7 +11,7 @@ import {
 } from '../../api/orders';
 import styles from './OrdersPage.module.css'
 import { useCouriersQuery } from '../../api/clients';
-import type { IOrder } from '../../types';
+import type { IFlowerOrder } from '../../types/order';
 import { Button, getButtonClassName, Input, Select } from '../../shared/ui';
 
 import InboxIcon from '../../assets/icons/inbox.svg';
@@ -131,7 +131,7 @@ export const OrdersPage: React.FC = () => {
     }
   };
 
-  const renderOrderCard = (order: IOrder) => {
+  const renderOrderCard = (order: IFlowerOrder) => {
     const isUploading =
       uploadPhotoMutation.isPending && uploadPhotoMutation.variables?.id === order.id;
     const hasPhotos = order.photos && order.photos.length > 0;

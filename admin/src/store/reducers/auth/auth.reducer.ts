@@ -1,5 +1,5 @@
 import { createSlice, type PayloadAction } from '@reduxjs/toolkit'
-import type { IUser } from '../../../types'
+import type { IUser } from '../../../types/user'
 
 export type AuthStatus = 'unknown' | 'loading' | 'authenticated' | 'unauthenticated'
 

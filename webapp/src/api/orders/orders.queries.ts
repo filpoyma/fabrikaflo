@@ -10,12 +10,18 @@ export const orderKeys = {
 export const useMyOrdersQuery = () =>
   useQuery({
     queryKey: orderKeys.my(),
-    queryFn: () => ordersApi.listMy(),
+    queryFn: async () => {
+      const response = await ordersApi.listMy()
+      return response.data ?? []
+    },
   })
 
 export const useMyOrderQuery = (id: string | undefined) =>
   useQuery({
     queryKey: orderKeys.detail(id ?? ''),
-    queryFn: () => ordersApi.getMy(id!),
+    queryFn: async () => {
+      const response = await ordersApi.getMy(id!)
+      return response.data
+    },
     enabled: Boolean(id),
   })

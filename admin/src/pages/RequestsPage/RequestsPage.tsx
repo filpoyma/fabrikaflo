@@ -9,7 +9,7 @@ import {
 import styles from './RequestsPage.module.css'
 import { isInitialQueryLoad } from '../../api/queryUtils'
 import { Button, Modal, InlineQueryLoader, Input, Textarea } from '../../shared/ui'
-import type { IRequest } from '../../types'
+import type { IFlowerInquiry } from '../../types/inquiry'
 
 import PlusIcon from '../../assets/icons/plus.svg'
 import CheckIcon from '../../assets/icons/check.svg'
@@ -24,7 +24,7 @@ export const RequestsPage: React.FC = () => {
 
   // Modal and form states
   const [isConvertModalOpen, setIsConvertModalOpen] = useState(false)
-  const [selectedRequest, setSelectedRequest] = useState<IRequest | null>(null)
+  const [selectedRequest, setSelectedRequest] = useState<IFlowerInquiry | null>(null)
 
   // Order Form states
   const [recipientName, setRecipientName] = useState('')
@@ -36,7 +36,7 @@ export const RequestsPage: React.FC = () => {
   const [comment, setComment] = useState('')
   const [budget, setBudget] = useState(0)
 
-  const handleOpenConvert = (req: IRequest) => {
+  const handleOpenConvert = (req: IFlowerInquiry) => {
     setSelectedRequest(req)
     setRecipientName(req.client?.name || '')
     setRecipientPhone(req.recipientPhone || req.client?.phone || '')

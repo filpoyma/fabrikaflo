@@ -14,13 +14,13 @@ export const cartApi = {
   async get(): Promise<ICart> {
     return emptyCart
   },
-  async add(_productId: string, _variantIndex: number, _qty: number) {
-    return { ok: true as const }
+  async add(_productId: string, _variantIndex: number, _qty: number): Promise<{ ok: true }> {
+    return { ok: true }
   },
-  async remove(_productId: string, _variantIndex: number) {
-    return { ok: true as const }
+  async remove(_productId: string, _variantIndex: number): Promise<{ ok: true }> {
+    return { ok: true }
   },
-  async updateQty(_productId: string, _variantIndex: number, _qty: number) {
-    return { ok: true as const }
+  async updateQty(_productId: string, _variantIndex: number, _qty: number): Promise<{ ok: true }> {
+    return { ok: true }
   },
 }

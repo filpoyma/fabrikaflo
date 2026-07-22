@@ -13,6 +13,9 @@ export const useProfileQuery = (
 ) =>
   useQuery({
     queryKey: clientKeys.profile(),
-    queryFn: () => clientsApi.getProfile(),
+    queryFn: async () => {
+      const response = await clientsApi.getProfile()
+      return response.data
+    },
     ...options,
   })

@@ -10,7 +10,7 @@ import {
 import styles from './GalleryPage.module.css'
 import { isInitialQueryLoad } from '../../api/queryUtils'
 import { IconButton, Button, Modal, InlineQueryLoader, Input, Textarea } from '../../shared/ui'
-import type { IPortfolioItem } from '../../types'
+import type { IPortfolioItem } from '../../types/gallery'
 
 import PlusIcon from '../../assets/icons/plus.svg'
 import { PeonyIcon } from '../../components/BotanicalIcons'

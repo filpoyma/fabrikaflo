@@ -1,26 +1,21 @@
 import api from '../baseApi.ts'
 import type { IClientProfile } from '../../types/webapp.ts'
 
-type ProfileResponse = { data: IClientProfile }
-type AvatarResponse = { url?: string }
-
 export const clientsApi = {
-  async getProfile(): Promise<IClientProfile> {
-    const response = await api.get('clients/profile').json<ProfileResponse>()
-    return response.data
+  async getProfile(): Promise<{ data: IClientProfile }> {
+    return api.get('clients/profile').json()
   },
-  async updateProfile(data: Partial<IClientProfile>): Promise<IClientProfile> {
-    const response = await api.patch('clients/profile', { json: data }).json<ProfileResponse>()
-    return response.data
+  async updateProfile(data: Partial<IClientProfile>): Promise<{ data: IClientProfile }> {
+    return api.patch('clients/profile', { json: data }).json()
   },
-  async uploadAvatar(file: File) {
+  async uploadAvatar(file: File): Promise<{ ok: true; url: string } | { ok: false }> {
     const formData = new FormData()
     formData.append('file', file)
     try {
-      const response = await api.post('clients/avatar', { body: formData }).json<AvatarResponse>()
-      return { ok: true as const, url: response.url || '' }
+      const response = await api.post('clients/avatar', { body: formData }).json<{ url?: string }>()
+      return { ok: true, url: response.url || '' }
     } catch {
-      return { ok: false as const }
+      return { ok: false }
     }
   },
 }

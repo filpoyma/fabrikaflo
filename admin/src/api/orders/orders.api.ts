@@ -1,45 +1,35 @@
-import api from '../baseApi.ts'
-import type { IOrder } from '../../types'
+import api from '../baseApi.ts';
+import type { IFlowerOrder, TCreateDirectOrderPayload } from '../../types/order';
 
 export const ordersApi = {
-  async list() {
-    return api.get('orders').json<{ data: IOrder[] }>()
+  async list(): Promise<{ data: IFlowerOrder[] }> {
+    return api.get('orders').json();
   },
-  async get(id: string) {
-    return api.get(`orders/${id}`).json<{ data: IOrder }>()
+  async get(id: string): Promise<{ data: IFlowerOrder }> {
+    return api.get(`orders/${id}`).json();
   },
-  async createDirect(data: {
-    clientId: string
-    recipientName?: string
-    recipientPhone?: string
-    deliveryAddress?: string
-    deliveryTime?: string
-    budget: number
-    wishes?: string
-    postcardText?: string
-    comment?: string
-  }) {
-    return api.post('orders', { json: data }).json<{ data: IOrder }>()
+  async createDirect(data: TCreateDirectOrderPayload): Promise<{ data: IFlowerOrder }> {
+    return api.post('orders', { json: data }).json();
   },
-  async updateStatus(id: string, status: string) {
-    return api.put(`orders/${id}/status`, { json: { status } }).json<{ data: IOrder }>()
+  async updateStatus(id: string, status: string): Promise<{ data: IFlowerOrder }> {
+    return api.put(`orders/${id}/status`, { json: { status } }).json();
   },
-  async uploadPhoto(id: string, file: File) {
-    const formData = new FormData()
-    formData.append('file', file)
-    return api.post(`orders/${id}/photos`, { body: formData }).json<{ data: IOrder }>()
+  async uploadPhoto(id: string, file: File): Promise<{ data: IFlowerOrder }> {
+    const formData = new FormData();
+    formData.append('file', file);
+    return api.post(`orders/${id}/photos`, { body: formData }).json();
   },
-  async sendApproval(id: string) {
-    return api.post(`orders/${id}/send-approval`).json<{ success: boolean; status: string }>()
+  async sendApproval(id: string): Promise<{ success: boolean; status: string }> {
+    return api.post(`orders/${id}/send-approval`).json();
   },
-  async sendPayment(id: string, paymentLink: string) {
+  async sendPayment(id: string, paymentLink: string): Promise<{ success: boolean; status: string }> {
     return api
       .post(`orders/${id}/send-payment`, { json: { paymentLink } })
-      .json<{ success: boolean; status: string }>()
+      .json();
   },
-  async assignCourier(id: string, courierId: string) {
+  async assignCourier(id: string, courierId: string): Promise<{ success: boolean; status: string }> {
     return api
       .post(`orders/${id}/assign-courier`, { json: { courierId } })
-      .json<{ success: boolean; status: string }>()
+      .json();
   },
-}
+};

@@ -2,19 +2,22 @@ import api from '../baseApi.ts'
 import type { TelegramWidgetUser } from '../../types/telegram.d.ts'
 import type { IUser } from '../../types/domain.ts'
 
-type LoginResponse = { token?: string; user?: IUser }
-type WidgetLoginResult = { ok: boolean; token: string; user: Partial<IUser> & { id: string | number } }
+export type WidgetLoginResult = {
+  ok: boolean
+  token: string
+  user: Partial<IUser> & { id: string | number }
+}
 
 export const authApi = {
-  async login(login: string, password: string) {
+  async login(login: string, password: string): Promise<{ accessToken: string; user: IUser }> {
     return api.post('auth/login', { json: { login, password } }).json()
   },
-  async getMe() {
+  async getMe(): Promise<{ user: IUser }> {
     return api.get('auth/me').json()
   },
   async loginWithTelegramWidget(user: TelegramWidgetUser): Promise<WidgetLoginResult> {
     try {
-      const res = await api.post('auth/telegram-widget', { json: user }).json<LoginResponse>()
+      const res = await api.post('auth/telegram-widget', { json: user }).json<{ token?: string; user?: IUser }>()
       if (res?.token) {
         return {
           ok: true,

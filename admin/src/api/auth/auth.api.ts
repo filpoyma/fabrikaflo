@@ -1,5 +1,5 @@
 import api from '../baseApi.ts'
-import type { IUser } from '../../types'
+import type { IUser } from '../../types/user'
 
 export type AuthResponse = {
   accessToken: string
@@ -7,16 +7,16 @@ export type AuthResponse = {
 }
 
 export const authApi = {
-  async login(login: string, password: string) {
-    return api.post('auth/login', { json: { login, password } }).json<AuthResponse>()
+  async login(login: string, password: string): Promise<AuthResponse> {
+    return api.post('auth/login', { json: { login, password } }).json()
   },
-  async refresh() {
-    return api.post('auth/refresh').json<AuthResponse>()
+  async refresh(): Promise<AuthResponse> {
+    return api.post('auth/refresh').json()
   },
-  async logout() {
-    return api.post('auth/logout').json<{ ok: boolean }>()
+  async logout(): Promise<{ ok: boolean }> {
+    return api.post('auth/logout').json()
   },
-  async getMe() {
-    return api.get('auth/me').json<{ user: IUser }>()
+  async getMe(): Promise<{ user: IUser }> {
+    return api.get('auth/me').json()
   },
 }

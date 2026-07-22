@@ -229,16 +229,6 @@ select {
   text-overflow: ellipsis;
 }
 .nav-item.active { color: var(--wine); }
-.nav-item.active::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 22px;
-  height: 2px;
-  background: var(--wine);
-}
 
 .nav-badge {
   position: absolute;

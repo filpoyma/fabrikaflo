@@ -67,7 +67,7 @@ function BottomNav(_props: NavShellProps) {
             data-testid={`nav-${tab.to.replace('/', '') || 'home'}`}
           >
             <div className={styles.navIconWrap}>
-              <Icon width={20} height={20} strokeWidth={1.4} />
+              <Icon width={20} height={20} strokeWidth={active ? 2.2 : 1.4} />
             </div>
             <span>{tab.label}</span>
           </Link>

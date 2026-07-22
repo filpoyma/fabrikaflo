@@ -2,6 +2,10 @@
   position: relative;
 }
 
+.navIconWrap svg {
+  transition: stroke-width 0.2s ease;
+}
+
 .loading {
   display: flex;
   flex-direction: column;

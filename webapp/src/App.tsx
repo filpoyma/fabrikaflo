@@ -13,7 +13,7 @@ import UserIcon from './assets/icons/user.svg'
 import SparklesIcon from './assets/icons/sparkles.svg'
 import { useTelegram } from './hooks/useTelegram.ts'
 import { setInitData } from './api/index.ts'
-import type { NavShellProps, ProtectedRouteProps, SplashScreenProps, PageWithCartProps } from './types/pages.ts'
+import type { ProtectedRouteProps, SplashScreenProps, PageWithCartProps } from './types/pages.ts'
 import './App.css'
 import styles from './App.module.css'
 
@@ -42,7 +42,7 @@ const OrdersPage = lazyWithRetry(() => import('./pages/Orders'))
 const LoginPage = lazyWithRetry(() => import('./pages/Login'))
 const AiGuidePage = lazyWithRetry(() => import('./pages/AiGuide'))
 
-function BottomNav(_props: NavShellProps) {
+function BottomNav() {
   const { pathname } = useLocation()
 
   const tabs = [
@@ -77,7 +77,7 @@ function BottomNav(_props: NavShellProps) {
   )
 }
 
-function DesktopHeader(_props: NavShellProps) {
+function DesktopHeader() {
   const { pathname } = useLocation()
 
   const navLinks = [
@@ -198,29 +198,25 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
 }
 
 export default function App() {
-  const { initData, user } = useTelegram()
-  const [cartCount, setCartCount] = useState(0)
+  const { initData } = useTelegram()
   const [showSplash, setShowSplash] = useState(true)
-  const hasAuth = Boolean(initData || user || localStorage.getItem('auth_token'))
 
   const updateCartCount = () => {
-    setCartCount(0)
+    // reserved for future cart badge sync
   }
 
   useEffect(() => {
     setInitData(initData)
     window.sessionStorage.removeItem('spa-chunk-reload')
 
-    const minSplash = new Promise<void>((r) => setTimeout(r, 2400))
-    const initTask = hasAuth ? Promise.resolve(updateCartCount()) : Promise.resolve()
-
-    Promise.all([minSplash, initTask]).then(() => setShowSplash(false))
-  }, [initData, hasAuth])
+    const timer = window.setTimeout(() => setShowSplash(false), 2400)
+    return () => window.clearTimeout(timer)
+  }, [initData])
 
   return (
     <BrowserRouter basename="/webapp">
       <div className="app-wrapper">
-        {!showSplash && <DesktopHeader cartCount={cartCount} />}
+        {!showSplash && <DesktopHeader />}
         {showSplash && <SplashScreen visible={showSplash} />}
         <div className={`${styles.mainContent} ${showSplash ? styles.mainHidden : styles.mainVisible}`}>
           <Suspense fallback={<LoadingFallback />}>
@@ -280,7 +276,7 @@ export default function App() {
             </Routes>
           </Suspense>
         </div>
-        {!showSplash && <BottomNav cartCount={cartCount} />}
+        {!showSplash && <BottomNav />}
       </div>
     </BrowserRouter>
   )

@@ -50,12 +50,15 @@ export default function LoginPage() {
     script.setAttribute('data-onauth', 'onTelegramAuth(user)')
     script.setAttribute('data-request-access', 'write')
     script.async = true
-    if (widgetContainerRef.current) widgetContainerRef.current.appendChild(script)
+    const container = widgetContainerRef.current
+    if (container) container.appendChild(script)
 
     return () => {
-      if (widgetContainerRef.current) widgetContainerRef.current.innerHTML = ''
+      if (container) container.innerHTML = ''
       delete window.onTelegramAuth
     }
+    // loginMutation is stable enough for one-time widget bootstrap
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [navigate, haptic])
 
   return (

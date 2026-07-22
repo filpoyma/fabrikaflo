@@ -14,14 +14,28 @@ export default function ArticlePage() {
 
   const [article, setArticle] = useState<IArticle | null>(null)
   const [loading, setLoading] = useState(true)
+  const [requestedId, setRequestedId] = useState(id)
+
+  if (id !== requestedId) {
+    setRequestedId(id)
+    setArticle(null)
+    setLoading(true)
+  }
 
   useEffect(() => {
-    setLoading(true)
+    let cancelled = false
     articleNotImplemented()
-      .then(setArticle)
+      .then((data) => {
+        if (!cancelled) setArticle(data)
+      })
       .catch(console.error)
-      .finally(() => setLoading(false))
-  }, [id])
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+    return () => {
+      cancelled = true
+    }
+  }, [requestedId])
 
   if (loading) return <div className="spinner" />
 

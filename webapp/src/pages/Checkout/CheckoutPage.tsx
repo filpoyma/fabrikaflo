@@ -71,9 +71,14 @@ export default function CheckoutPage() {
   const [submitting, setSubmitting] = useState(false)
   const [showErrors, setShowErrors] = useState(false)
   const fileInputRef = useRef<HTMLInputElement>(null)
+  const [appliedProfileKey, setAppliedProfileKey] = useState('')
 
-  useEffect(() => {
-    if (!profile) return
+  const profileKey = profile
+    ? `${profile.phone ?? ''}-${profile.address ?? ''}-${profile.address_lat ?? ''}-${profile.address_lng ?? ''}`
+    : ''
+
+  if (profile && profileKey !== appliedProfileKey) {
+    setAppliedProfileKey(profileKey)
     setForm((f) => ({
       ...f,
       recipientPhone: profile.phone || '',
@@ -85,7 +90,7 @@ export default function CheckoutPage() {
         lng: Number(profile.address_lng),
       })
     }
-  }, [profile])
+  }
 
   const handlePositionChange = async (latlng: LatLng) => {
     setMapPosition(latlng)

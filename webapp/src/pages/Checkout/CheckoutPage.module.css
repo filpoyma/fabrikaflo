@@ -1,0 +1,182 @@
+.refBouquet {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+  border: 1px solid var(--champagne);
+  background: var(--champagne-tint);
+  margin-bottom: 1.5rem;
+}
+
+.refImage {
+  width: 64px;
+  height: 64px;
+  object-fit: cover;
+  border-radius: 2px;
+}
+
+.refEyebrow {
+  color: var(--wine);
+}
+
+.refTitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--ink);
+  margin-top: 0.15rem;
+}
+
+.fieldLabel {
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 0.6rem;
+}
+
+.fieldLabelSpaced {
+  margin-top: 0.8rem;
+}
+
+.fieldLabelTight {
+  margin-bottom: 0.4rem;
+}
+
+.fieldLabelPhone {
+  margin-top: 0.6rem;
+}
+
+.chipGroup {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-bottom: 1.4rem;
+}
+
+.budgetValue {
+  color: var(--wine);
+  letter-spacing: 0;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.15rem;
+  font-weight: 300;
+  text-transform: none;
+}
+
+.budgetSlider {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  accent-color: var(--wine);
+}
+
+.deliveryOptions {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.deliveryChip {
+  flex: 1;
+  justify-content: center;
+  padding: 0.75rem;
+}
+
+.mapWrap {
+  width: 100%;
+  height: 240px;
+  overflow: hidden;
+  margin-bottom: 0.8rem;
+  border: 1px solid var(--line);
+}
+
+.locateBtn {
+  margin-bottom: 1rem;
+}
+
+.inputError {
+  border-bottom-color: var(--error);
+}
+
+.pickupBox {
+  background: var(--champagne-tint);
+  border: 1px solid var(--champagne);
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.pickupEyebrow {
+  color: var(--wine);
+  margin-bottom: 0.4rem;
+}
+
+.pickupAddress {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink);
+}
+
+.postcardInput {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+}
+
+.photoPreview {
+  position: relative;
+  width: 140px;
+  aspect-ratio: 4/5;
+  border: 1px solid var(--champagne);
+}
+
+.photoImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.removePhotoBtn {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 24px;
+  height: 24px;
+}
+
+.uploadBox {
+  width: 140px;
+  aspect-ratio: 4/5;
+  border: 1px dashed var(--champagne);
+  background: var(--champagne-tint);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  cursor: pointer;
+  color: var(--wine);
+}
+
+.uploadLabel {
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+  text-align: center;
+  padding: 0 0.4rem;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.submitSection {
+  padding: 2rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.submitNote {
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  color: var(--ink-soft);
+}

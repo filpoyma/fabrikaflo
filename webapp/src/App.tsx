@@ -10,14 +10,14 @@ import {
 import HomeIcon from './assets/icons/home.svg'
 import PackageIcon from './assets/icons/package.svg'
 import UserIcon from './assets/icons/user.svg'
-import ShieldCheckIcon from './assets/icons/shield-check.svg'
 import SparklesIcon from './assets/icons/sparkles.svg'
 import { useTelegram } from './hooks/useTelegram.ts'
-import { setInitData, useProfileQuery } from './api/index.ts'
-import type { NavShellProps, ProtectedRouteProps, SplashScreenProps } from './types/pages.ts'
+import { setInitData } from './api/index.ts'
+import type { NavShellProps, ProtectedRouteProps, SplashScreenProps, PageWithCartProps } from './types/pages.ts'
 import './App.css'
+import styles from './App.module.css'
 
-const lazyWithRetry = (componentImport: () => Promise<{ default: ComponentType<any> }>) =>
+const lazyWithRetry = (componentImport: () => Promise<{ default: ComponentType<PageWithCartProps> }>) =>
   lazy(async () => {
     try {
       return await componentImport()
@@ -31,19 +31,18 @@ const lazyWithRetry = (componentImport: () => Promise<{ default: ComponentType<a
     }
   })
 
-const HomePage = lazyWithRetry(() => import('./pages/Home.tsx'))
-const CatalogPage = lazyWithRetry(() => import('./pages/Catalog.tsx'))
-const ProductPage = lazyWithRetry(() => import('./pages/Product.tsx'))
-const ArticlePage = lazyWithRetry(() => import('./pages/Article.tsx'))
-const CartPage = lazyWithRetry(() => import('./pages/Cart.tsx'))
-const CheckoutPage = lazyWithRetry(() => import('./pages/Checkout.tsx'))
-const ProfilePage = lazyWithRetry(() => import('./pages/Profile.tsx'))
-const OrdersPage = lazyWithRetry(() => import('./pages/Orders.tsx'))
-const AdminPage = lazyWithRetry(() => import('./pages/Admin.tsx'))
-const LoginPage = lazyWithRetry(() => import('./pages/Login.tsx'))
-const AiGuidePage = lazyWithRetry(() => import('./pages/AiGuide.tsx'))
+const HomePage = lazyWithRetry(() => import('./pages/Home'))
+const CatalogPage = lazyWithRetry(() => import('./pages/Catalog'))
+const ProductPage = lazyWithRetry(() => import('./pages/Product'))
+const ArticlePage = lazyWithRetry(() => import('./pages/Article'))
+const CartPage = lazyWithRetry(() => import('./pages/Cart'))
+const CheckoutPage = lazyWithRetry(() => import('./pages/Checkout'))
+const ProfilePage = lazyWithRetry(() => import('./pages/Profile'))
+const OrdersPage = lazyWithRetry(() => import('./pages/Orders'))
+const LoginPage = lazyWithRetry(() => import('./pages/Login'))
+const AiGuidePage = lazyWithRetry(() => import('./pages/AiGuide'))
 
-function BottomNav({ isAdmin }: NavShellProps) {
+function BottomNav(_props: NavShellProps) {
   const { pathname } = useLocation()
 
   const tabs = [
@@ -52,7 +51,6 @@ function BottomNav({ isAdmin }: NavShellProps) {
     { to: '/checkout', icon: SparklesIcon, label: 'Заказ' },
     { to: '/profile', icon: UserIcon, label: 'Профиль' },
   ]
-  if (isAdmin) tabs.push({ to: '/admin', icon: ShieldCheckIcon, label: 'Админ' })
 
   return (
     <nav className="bottom-nav" data-testid="bottom-nav">
@@ -68,7 +66,7 @@ function BottomNav({ isAdmin }: NavShellProps) {
             className={`nav-item ${active ? 'active' : ''}`}
             data-testid={`nav-${tab.to.replace('/', '') || 'home'}`}
           >
-            <div style={{ position: 'relative' }}>
+            <div className={styles.navIconWrap}>
               <Icon width={20} height={20} strokeWidth={1.4} />
             </div>
             <span>{tab.label}</span>
@@ -79,7 +77,7 @@ function BottomNav({ isAdmin }: NavShellProps) {
   )
 }
 
-function DesktopHeader({ isAdmin }: NavShellProps) {
+function DesktopHeader(_props: NavShellProps) {
   const { pathname } = useLocation()
 
   const navLinks = [
@@ -88,7 +86,6 @@ function DesktopHeader({ isAdmin }: NavShellProps) {
     { to: '/checkout', label: 'Заказать' },
     { to: '/profile', label: 'Профиль' },
   ]
-  if (isAdmin) navLinks.push({ to: '/admin', label: 'Админ' })
 
   return (
     <header className="desktop-header" data-testid="desktop-header">
@@ -125,19 +122,12 @@ function DesktopHeader({ isAdmin }: NavShellProps) {
 function LoadingFallback() {
   return (
     <div className="container">
-      <div
-        style={{
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '1.2rem',
-          paddingTop: '1rem',
-        }}
-      >
-        <div className="skeleton" style={{ height: '260px' }} />
-        <div className="skeleton" style={{ height: '32px', width: '55%' }} />
+      <div className={styles.loading}>
+        <div className={`skeleton ${styles.skeletonHero}`} />
+        <div className={`skeleton ${styles.skeletonTitle}`} />
         <div className="responsive-products-grid">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="skeleton" style={{ aspectRatio: '4/5' }} />
+            <div key={i} className={`skeleton ${styles.skeletonCard}`} />
           ))}
         </div>
       </div>
@@ -182,14 +172,7 @@ function BotanicalSvg() {
 function SplashScreen({ visible }: SplashScreenProps) {
   if (!visible) return null
   return (
-    <div
-      className="splash-screen"
-      style={{
-        opacity: visible ? 1 : 0,
-        pointerEvents: visible ? 'auto' : 'none',
-      }}
-      data-testid="splash-screen"
-    >
+    <div className="splash-screen" data-testid="splash-screen">
       <div className="splash-inner">
         <div className="splash-svg-wrap">
           <BotanicalSvg />
@@ -198,7 +181,7 @@ function SplashScreen({ visible }: SplashScreenProps) {
           </div>
         </div>
         <div className="splash-brand">
-          fabrika<span style={{ color: 'var(--champagne-lo)' }}>.</span>flo
+          fabrika<span className={styles.splashAccent}>.</span>flo
         </div>
         <div className="splash-hairline" />
         <div className="splash-tagline">цветочный цех</div>
@@ -214,16 +197,11 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
   return children
 }
 
-const ADMIN_IDS = [5082384607, 1005121723]
-
 export default function App() {
   const { initData, user } = useTelegram()
   const [cartCount, setCartCount] = useState(0)
   const [showSplash, setShowSplash] = useState(true)
   const hasAuth = Boolean(initData || user || localStorage.getItem('auth_token'))
-  const { data: profile } = useProfileQuery({ enabled: hasAuth })
-  const isAdmin =
-    (user?.id != null && ADMIN_IDS.includes(user.id)) || Boolean(profile?.is_admin)
 
   const updateCartCount = () => {
     setCartCount(0)
@@ -242,14 +220,9 @@ export default function App() {
   return (
     <BrowserRouter basename="/webapp">
       <div className="app-wrapper">
-        {!showSplash && <DesktopHeader isAdmin={isAdmin} />}
+        {!showSplash && <DesktopHeader cartCount={cartCount} />}
         {showSplash && <SplashScreen visible={showSplash} />}
-        <div
-          style={{
-            paddingBottom: '80px',
-            display: showSplash ? 'none' : 'block',
-          }}
-        >
+        <div className={`${styles.mainContent} ${showSplash ? styles.mainHidden : styles.mainVisible}`}>
           <Suspense fallback={<LoadingFallback />}>
             <Routes>
               <Route
@@ -304,20 +277,10 @@ export default function App() {
                   </ProtectedRoute>
                 }
               />
-              {isAdmin && (
-                <Route
-                  path="/admin"
-                  element={
-                    <ProtectedRoute>
-                      <AdminPage profile={profile} />
-                    </ProtectedRoute>
-                  }
-                />
-              )}
             </Routes>
           </Suspense>
         </div>
-        {!showSplash && <BottomNav cartCount={cartCount} isAdmin={isAdmin} />}
+        {!showSplash && <BottomNav cartCount={cartCount} />}
       </div>
     </BrowserRouter>
   )

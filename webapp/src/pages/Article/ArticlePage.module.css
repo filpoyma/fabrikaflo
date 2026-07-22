@@ -1,0 +1,116 @@
+.homeAction {
+  margin-top: 1.6rem;
+}
+
+.hero {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  max-height: 55vh;
+  overflow: hidden;
+  background: var(--cream);
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.articleContainer {
+  max-width: 680px;
+  padding-top: 3.5rem;
+}
+
+.articleContainerWithPhoto {
+  padding-top: 2.5rem;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.eyebrow {
+  color: var(--champagne-lo);
+}
+
+.title {
+  margin-top: 0.6rem;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  line-height: 1.15;
+}
+
+.rule {
+  width: 44px;
+  height: 1px;
+  background: var(--champagne-lo);
+  margin: 1.4rem auto 0;
+}
+
+.lead {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.2rem;
+  line-height: 1.55;
+  color: var(--ink);
+  text-align: center;
+  margin-bottom: 2.6rem;
+  max-width: 52ch;
+  margin-inline: auto;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+  font-size: 1rem;
+  line-height: 1.75;
+  color: var(--ink);
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 400;
+  font-size: 1.35rem;
+  color: var(--wine);
+  margin-top: 1.5rem;
+}
+
+.bullet {
+  padding-left: 1.4rem;
+  position: relative;
+}
+
+.bulletMark {
+  position: absolute;
+  left: 0;
+  color: var(--champagne-lo);
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+.paragraph {
+  color: var(--ink);
+}
+
+.telegramLink {
+  color: var(--wine);
+  text-decoration: none;
+  border-bottom: 1px solid var(--wine);
+  font-weight: 500;
+}
+
+.hairlineSpaced {
+  margin-top: 3rem;
+}
+
+.brandMark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}

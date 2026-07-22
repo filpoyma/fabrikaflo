@@ -1,0 +1,39 @@
+.skeletonThumb {
+  aspect-ratio: 4 / 5;
+}
+
+.price {
+  margin-top: 0.25rem;
+}
+
+.brandMark {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+}
+
+.aiTeaserBody {
+  flex: 1;
+}
+
+.aiToggle {
+  color: var(--wine);
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.footer {
+  text-align: center;
+  font-size: 0.7rem;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  padding: 0 0 3rem;
+}
+
+.footerAccent {
+  color: var(--champagne-lo);
+}

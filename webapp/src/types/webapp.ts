@@ -34,7 +34,10 @@ export interface ICartItem {
   price_usd: number
   subtotal_display?: string
   name?: string
+  product_name?: string
+  variant_name?: string
   photo_url?: string
+  in_stock?: boolean
 }
 
 export interface ICart {
@@ -47,30 +50,34 @@ export interface ICart {
   discount_usd?: number
 }
 
-export interface IAdminPermissions {
-  can_edit_products?: boolean
-  has_full_access?: boolean
+export interface ILegacyOrderLineItem {
+  qty?: number
+  name?: string
+  variant?: string
+  subtotal?: number
+}
+
+/** Legacy shop order shape still used in Profile UI */
+export interface IProfileLegacyOrder {
+  id?: string | number
+  status?: string
+  created_at?: string
+  items?: ILegacyOrderLineItem[]
+  currency?: string
+  total_in_currency?: number | string
+  payment_details?: string
 }
 
 export interface IClientProfile {
   id?: string
   name?: string | null
   phone?: string | null
+  tgname?: string | null
   photo_url?: string | null
   address?: string | null
   address_lat?: number | null
   address_lng?: number | null
-  is_admin?: boolean
-  is_partner?: boolean
-  referral_code?: string
-  referral_link?: string
-  referral_percent?: number
-  referred_by_user?: {
-    id?: string
-    name?: string
-    tgname?: string
-  } | null
-  admin_permissions?: IAdminPermissions
+  discount_percent?: number
   role?: string
 }
 
@@ -94,24 +101,11 @@ export interface IArticle {
   photo_url: string | null
 }
 
-export interface IAdminSettings {
-  referral_percent?: number
-  [key: string]: unknown
-}
-
-export interface IAdminStats {
-  [key: string]: unknown
-}
-
 export interface ITeamMember {
   id: string
   name?: string
   tgname?: string
   role?: string
-}
-
-export interface IReferralUser {
-  [key: string]: unknown
 }
 
 export interface IAiChatResponse {

@@ -29,7 +29,7 @@ export const configSchema = Type.Object({
   // Security
   JWT_SECRET: Type.String({ default: 'fabrikaflo-super-secret-key-12345' }),
   ACCESS_TOKEN_EXPIRES_IN: Type.String({ default: '15m' }),
-  REFRESH_TOKEN_EXPIRES_IN: Type.String({ default: '7d' }),
+  REFRESH_TOKEN_EXPIRES_IN: Type.String({ default: '44d' }),
   REFRESH_COOKIE_NAME: Type.String({ default: 'refresh_token' }),
   CORS_ORIGINS: Type.String({ default: '*' }),
   

@@ -1,0 +1,21 @@
+.section {
+  padding: 2rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.header {
+  margin-bottom: 1.4rem;
+}
+
+.eyebrow {
+  color: var(--champagne-lo);
+}
+
+.title {
+  margin-top: 0.35rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 1.75rem;
+  color: var(--ink);
+}

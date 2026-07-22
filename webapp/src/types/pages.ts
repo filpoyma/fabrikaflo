@@ -6,13 +6,6 @@ export interface PageWithCartProps {
   updateCart?: UpdateCartFn
 }
 
-export interface AdminPageProps {
-  profile?: {
-    is_admin?: boolean
-    [key: string]: unknown
-  }
-}
-
 export interface SplashScreenProps {
   visible: boolean
 }
@@ -22,7 +15,6 @@ export interface ProtectedRouteProps {
 }
 
 export interface NavShellProps {
-  isAdmin?: boolean
   cartCount?: number
 }
 

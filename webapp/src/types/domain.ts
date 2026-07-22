@@ -1,3 +1,25 @@
+export type TDeliveryType = 'PICKUP' | 'DELIVERY'
+
+export type TOrderStatus =
+  | 'CREATED'
+  | 'ASSEMBLING'
+  | 'ASSEMBLED'
+  | 'WAITING_FOR_APPROVAL'
+  | 'APPROVED'
+  | 'WAITING_FOR_PAYMENT'
+  | 'PAID'
+  | 'DELIVERING'
+  | 'DELIVERED'
+  | 'CANCELLED'
+
+export type TLegacyOrderStatus =
+  | 'pending'
+  | 'paid'
+  | 'confirmed'
+  | 'shipped'
+  | 'done'
+  | 'cancelled'
+
 export interface IUser {
   id: string
   telegramId: string | null
@@ -49,17 +71,7 @@ export interface IOrder {
   postcardText: string | null
   comment: string | null
   clientFeedback: string | null
-  status:
-    | 'CREATED'
-    | 'ASSEMBLING'
-    | 'ASSEMBLED'
-    | 'WAITING_FOR_APPROVAL'
-    | 'APPROVED'
-    | 'WAITING_FOR_PAYMENT'
-    | 'PAID'
-    | 'DELIVERING'
-    | 'DELIVERED'
-    | 'CANCELLED'
+  status: TOrderStatus
   paymentLink: string | null
   courierId: string | null
   courier?: IUser | null

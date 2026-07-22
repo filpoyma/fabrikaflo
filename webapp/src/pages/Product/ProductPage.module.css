@@ -1,0 +1,117 @@
+.hero {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  max-height: 70vh;
+  background: var(--cream);
+  overflow: hidden;
+  position: relative;
+}
+
+.heroImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.productNumber {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  font-family: var(--font-display);
+  font-style: italic;
+  color: var(--ivory);
+  font-size: 0.85rem;
+  letter-spacing: 0.15em;
+  padding: 0.3rem 0.7rem;
+  background: rgba(40, 35, 33, 0.35);
+  backdrop-filter: blur(6px);
+}
+
+.content {
+  padding-top: 2rem;
+}
+
+.header {
+  margin-bottom: 1rem;
+}
+
+.eyebrowChampagne {
+  color: var(--champagne-lo);
+}
+
+.title {
+  margin-top: 0.4rem;
+  font-family: var(--font-display);
+  font-weight: 300;
+  font-style: italic;
+  font-size: clamp(1.7rem, 5vw, 2.4rem);
+  color: var(--ink);
+}
+
+.description {
+  margin-bottom: 2rem;
+  white-space: pre-wrap;
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--ink-soft);
+}
+
+.variants {
+  margin-bottom: 2rem;
+}
+
+.variantLabel {
+  color: var(--ink-soft);
+  margin-bottom: 0.7rem;
+}
+
+.variantRow {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.priceRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding: 1.4rem 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 1.6rem;
+}
+
+.priceLabel {
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+
+.oldPrice {
+  font-size: 0.85rem;
+}
+
+.priceValue {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  color: var(--wine);
+  font-size: 1.9rem;
+  line-height: 1;
+}
+
+.similar {
+  margin-top: 3rem;
+  margin-bottom: 4rem;
+}
+
+.similarGrid {
+  margin-top: 0;
+}
+
+.similarLink {
+  text-decoration: none;
+}
+
+.similarPrice {
+  margin-top: 0.3rem;
+}

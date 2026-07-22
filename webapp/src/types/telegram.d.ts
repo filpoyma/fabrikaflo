@@ -37,6 +37,7 @@ interface TelegramWebApp {
   ready: () => void
   expand: () => void
   close: () => void
+  openTelegramLink?: (url: string) => void
   showAlert: (message: string, callback?: () => void) => void
   showConfirm: (message: string, callback?: (confirmed: boolean) => void) => void
   HapticFeedback?: {
@@ -44,6 +45,9 @@ interface TelegramWebApp {
     notificationOccurred: (type: 'error' | 'success' | 'warning') => void
   }
   LocationManager?: {
+    isInited?: boolean
+    isLocationAvailable?: boolean
+    isAccessGranted?: boolean
     init: (callback: () => void) => void
     getLocation: (callback: (data: { latitude: number; longitude: number } | null) => void) => void
   }

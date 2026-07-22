@@ -1,0 +1,50 @@
+.catalogEmpty {
+  padding: 5rem 1rem;
+  color: var(--ink-soft);
+}
+
+.skeletonThumb {
+  aspect-ratio: 4 / 5;
+  margin-bottom: 0.6rem;
+}
+
+.skeletonLinePrimary {
+  height: 14px;
+  width: 75%;
+  margin-bottom: 0.4rem;
+}
+
+.skeletonLineSecondary {
+  height: 12px;
+  width: 40%;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem;
+}
+
+.sectionCount {
+  font-family: var(--font-sans);
+  font-size: 0.68rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+}
+
+.gridNoMargin {
+  margin-top: 0;
+}
+
+.productLink {
+  text-decoration: none;
+}
+
+.outOfStock {
+  opacity: 0.55;
+}
+
+.price {
+  margin-top: 0.35rem;
+}

@@ -1,0 +1,77 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 82vh;
+  text-align: center;
+  padding: 2rem;
+}
+
+.card {
+  max-width: 440px;
+  width: 100%;
+  padding: 3rem 2rem;
+  border: 1px solid var(--line);
+  background: var(--ivory);
+}
+
+.monogram {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 300;
+  font-size: 3rem;
+  color: var(--wine);
+  line-height: 1;
+}
+
+.accent {
+  color: var(--champagne-lo);
+}
+
+.rule {
+  margin: 1rem auto 0;
+  width: 44px;
+  height: 1px;
+  background: var(--champagne-lo);
+}
+
+.brand {
+  margin-top: 1rem;
+  font-family: var(--font-sans);
+  font-size: 0.7rem;
+  letter-spacing: 0.4em;
+  text-transform: uppercase;
+  color: var(--ink);
+}
+
+.tagline {
+  margin-top: 0.3rem;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1rem;
+  color: var(--ink-soft);
+}
+
+.description {
+  color: var(--ink-soft);
+  font-size: 0.9rem;
+  margin: 2rem auto;
+  line-height: 1.65;
+  max-width: 32ch;
+}
+
+.widget {
+  display: flex;
+  justify-content: center;
+  min-height: 40px;
+}
+
+.error {
+  color: var(--error);
+  font-size: 0.85rem;
+  margin-top: 1rem;
+  padding: 0.7rem;
+  border-top: 1px solid rgba(181, 61, 61, 0.25);
+  border-bottom: 1px solid rgba(181, 61, 61, 0.25);
+}

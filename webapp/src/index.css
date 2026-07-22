@@ -137,88 +137,6 @@ p  { color: var(--ink-soft); font-size: 0.95rem; line-height: 1.65; font-family:
 .glass-card:hover { border-color: var(--wine); }
 .glass-card:active { transform: scale(0.995); }
 
-/* --- Buttons --- */
-button {
-  cursor: pointer;
-  border: none;
-  font-family: var(--font-sans);
-  font-size: 0.9rem;
-  font-weight: 500;
-  letter-spacing: 0.04em;
-  border-radius: 999px;
-  padding: 0.85rem 1.4rem;
-  transition: background-color .3s ease, color .3s ease, border-color .3s ease, opacity .2s ease;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  color: var(--ink);
-  background: transparent;
-}
-button:active { opacity: 0.85; }
-
-button.primary {
-  background: var(--wine);
-  color: var(--ivory);
-  border: 1px solid var(--wine);
-  box-shadow: none;
-}
-button.primary:hover { background: var(--wine-deep); border-color: var(--wine-deep); }
-button.primary:disabled { background: var(--line); color: var(--ink-soft); border-color: var(--line); cursor: not-allowed; }
-
-button.secondary {
-  background: transparent;
-  border: 1px solid var(--ink);
-  color: var(--ink);
-  border-radius: 999px;
-}
-button.secondary:hover { background: var(--ink); color: var(--ivory); }
-
-button.tertiary {
-  background: transparent;
-  border: none;
-  color: var(--wine);
-  padding: 0.4rem 0;
-  border-radius: 0;
-  position: relative;
-}
-button.tertiary::after {
-  content: '';
-  position: absolute;
-  left: 0; right: 100%; bottom: 0;
-  height: 1px;
-  background: var(--wine);
-  transition: right .35s ease;
-}
-button.tertiary:hover::after { right: 0; }
-
-button.icon-btn {
-  padding: 0.55rem;
-  border-radius: 999px;
-  background: var(--ivory);
-  border: 1px solid var(--line);
-  color: var(--ink);
-  width: 40px; height: 40px;
-}
-button.icon-btn:hover { border-color: var(--wine); color: var(--wine); }
-
-/* Admin-panel icon buttons (kept, restyled) */
-button.icon-btn-copy,
-button.icon-btn-edit,
-button.icon-btn-delete {
-  border-radius: 999px;
-  width: 32px; height: 32px;
-  display: inline-flex; align-items: center; justify-content: center;
-  padding: 0; box-shadow: none;
-  transition: background-color .25s ease, color .25s ease, border-color .25s ease;
-}
-button.icon-btn-copy  { background: var(--ivory); border: 1px solid var(--line); color: var(--ink); }
-button.icon-btn-copy:hover { border-color: var(--wine); color: var(--wine); }
-button.icon-btn-edit  { background: var(--ivory); border: 1px solid var(--champagne); color: var(--wine); }
-button.icon-btn-edit:hover { background: var(--champagne-tint); }
-button.icon-btn-delete{ background: var(--ivory); border: 1px solid var(--error); color: var(--error); }
-button.icon-btn-delete:hover { background: var(--error); color: var(--ivory); }
-
 /* --- Inputs --- */
 input, textarea, select {
   width: 100%;
@@ -538,28 +456,6 @@ select {
   background: var(--champagne);
 }
 
-/* Chip / Filter */
-.chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.5rem 1rem;
-  border-radius: 999px;
-  border: 1px solid var(--line);
-  background: var(--ivory);
-  font-family: var(--font-sans);
-  font-size: 0.75rem;
-  font-weight: 500;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--ink-soft);
-  cursor: pointer;
-  transition: border-color .25s ease, color .25s ease, background-color .25s ease;
-  white-space: nowrap;
-}
-.chip:hover { border-color: var(--wine); color: var(--wine); }
-.chip.active { background: var(--wine); border-color: var(--wine); color: var(--ivory); }
-
 /* Number inputs — hide spin */
 input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
   -webkit-appearance: none; margin: 0;
@@ -723,9 +619,6 @@ input[type=number] { -moz-appearance: textfield; }
 
 /* Override old `linear-gradient(135deg, rgba(27, 67, 50` used in Home hero — invisible on light theme */
 [style*="rgba(27, 67, 50"] { background: var(--cream) !important; border-color: var(--line) !important; }
-
-/* Ensure fixed sticky back-button in Product page stays legible */
-.icon-btn[style*="rgba(0,0,0"] { background: rgba(253, 251, 247, 0.9) !important; color: var(--ink) !important; }
 
 /* Ranunculus mark SVG helper */
 .botanical-mark {

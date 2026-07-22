@@ -1,0 +1,204 @@
+.page {
+  padding-bottom: 6rem;
+}
+
+.ordersList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-top: 1px solid var(--line);
+}
+
+.orderArticle {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.headerRow {
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.orderNumber {
+  color: var(--champagne-lo);
+}
+
+.budget {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 1.6rem;
+  font-weight: 300;
+  color: var(--wine);
+  margin-top: 0.3rem;
+  line-height: 1;
+}
+
+.orderDate {
+  font-size: 0.72rem;
+  color: var(--ink-soft);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  margin-top: 0.4rem;
+}
+
+.statusPill {
+  display: inline-block;
+  padding: 0.32rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid;
+  font-family: var(--font-sans);
+  font-size: 0.6rem;
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.statusPill[data-status='CREATED'],
+.statusPill[data-status='ASSEMBLING'],
+.statusPill[data-status='ASSEMBLED'],
+.statusPill[data-status='WAITING_FOR_APPROVAL'],
+.statusPill[data-status='WAITING_FOR_PAYMENT'] {
+  background: var(--champagne-tint);
+  color: var(--wine);
+  border-color: var(--champagne);
+}
+
+.statusPill[data-status='APPROVED'],
+.statusPill[data-status='PAID'],
+.statusPill[data-status='DELIVERED'] {
+  background: rgba(122, 139, 111, 0.14);
+  color: var(--sage);
+  border-color: rgba(122, 139, 111, 0.32);
+}
+
+.statusPill[data-status='DELIVERING'] {
+  background: var(--ivory-warm);
+  color: var(--ink);
+  border-color: var(--line);
+}
+
+.statusPill[data-status='CANCELLED'] {
+  background: rgba(181, 61, 61, 0.08);
+  color: var(--error);
+  border-color: rgba(181, 61, 61, 0.25);
+}
+
+.details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  font-size: 0.88rem;
+  color: var(--ink);
+  margin-bottom: 0.5rem;
+}
+
+.detailsWithPhoto {
+  margin-bottom: 1.25rem;
+}
+
+.detailLabel {
+  color: var(--ink-soft);
+  font-size: 0.68rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  margin-right: 0.5rem;
+}
+
+.detailQuote {
+  font-family: var(--font-display);
+  font-style: italic;
+}
+
+.postcardBox {
+  margin-top: 0.5rem;
+  padding: 0.85rem 1rem;
+  background: var(--champagne-tint);
+  border: 1px solid var(--champagne);
+}
+
+.postcardEyebrow {
+  color: var(--wine);
+  margin-bottom: 0.3rem;
+}
+
+.photoSection {
+  margin-bottom: 1.2rem;
+}
+
+.photoEyebrow {
+  color: var(--ink-soft);
+  margin-bottom: 0.5rem;
+}
+
+.photoFrame {
+  width: 100%;
+  max-height: 360px;
+  overflow: hidden;
+  background: var(--cream);
+  border: 1px solid var(--line);
+}
+
+.photo {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+}
+
+.feedbackLabel {
+  color: var(--ink-soft);
+  display: block;
+  margin-bottom: 0.4rem;
+}
+
+.feedbackTextarea {
+  margin-bottom: 0.6rem;
+}
+
+.btnRow {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.paymentSection {
+  margin-top: 1.4rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid var(--line);
+}
+
+.payLinkBtn {
+  margin-bottom: 0.7rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.22em;
+}
+
+.waitingBox {
+  padding: 0.85rem 1rem;
+  background: var(--champagne-tint);
+  border: 1px solid var(--champagne);
+  font-size: 0.82rem;
+  color: var(--ink);
+  margin-bottom: 0.7rem;
+}
+
+.waitingEyebrow {
+  color: var(--wine);
+  margin-bottom: 0.3rem;
+}
+
+.hiddenInput {
+  display: none;
+}
+
+.feedbackStatus {
+  margin-top: 1rem;
+  background: var(--champagne-tint);
+  border: 1px solid var(--champagne);
+  padding: 0.85rem 1rem;
+}
+
+.feedbackStatusEyebrow {
+  color: var(--wine);
+  margin-bottom: 0.3rem;
+}

@@ -1,0 +1,53 @@
+.root {
+  text-align: center;
+}
+
+.rootPadded {
+  composes: root;
+  padding-top: 5rem;
+}
+
+.rootArticle {
+  composes: root;
+  padding: 4rem 1.5rem;
+}
+
+.word {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 2.4rem;
+  color: var(--wine);
+}
+
+.wordCatalog {
+  composes: word;
+  font-size: 2.2rem;
+  margin-bottom: 0.6rem;
+}
+
+.rule {
+  width: 44px;
+  height: 1px;
+  background: var(--champagne-lo);
+  margin: 1rem auto;
+}
+
+.title {
+  margin-top: 0.5rem;
+}
+
+.description {
+  margin-top: 0.8rem;
+  margin-bottom: 2rem;
+}
+
+.descriptionCatalog {
+  font-size: 0.9rem;
+  color: var(--ink-soft);
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+.action {
+  margin-top: 1.6rem;
+}

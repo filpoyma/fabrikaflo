@@ -1,0 +1,21 @@
+.badge {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  background: var(--wine);
+  color: var(--ivory);
+  font-family: var(--font-sans);
+  font-size: 0.62rem;
+  letter-spacing: 0.2em;
+  padding: 0.35rem 0.6rem;
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+.badgeLg {
+  composes: badge;
+  top: 16px;
+  left: 16px;
+  font-size: 0.65rem;
+  padding: 0.4rem 0.8rem;
+}

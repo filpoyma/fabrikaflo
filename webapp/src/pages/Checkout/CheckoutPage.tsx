@@ -13,12 +13,13 @@ import XIcon from '../../assets/icons/x.svg';
 import { useTelegram } from '../../hooks/useTelegram';
 import { formatDeliveryDateTime } from '../../shared/order/deliveryDateTime';
 import { Button, Chip, cx, IconButton, PageTitle } from '../../shared/ui';
-import type { ICheckoutLocationState, LatLng } from '../../types/pages.ts';
+import { isValidRuPhone, RU_PHONE_INVALID_MESSAGE } from '../../shared/utils/phnum.utils.ts';
 import type {
   ICheckoutFormState,
   ILocationPickerProps,
   INominatimReverseResponse,
-} from '../../types/ui.ts';
+} from '../../types';
+import type { ICheckoutLocationState, LatLng } from '../../types/pages.ts';
 import { CheckoutSection } from './components/CheckoutSection';
 
 const customIcon = new L.DivIcon({
@@ -60,7 +61,7 @@ export default function CheckoutPage() {
   const [form, setForm] = useState<ICheckoutFormState>({
     occasion: 'День рождения',
     customOccasion: '',
-    budget: 4000,
+    budget: 3000,
     deliveryDate: '',
     deliveryTime: '',
     deliveryType: 'DELIVERY',
@@ -175,6 +176,12 @@ export default function CheckoutPage() {
       setShowErrors(true);
       haptic.error();
       showAlert('Пожалуйста, укажите контактный телефон.');
+      return;
+    }
+    if (!isValidRuPhone(form.recipientPhone)) {
+      setShowErrors(true);
+      haptic.error();
+      showAlert(RU_PHONE_INVALID_MESSAGE);
       return;
     }
     try {
@@ -368,7 +375,11 @@ export default function CheckoutPage() {
             value={form.recipientPhone}
             onChange={(e) => setForm({ ...form, recipientPhone: e.target.value })}
             required
-            className={showErrors && !form.recipientPhone ? styles.inputError : undefined}
+            className={
+              showErrors && (!form.recipientPhone || !isValidRuPhone(form.recipientPhone))
+                ? styles.inputError
+                : undefined
+            }
             data-testid="phone-input"
           />
         </CheckoutSection>

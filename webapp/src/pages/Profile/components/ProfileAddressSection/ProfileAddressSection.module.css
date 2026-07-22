@@ -36,3 +36,7 @@
 .field:last-of-type {
   margin-bottom: 1.2rem;
 }
+
+.inputError {
+  border-bottom-color: var(--error);
+}

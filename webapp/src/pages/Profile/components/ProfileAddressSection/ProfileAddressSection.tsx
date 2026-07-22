@@ -1,14 +1,11 @@
 import { useState } from 'react';
 import styles from './ProfileAddressSection.module.css';
 
-import {
-  isValidRuPhone,
-  RU_PHONE_INVALID_MESSAGE,
-} from '../../../../../../../../../webapp/src/shared/utils/phnum.utils.ts';
 import { useUpdateProfileMutation } from '../../../../api/clients';
 import MapPinIcon from '../../../../assets/icons/map-pin.svg';
 import { useTelegram } from '../../../../hooks/useTelegram';
 import { Button, cx } from '../../../../shared/ui';
+import { isValidRuPhone, RU_PHONE_INVALID_MESSAGE } from '../../../../shared/utils/phnum.utils';
 import type { IClientProfile } from '../../../../types';
 
 export interface IProfileAddressSectionProps {

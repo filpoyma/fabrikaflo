@@ -199,7 +199,7 @@ export default function ProfilePage() {
       )}
 
       <ProfileAddressSection
-        key={`${profile.address ?? ''}-${profile.address_lat ?? ''}-${profile.address_lng ?? ''}`}
+        key={`${profile.address ?? ''}-${profile.phone ?? ''}`}
         profile={profile as IClientProfile}
         haptic={haptic}
         showAlert={showAlert}

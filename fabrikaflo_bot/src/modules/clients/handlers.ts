@@ -21,7 +21,14 @@ export async function getProfile(request: FastifyRequest, reply: FastifyReply) {
 }
 
 export async function updateProfile(
-  request: FastifyRequest<{ Body: { name?: string; phone?: string } }>,
+  request: FastifyRequest<{
+    Body: {
+      name?: string
+      phone?: string
+      avatarUrl?: string
+      address?: string
+    }
+  }>,
   _reply: FastifyReply,
 ) {
   const service = createClientsService(request.server)

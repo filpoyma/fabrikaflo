@@ -52,8 +52,6 @@ export interface IClientProfile {
   tgname?: string | null
   photo_url?: string | null
   address?: string | null
-  address_lat?: number | null
-  address_lng?: number | null
   discount_percent?: number
   role?: string
 }

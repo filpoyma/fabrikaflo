@@ -96,9 +96,7 @@ export default function CheckoutPage() {
     }));
   }
 
-  const profileKey = profile
-    ? `${profile.phone ?? ''}-${profile.address ?? ''}-${profile.address_lat ?? ''}-${profile.address_lng ?? ''}`
-    : '';
+  const profileKey = profile ? `${profile.phone ?? ''}-${profile.address ?? ''}` : '';
 
   if (profile && profileKey !== appliedProfileKey) {
     setAppliedProfileKey(profileKey);
@@ -107,12 +105,6 @@ export default function CheckoutPage() {
       recipientPhone: f.recipientPhone || profile.phone || '',
       deliveryAddress: f.deliveryAddress || profile.address || '',
     }));
-    if (profile.address_lat && profile.address_lng) {
-      setMapPosition({
-        lat: Number(profile.address_lat),
-        lng: Number(profile.address_lng),
-      });
-    }
   }
 
   const handlePositionChange = async (latlng: LatLng) => {

@@ -53,7 +53,15 @@ export function createClientsService(fastify: FastifyInstance) {
       })
     },
 
-    async updateProfile(userId: string, data: { name?: string; phone?: string }) {
+    async updateProfile(
+      userId: string,
+      data: {
+        name?: string
+        phone?: string
+        avatarUrl?: string
+        address?: string
+      },
+    ) {
       return prisma.user.update({
         where: { id: userId },
         data,

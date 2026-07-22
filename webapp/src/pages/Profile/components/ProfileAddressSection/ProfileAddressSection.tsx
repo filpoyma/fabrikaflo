@@ -35,17 +35,11 @@ export function ProfileAddressSection({
       showAlert('Введите адрес доставки');
       return;
     }
-    if (!phone.trim()) {
-      setPhoneError(true);
-      showAlert('Введите телефон');
-      return;
-    }
-    if (!isValidRuPhone(phone)) {
+    if (phone.trim() && !isValidRuPhone(phone)) {
       setPhoneError(true);
       showAlert(RU_PHONE_INVALID_MESSAGE);
       return;
     }
-
     setSaving(true);
     haptic.impact('heavy');
     try {

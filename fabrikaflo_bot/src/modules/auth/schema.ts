@@ -6,6 +6,8 @@ export const UserSchema = Type.Object({
   tgname: Type.Union([Type.String(), Type.Null()]),
   name: Type.Union([Type.String(), Type.Null()]),
   phone: Type.Union([Type.String(), Type.Null()]),
+  avatarUrl: Type.Union([Type.String(), Type.Null()]),
+  address: Type.Union([Type.String(), Type.Null()]),
   role: Type.String(),
   createdAt: Type.Any(),
   updatedAt: Type.Any(),

@@ -46,6 +46,8 @@ export const updateProfileSchema = {
   body: Type.Object({
     name: Type.Optional(Type.String()),
     phone: Type.Optional(Type.String()),
+    avatarUrl: Type.Optional(Type.String()),
+    address: Type.Optional(Type.String()),
   }),
   response: {
     200: Type.Object({

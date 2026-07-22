@@ -1,33 +1,38 @@
-import L from 'leaflet'
-import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react'
-import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet'
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
-import { useProfileQuery } from '../../api/clients'
-import { useCreateRequestMutation, useUploadRequestPhotoMutation } from '../../api/requests'
-import ArrowRightIcon from '../../assets/icons/arrow-right.svg'
-import MapPinIcon from '../../assets/icons/map-pin.svg'
-import UploadIcon from '../../assets/icons/upload.svg'
-import XIcon from '../../assets/icons/x.svg'
-import { useTelegram } from '../../hooks/useTelegram'
-import { Button, Chip, IconButton, PageTitle, cx } from '../../shared/ui'
-import type { LatLng, ICheckoutLocationState } from '../../types/pages.ts'
-import type { ICheckoutFormState, ILocationPickerProps, INominatimReverseResponse } from '../../types/ui.ts'
-import { CheckoutSection } from './components/CheckoutSection'
-import styles from './CheckoutPage.module.css'
+import L from 'leaflet';
+import { useEffect, useRef, useState, type ChangeEvent, type FormEvent } from 'react';
+import { MapContainer, Marker, TileLayer, useMap, useMapEvents } from 'react-leaflet';
+import { useLocation, useNavigate, useSearchParams } from 'react-router-dom';
+import styles from './CheckoutPage.module.css';
+
+import { useProfileQuery } from '../../api/clients';
+import { useCreateRequestMutation, useUploadRequestPhotoMutation } from '../../api/requests';
+import ArrowRightIcon from '../../assets/icons/arrow-right.svg';
+import MapPinIcon from '../../assets/icons/map-pin.svg';
+import UploadIcon from '../../assets/icons/upload.svg';
+import XIcon from '../../assets/icons/x.svg';
+import { useTelegram } from '../../hooks/useTelegram';
+import { Button, Chip, cx, IconButton, PageTitle } from '../../shared/ui';
+import type { ICheckoutLocationState, LatLng } from '../../types/pages.ts';
+import type {
+  ICheckoutFormState,
+  ILocationPickerProps,
+  INominatimReverseResponse,
+} from '../../types/ui.ts';
+import { CheckoutSection } from './components/CheckoutSection';
 
 const customIcon = new L.DivIcon({
   className: 'custom-marker',
   html: '<div style="width:14px;height:14px;background:#6A1A2B;border:2px solid #FDFBF7;border-radius:50%;box-shadow:0 4px 12px rgba(40,35,33,0.35);transform:translate(-50%,-50%);"></div>',
   iconSize: [0, 0],
-})
+});
 
 function LocationPicker({ position, onPositionChange }: ILocationPickerProps) {
-  const map = useMap()
-  useMapEvents({ click: (e) => onPositionChange(e.latlng) })
+  const map = useMap();
+  useMapEvents({ click: (e) => onPositionChange(e.latlng) });
   useEffect(() => {
-    if (position) map.setView(position, map.getZoom() || 11)
-  }, [position, map])
-  return position ? <Marker position={position} icon={customIcon} /> : null
+    if (position) map.setView(position, map.getZoom() || 11);
+  }, [position, map]);
+  return position ? <Marker position={position} icon={customIcon} /> : null;
 }
 
 const OCCASIONS = [
@@ -37,19 +42,19 @@ const OCCASIONS = [
   { value: 'Свадьба', label: 'Свадьба' },
   { value: 'Просто так', label: 'Просто так' },
   { value: 'Другое', label: 'Другое' },
-]
+];
 
 export default function CheckoutPage() {
-  const navigate = useNavigate()
-  const location = useLocation()
-  const [searchParams] = useSearchParams()
-  const { haptic, showAlert } = useTelegram()
-  const { data: profile } = useProfileQuery()
-  const createRequestMutation = useCreateRequestMutation()
-  const uploadPhotoMutation = useUploadRequestPhotoMutation()
+  const navigate = useNavigate();
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  const { haptic, showAlert } = useTelegram();
+  const { data: profile } = useProfileQuery();
+  const createRequestMutation = useCreateRequestMutation();
+  const uploadPhotoMutation = useUploadRequestPhotoMutation();
 
-  const refPhoto = searchParams.get('ref_photo')
-  const refTitle = searchParams.get('ref_title')
+  const refPhoto = searchParams.get('ref_photo');
+  const refTitle = searchParams.get('ref_title');
 
   const [form, setForm] = useState<ICheckoutFormState>({
     occasion: 'День рождения',
@@ -62,68 +67,68 @@ export default function CheckoutPage() {
     postcardText: '',
     comment: '',
     examplePhotoUrl: refPhoto || '',
-  })
+  });
 
   const [mapPosition, setMapPosition] = useState<LatLng>({
     lat: 55.755826,
     lng: 37.617299,
-  })
-  const [uploadingPhoto, setUploadingPhoto] = useState(false)
-  const [submitting, setSubmitting] = useState(false)
-  const [showErrors, setShowErrors] = useState(false)
-  const fileInputRef = useRef<HTMLInputElement>(null)
-  const [appliedProfileKey, setAppliedProfileKey] = useState('')
-  const [appliedRepeatKey, setAppliedRepeatKey] = useState('')
+  });
+  const [uploadingPhoto, setUploadingPhoto] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [showErrors, setShowErrors] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [appliedProfileKey, setAppliedProfileKey] = useState('');
+  const [appliedRepeatKey, setAppliedRepeatKey] = useState('');
 
-  const repeatPrefill = (location.state as ICheckoutLocationState | null)?.repeatOrder
+  const repeatPrefill = (location.state as ICheckoutLocationState | null)?.repeatOrder;
 
   if (repeatPrefill && appliedRepeatKey !== 'repeat') {
-    setAppliedRepeatKey('repeat')
+    setAppliedRepeatKey('repeat');
     setForm((f) => ({
       ...f,
       ...repeatPrefill,
       date: '',
       examplePhotoUrl: f.examplePhotoUrl || refPhoto || '',
-    }))
+    }));
   }
 
   const profileKey = profile
     ? `${profile.phone ?? ''}-${profile.address ?? ''}-${profile.address_lat ?? ''}-${profile.address_lng ?? ''}`
-    : ''
+    : '';
 
   if (profile && profileKey !== appliedProfileKey) {
-    setAppliedProfileKey(profileKey)
+    setAppliedProfileKey(profileKey);
     setForm((f) => ({
       ...f,
       recipientPhone: f.recipientPhone || profile.phone || '',
       deliveryAddress: f.deliveryAddress || profile.address || '',
-    }))
+    }));
     if (profile.address_lat && profile.address_lng) {
       setMapPosition({
         lat: Number(profile.address_lat),
         lng: Number(profile.address_lng),
-      })
+      });
     }
   }
 
   const handlePositionChange = async (latlng: LatLng) => {
-    setMapPosition(latlng)
-    haptic.impact('light')
+    setMapPosition(latlng);
+    haptic.impact('light');
     try {
       const res = await fetch(
-        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`,
-      )
-      const data = (await res.json()) as INominatimReverseResponse
+        `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latlng.lat}&lon=${latlng.lng}`
+      );
+      const data = (await res.json()) as INominatimReverseResponse;
       if (data.display_name) {
-        setForm((f) => ({ ...f, deliveryAddress: data.display_name ?? f.deliveryAddress }))
+        setForm((f) => ({ ...f, deliveryAddress: data.display_name ?? f.deliveryAddress }));
       }
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
-  }
+  };
 
   const locateMe = () => {
-    haptic.impact('medium')
+    haptic.impact('medium');
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) =>
@@ -132,47 +137,47 @@ export default function CheckoutPage() {
             lng: pos.coords.longitude,
           }),
         () => showAlert('Не удалось определить положение автоматически. Выберите точку на карте.'),
-        { enableHighAccuracy: true, timeout: 5000 },
-      )
-    } else showAlert('Геолокация не поддерживается вашим устройством.')
-  }
+        { enableHighAccuracy: true, timeout: 5000 }
+      );
+    } else showAlert('Геолокация не поддерживается вашим устройством.');
+  };
 
   const handlePhotoUpload = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
+    const file = e.target.files?.[0];
+    if (!file) return;
     try {
-      setUploadingPhoto(true)
-      haptic.impact('light')
-      const res = await uploadPhotoMutation.mutateAsync(file)
-      setForm((f) => ({ ...f, examplePhotoUrl: res.url }))
-      haptic.success()
+      setUploadingPhoto(true);
+      haptic.impact('light');
+      const res = await uploadPhotoMutation.mutateAsync(file);
+      setForm((f) => ({ ...f, examplePhotoUrl: res.url }));
+      haptic.success();
     } catch (err) {
-      console.error(err)
-      haptic.error()
-      showAlert('Не удалось загрузить фото.')
+      console.error(err);
+      haptic.error();
+      showAlert('Не удалось загрузить фото.');
     } finally {
-      setUploadingPhoto(false)
+      setUploadingPhoto(false);
     }
-  }
+  };
 
   const submit = async (e?: FormEvent) => {
-    if (e) e.preventDefault()
+    if (e) e.preventDefault();
     if (form.deliveryType === 'DELIVERY' && !form.deliveryAddress.trim()) {
-      setShowErrors(true)
-      haptic.error()
-      showAlert('Пожалуйста, заполните адрес доставки.')
-      return
+      setShowErrors(true);
+      haptic.error();
+      showAlert('Пожалуйста, заполните адрес доставки.');
+      return;
     }
     if (!form.recipientPhone.trim()) {
-      setShowErrors(true)
-      haptic.error()
-      showAlert('Пожалуйста, укажите контактный телефон.')
-      return
+      setShowErrors(true);
+      haptic.error();
+      showAlert('Пожалуйста, укажите контактный телефон.');
+      return;
     }
     try {
-      setSubmitting(true)
-      haptic.impact('medium')
-      const finalOccasion = form.occasion === 'Другое' ? form.customOccasion : form.occasion
+      setSubmitting(true);
+      haptic.impact('medium');
+      const finalOccasion = form.occasion === 'Другое' ? form.customOccasion : form.occasion;
       await createRequestMutation.mutateAsync({
         occasion: finalOccasion,
         budget: Number(form.budget),
@@ -183,18 +188,18 @@ export default function CheckoutPage() {
         postcardText: form.postcardText || null,
         comment: form.comment || null,
         examplePhotoUrl: form.examplePhotoUrl || null,
-      })
-      haptic.success()
-      showAlert('Ваша заявка отправлена. Мы свяжемся с вами в Telegram.')
-      navigate('/orders')
+      });
+      haptic.success();
+      showAlert('Ваша заявка отправлена. Мы свяжемся с вами в Telegram.');
+      navigate('/orders');
     } catch (err) {
-      console.error(err)
-      haptic.error()
-      showAlert('Ошибка при оформлении заявки.')
+      console.error(err);
+      haptic.error();
+      showAlert('Ошибка при оформлении заявки.');
     } finally {
-      setSubmitting(false)
+      setSubmitting(false);
     }
-  }
+  };
 
   return (
     <div className="container page-transition" data-testid="checkout-page">
@@ -221,8 +226,8 @@ export default function CheckoutPage() {
                 key={o.value}
                 active={form.occasion === o.value}
                 onClick={() => {
-                  haptic.impact('light')
-                  setForm({ ...form, occasion: o.value })
+                  haptic.impact('light');
+                  setForm({ ...form, occasion: o.value });
                 }}
                 data-testid={`occasion-${o.value}`}
               >
@@ -243,7 +248,8 @@ export default function CheckoutPage() {
           )}
 
           <label className={cx('eyebrow', styles.fieldLabel, styles.fieldLabelSpaced)}>
-            Бюджет · <span className={styles.budgetValue}>{form.budget.toLocaleString('ru-RU')} ₽</span>
+            Бюджет ·{' '}
+            <span className={styles.budgetValue}>{form.budget.toLocaleString('ru-RU')} ₽</span>
           </label>
           <input
             type="range"
@@ -252,8 +258,8 @@ export default function CheckoutPage() {
             step="500"
             value={form.budget}
             onChange={(e) => {
-              setForm({ ...form, budget: Number(e.target.value) })
-              haptic.impact('light')
+              setForm({ ...form, budget: Number(e.target.value) });
+              haptic.impact('light');
             }}
             className={styles.budgetSlider}
             data-testid="budget-slider"
@@ -274,8 +280,8 @@ export default function CheckoutPage() {
               active={form.deliveryType === 'DELIVERY'}
               className={styles.deliveryChip}
               onClick={() => {
-                setForm({ ...form, deliveryType: 'DELIVERY' })
-                haptic.impact('light')
+                setForm({ ...form, deliveryType: 'DELIVERY' });
+                haptic.impact('light');
               }}
               data-testid="delivery-option"
             >
@@ -285,8 +291,8 @@ export default function CheckoutPage() {
               active={form.deliveryType === 'PICKUP'}
               className={styles.deliveryChip}
               onClick={() => {
-                setForm({ ...form, deliveryType: 'PICKUP' })
-                haptic.impact('light')
+                setForm({ ...form, deliveryType: 'PICKUP' });
+                haptic.impact('light');
               }}
               data-testid="pickup-option"
             >
@@ -331,11 +337,18 @@ export default function CheckoutPage() {
           ) : (
             <div className={styles.pickupBox}>
               <div className={cx('eyebrow', styles.pickupEyebrow)}>Адрес самовывоза</div>
-              <div className={styles.pickupAddress}>Москва, ул. Большая Дмитровка, 12</div>
+              <div className={styles.pickupAddress}>Сергиев Посад, ул. Вифанская, 29</div>
             </div>
           )}
 
-          <label className={cx('eyebrow', styles.fieldLabel, styles.fieldLabelTight, styles.fieldLabelPhone)}>
+          <label
+            className={cx(
+              'eyebrow',
+              styles.fieldLabel,
+              styles.fieldLabelTight,
+              styles.fieldLabelPhone
+            )}
+          >
             Телефон для связи
           </label>
           <input
@@ -350,7 +363,9 @@ export default function CheckoutPage() {
         </CheckoutSection>
 
         <CheckoutSection eyebrow="Пожелания" title="Открытка и детали">
-          <label className={cx('eyebrow', styles.fieldLabel, styles.fieldLabelTight)}>Текст открытки</label>
+          <label className={cx('eyebrow', styles.fieldLabel, styles.fieldLabelTight)}>
+            Текст открытки
+          </label>
           <textarea
             placeholder="Напишите пожелание — мы подпишем открытку рукой флориста"
             rows={2}
@@ -360,7 +375,14 @@ export default function CheckoutPage() {
             data-testid="postcard-input"
           />
 
-          <label className={cx('eyebrow', styles.fieldLabel, styles.fieldLabelTight, styles.fieldLabelPhone)}>
+          <label
+            className={cx(
+              'eyebrow',
+              styles.fieldLabel,
+              styles.fieldLabelTight,
+              styles.fieldLabelPhone
+            )}
+          >
             Особые пожелания
           </label>
           <textarea
@@ -422,11 +444,9 @@ export default function CheckoutPage() {
               </>
             )}
           </Button>
-          <p className={styles.submitNote}>
-            Флорист свяжется с вами в Telegram в течение 15 минут
-          </p>
+          <p className={styles.submitNote}>Флорист свяжется с вами в Telegram в течение 15 минут</p>
         </div>
       </form>
     </div>
-  )
+  );
 }

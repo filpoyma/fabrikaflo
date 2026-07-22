@@ -1,96 +1,96 @@
-import { useRef, useState, type ChangeEvent } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { API_URL } from '../../api'
+import { useRef, useState, type ChangeEvent } from 'react';
+import { useNavigate } from 'react-router-dom';
+import styles from './ProfilePage.module.css';
+
+import { API_URL } from '../../api';
 import {
   useProfileQuery,
   useUpdateProfileMutation,
   useUploadAvatarMutation,
-} from '../../api/clients'
-import { useMyOrdersQuery } from '../../api/orders'
-import { useTelegram } from '../../hooks/useTelegram'
-import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat'
-import { isCompletedOrderStatus } from '../../shared/order/orderLabels'
-import { buildCheckoutRepeatState } from '../../shared/order/orderRepeat'
-import { Button, IconButton, OrderStatusPill, PageTitle, cx } from '../../shared/ui'
-import type { IOrder } from '../../types/domain.ts'
-import type { IClientProfile } from '../../types/webapp.ts'
-import { ProfileAddressSection } from './components/ProfileAddressSection'
-import styles from './ProfilePage.module.css'
+} from '../../api/clients';
+import { useMyOrdersQuery } from '../../api/orders';
+import { useTelegram } from '../../hooks/useTelegram';
+import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat';
+import { isCompletedOrderStatus } from '../../shared/order/orderLabels';
+import { buildCheckoutRepeatState } from '../../shared/order/orderRepeat';
+import { Button, cx, IconButton, OrderStatusPill, PageTitle } from '../../shared/ui';
+import type { IOrder } from '../../types/domain.ts';
+import type { IClientProfile } from '../../types/webapp.ts';
+import { ProfileAddressSection } from './components/ProfileAddressSection';
 
 export default function ProfilePage() {
-  const navigate = useNavigate()
-  const { data: profile, isPending: profileLoading } = useProfileQuery()
-  const { data: orders = [], isPending: ordersLoading } = useMyOrdersQuery()
-  const updateProfileMutation = useUpdateProfileMutation()
-  const uploadAvatarMutation = useUploadAvatarMutation()
-  const loading = profileLoading || ordersLoading
-  const { haptic, showAlert } = useTelegram()
+  const navigate = useNavigate();
+  const { data: profile, isPending: profileLoading } = useProfileQuery();
+  const { data: orders = [], isPending: ordersLoading } = useMyOrdersQuery();
+  const updateProfileMutation = useUpdateProfileMutation();
+  const uploadAvatarMutation = useUploadAvatarMutation();
+  const loading = profileLoading || ordersLoading;
+  const { haptic, showAlert } = useTelegram();
 
-  const [isEditingProfile, setIsEditingProfile] = useState(false)
-  const [editName, setEditName] = useState('')
+  const [isEditingProfile, setIsEditingProfile] = useState(false);
+  const [editName, setEditName] = useState('');
 
-  const avatarInputRef = useRef<HTMLInputElement>(null)
-  const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const avatarInputRef = useRef<HTMLInputElement>(null);
+  const [uploadingAvatar, setUploadingAvatar] = useState(false);
 
   const handleAvatarClick = () => {
-    avatarInputRef.current?.click()
-  }
+    avatarInputRef.current?.click();
+  };
 
   const handleAvatarChange = async (e: ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0]
-    if (!file) return
-    haptic.impact('light')
-    setUploadingAvatar(true)
+    const file = e.target.files?.[0];
+    if (!file) return;
+    haptic.impact('light');
+    setUploadingAvatar(true);
     try {
-      const res = await uploadAvatarMutation.mutateAsync(file)
+      const res = await uploadAvatarMutation.mutateAsync(file);
       if (res.ok && res.url) {
-        await updateProfileMutation.mutateAsync({ photo_url: res.url })
-        showAlert('Аватар успешно обновлен!')
+        await updateProfileMutation.mutateAsync({ photo_url: res.url });
+        showAlert('Аватар успешно обновлен!');
       } else {
-        showAlert('Ошибка загрузки аватара')
+        showAlert('Ошибка загрузки аватара');
       }
     } catch (err) {
-      console.error(err)
-      showAlert('Ошибка при загрузке аватара')
+      console.error(err);
+      showAlert('Ошибка при загрузке аватара');
     } finally {
-      setUploadingAvatar(false)
+      setUploadingAvatar(false);
     }
-  }
+  };
 
   const saveProfileData = async () => {
     try {
-      haptic.impact('medium')
-      const updated = await updateProfileMutation.mutateAsync({ name: editName })
-      setEditName(updated.data.name || editName)
-      setIsEditingProfile(false)
+      haptic.impact('medium');
+      const updated = await updateProfileMutation.mutateAsync({ name: editName });
+      setEditName(updated.data.name || editName);
+      setIsEditingProfile(false);
     } catch (e) {
-      console.error(e)
-      alert('Ошибка сохранения данных')
+      console.error(e);
+      alert('Ошибка сохранения данных');
     }
-  }
+  };
 
   const handleRepeatOrder = (order: IOrder) => {
-    haptic.impact('medium')
-    navigate('/checkout', { state: { repeatOrder: buildCheckoutRepeatState(order) } })
-  }
+    haptic.impact('medium');
+    navigate('/checkout', { state: { repeatOrder: buildCheckoutRepeatState(order) } });
+  };
 
-  if (loading) return <div className="spinner" />
+  if (loading) return <div className="spinner" />;
   if (!profile) {
     return (
       <div className="container">
         <p>Ошибка загрузки профиля</p>
       </div>
-    )
+    );
   }
 
-  const lastCompletedOrder =
-    orders.find((o) => isCompletedOrderStatus(o.status)) ?? null
+  const lastCompletedOrder = orders.find((o) => isCompletedOrderStatus(o.status)) ?? null;
+  const recentOrders = [...orders]
+    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .slice(0, 5);
 
   return (
-    <div
-      className={cx('container page-transition', styles.page)}
-      data-testid="profile-page"
-    >
+    <div className={cx('container page-transition', styles.page)} data-testid="profile-page">
       <PageTitle eyebrow="Личный кабинет">
         Ваш <em>профиль</em>
       </PageTitle>
@@ -138,8 +138,8 @@ export default function ProfilePage() {
                 flex
                 className={styles.noMarginBtn}
                 onClick={() => {
-                  setEditName(profile.name || '')
-                  setIsEditingProfile(false)
+                  setEditName(profile.name || '');
+                  setIsEditingProfile(false);
                 }}
               >
                 Отмена
@@ -153,8 +153,8 @@ export default function ProfilePage() {
               <IconButton
                 variant="ghost"
                 onClick={() => {
-                  setEditName(profile.name || '')
-                  setIsEditingProfile(true)
+                  setEditName(profile.name || '');
+                  setIsEditingProfile(true);
                 }}
                 aria-label="Редактировать имя"
                 className={styles.editIconBtn}
@@ -206,14 +206,19 @@ export default function ProfilePage() {
         updateProfileMutation={updateProfileMutation}
       />
 
-      <h3 className={styles.ordersTitle}>📋 Мои заказы</h3>
+      <div className={styles.ordersHeader}>
+        <h3 className={styles.ordersTitle}>📋 Последние заказы</h3>
+        <Button variant="secondary" size="sm" to="/orders" className={styles.allOrdersBtn}>
+          Все заказы
+        </Button>
+      </div>
       {orders.length === 0 ? (
         <div className={cx('glass-card', styles.emptyOrders)}>
           <p className={styles.emptyOrdersText}>У вас пока нет заказов</p>
         </div>
       ) : (
         <div className={styles.ordersList}>
-          {orders.map((o) => (
+          {recentOrders.map((o) => (
             <div key={o.id} className="glass-card">
               <div className={cx('flex-between', styles.orderHeader)}>
                 <div>
@@ -271,5 +276,5 @@ export default function ProfilePage() {
         </div>
       )}
     </div>
-  )
+  );
 }

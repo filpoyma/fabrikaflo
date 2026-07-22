@@ -144,10 +144,23 @@
   margin-bottom: 0.3rem;
 }
 
-.ordersTitle {
-  margin-bottom: 1rem;
-  font-size: 1.1rem;
+.ordersHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
   margin-top: 2rem;
+  margin-bottom: 1rem;
+}
+
+.ordersTitle {
+  margin: 0;
+  font-size: 1.1rem;
+}
+
+.allOrdersBtn {
+  margin-bottom: 0;
+  flex-shrink: 0;
 }
 
 .emptyOrders {

@@ -1,4 +1,5 @@
 import { useRef, useState, type ChangeEvent } from 'react'
+import { useNavigate } from 'react-router-dom'
 import {
   useMyOrdersQuery,
   useApproveOrderMutation,
@@ -7,7 +8,8 @@ import {
 } from '../../api/orders'
 import { useTelegram } from '../../hooks/useTelegram'
 import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat'
-import { Button, EmptyState, OrderStatusPill, PageTitle, cx } from '../../shared/ui'
+import { BackFloating, Button, EmptyState, OrderStatusPill, PageTitle, cx } from '../../shared/ui'
+import ArrowLeftIcon from '../../assets/icons/arrow-left.svg'
 import CheckIcon from '../../assets/icons/check.svg'
 import XIcon from '../../assets/icons/x.svg'
 import UploadIcon from '../../assets/icons/upload.svg'
@@ -15,6 +17,7 @@ import CreditCardIcon from '../../assets/icons/credit-card.svg'
 import styles from './OrdersPage.module.css'
 
 export default function OrdersPage() {
+  const navigate = useNavigate()
   const { haptic, showAlert } = useTelegram()
   const { data: orders = [], isPending: loading, refetch } = useMyOrdersQuery()
   const approveMutation = useApproveOrderMutation()
@@ -85,11 +88,18 @@ export default function OrdersPage() {
     }
   }
 
+  const backButton = (
+    <BackFloating onClick={() => navigate(-1)} data-testid="orders-back-btn" aria-label="Назад">
+      <ArrowLeftIcon width={24} height={24} strokeWidth={2} />
+    </BackFloating>
+  )
+
   if (loading) return <div className="spinner" />
 
   if (orders.length === 0) {
     return (
-      <div className="container page-transition" data-testid="orders-empty">
+      <div className={cx('container', 'page-transition', styles.page)} data-testid="orders-empty">
+        {backButton}
         <EmptyState
           variant="padded"
           word="пусто"
@@ -106,6 +116,7 @@ export default function OrdersPage() {
 
   return (
     <div className={cx('container', 'page-transition', styles.page)} data-testid="orders-page">
+      {backButton}
       <PageTitle eyebrow="История">
         Мои <em>заказы</em>
       </PageTitle>

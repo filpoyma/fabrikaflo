@@ -7,6 +7,12 @@ export async function listRequests(request: FastifyRequest, _reply: FastifyReply
   return { data }
 }
 
+export async function listMyRequests(request: FastifyRequest, _reply: FastifyReply) {
+  const service = createRequestsService(request.server)
+  const data = await service.getMyRequests(request.user.id)
+  return { data }
+}
+
 export async function getRequest(
   request: FastifyRequest<{ Params: { id: string } }>,
   _reply: FastifyReply,

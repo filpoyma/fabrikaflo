@@ -12,6 +12,14 @@ export function createRequestsService(fastify: FastifyInstance) {
       })
     },
 
+    async getMyRequests(clientId: string) {
+      return prisma.request.findMany({
+        where: { clientId },
+        orderBy: { createdAt: 'desc' },
+        include: { client: true },
+      })
+    },
+
     async getById(id: string) {
       const request = await prisma.request.findUnique({
         where: { id },

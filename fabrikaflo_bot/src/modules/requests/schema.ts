@@ -28,6 +28,15 @@ export const listRequestsSchema = {
   },
 }
 
+export const listMyRequestsSchema = {
+  tags: ['requests'],
+  response: {
+    200: Type.Object({
+      data: Type.Array(RequestSchema),
+    }),
+  },
+}
+
 export const getRequestSchema = {
   tags: ['requests'],
   params: Type.Object({

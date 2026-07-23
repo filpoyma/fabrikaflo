@@ -23,7 +23,15 @@ export function useTelegram() {
   }
 
   const close = () => tg?.close()
-  const showAlert = (msg: string) => tg?.showAlert(msg)
+  const showAlert = (msg: string, callback?: () => void) => {
+    if (tg?.showAlert) {
+      tg.showAlert(msg, callback)
+      return
+    }
+
+    window.alert(msg)
+    callback?.()
+  }
   const showConfirm = (msg: string, cb: (confirmed: boolean) => void) => tg?.showConfirm(msg, cb)
 
   return {

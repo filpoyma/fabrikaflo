@@ -19,6 +19,11 @@ export const requestsRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
     handlers.uploadRequestPhoto,
   )
   fastify.get(
+    '/my',
+    { schema: schema.listMyRequestsSchema, preHandler: [fastify.authenticate] },
+    handlers.listMyRequests,
+  )
+  fastify.get(
     '/:id',
     { schema: schema.getRequestSchema, preHandler: [fastify.authenticate, fastify.requireAdmin] },
     handlers.getRequest,

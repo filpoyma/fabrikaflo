@@ -11,6 +11,7 @@ import MapPinIcon from '../../assets/icons/map-pin.svg';
 import UploadIcon from '../../assets/icons/upload.svg';
 import XIcon from '../../assets/icons/x.svg';
 import { useTelegram } from '../../hooks/useTelegram';
+import { buildCheckoutSuccessMessage } from '../../shared/order/buildCheckoutSuccessMessage';
 import { formatDeliveryDateTime } from '../../shared/order/deliveryDateTime';
 import { Button, Chip, cx, IconButton, PageTitle } from '../../shared/ui';
 import { isValidRuPhone, RU_PHONE_INVALID_MESSAGE } from '../../shared/utils/phnum.utils.ts';
@@ -192,8 +193,9 @@ export default function CheckoutPage() {
         examplePhotoUrl: form.examplePhotoUrl || null,
       });
       haptic.success();
-      showAlert('Ваша заявка отправлена. Мы свяжемся с вами в Telegram.');
-      navigate('/orders');
+      showAlert(buildCheckoutSuccessMessage(form), () => {
+        navigate('/orders');
+      });
     } catch (err) {
       console.error(err);
       haptic.error();

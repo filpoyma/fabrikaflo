@@ -3,6 +3,27 @@
   padding-bottom: 6rem;
 }
 
+.sectionTitle {
+  color: var(--ink-soft);
+  margin-bottom: 1rem;
+}
+
+.requestsSection {
+  margin-bottom: 2.5rem;
+}
+
+.requestsList {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  border-top: 1px solid var(--line);
+}
+
+.requestArticle {
+  padding: 2rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
 .ordersList {
   display: flex;
   flex-direction: column;

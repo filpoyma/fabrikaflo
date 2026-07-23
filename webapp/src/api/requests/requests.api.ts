@@ -6,6 +6,9 @@ export const requestsApi = {
   async create(data: ICreateRequestPayload): Promise<{ data: IRequest }> {
     return api.post('requests', { json: data }).json()
   },
+  async listMy(): Promise<{ data: IRequest[] }> {
+    return api.get('requests/my').json()
+  },
   async uploadPhoto(file: File): Promise<{ url: string }> {
     const formData = new FormData()
     formData.append('file', file)

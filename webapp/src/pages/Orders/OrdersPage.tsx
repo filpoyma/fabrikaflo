@@ -6,9 +6,22 @@ import {
   useDisapproveOrderMutation,
   useUploadReceiptMutation,
 } from '../../api/orders'
+import { useMyRequestsQuery } from '../../api/requests'
 import { useTelegram } from '../../hooks/useTelegram'
 import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat'
-import { BackFloating, Button, EmptyState, OrderStatusPill, PageTitle, cx } from '../../shared/ui'
+import {
+  formatRequestDeliveryDate,
+  isActiveRequest,
+} from '../../shared/order/requestLabels'
+import {
+  BackFloating,
+  Button,
+  EmptyState,
+  OrderStatusPill,
+  PageTitle,
+  RequestStatusPill,
+  cx,
+} from '../../shared/ui'
 import ArrowLeftIcon from '../../assets/icons/arrow-left.svg'
 import CheckIcon from '../../assets/icons/check.svg'
 import XIcon from '../../assets/icons/x.svg'
@@ -19,7 +32,9 @@ import styles from './OrdersPage.module.css'
 export default function OrdersPage() {
   const navigate = useNavigate()
   const { haptic, showAlert } = useTelegram()
-  const { data: orders = [], isPending: loading, refetch } = useMyOrdersQuery()
+  const { data: orders = [], isPending: loadingOrders, refetch } = useMyOrdersQuery()
+  const { data: requests = [], isPending: loadingRequests } = useMyRequestsQuery()
+  const activeRequests = requests.filter(isActiveRequest)
   const approveMutation = useApproveOrderMutation()
   const disapproveMutation = useDisapproveOrderMutation()
   const uploadReceiptMutation = useUploadReceiptMutation()
@@ -94,9 +109,11 @@ export default function OrdersPage() {
     </BackFloating>
   )
 
+  const loading = loadingOrders || loadingRequests
+
   if (loading) return <div className="spinner" />
 
-  if (orders.length === 0) {
+  if (orders.length === 0 && activeRequests.length === 0) {
     return (
       <div className={cx('container', 'page-transition', styles.page)} data-testid="orders-empty">
         {backButton}
@@ -108,7 +125,7 @@ export default function OrdersPage() {
               Пока нет <em>заказов</em>
             </>
           }
-          description="Здесь появится история ваших букетов, статусы согласования и оплаты."
+          description="Здесь появится история ваших заявок и букетов, статусы согласования и оплаты."
         />
       </div>
     )
@@ -121,6 +138,68 @@ export default function OrdersPage() {
         Мои <em>заказы</em>
       </PageTitle>
 
+      {activeRequests.length > 0 && (
+        <section className={styles.requestsSection} data-testid="requests-section">
+          <h2 className={cx('eyebrow', styles.sectionTitle)}>Заявки</h2>
+          <div className={styles.requestsList}>
+            {activeRequests.map((request) => {
+              const deliveryDate = formatRequestDeliveryDate(request.date)
+              const isPickup =
+                request.deliveryType === 'PICKUP' || request.deliveryAddress === 'Самовывоз'
+
+              return (
+                <article
+                  key={request.id}
+                  className={styles.requestArticle}
+                  data-testid={`request-${request.id}`}
+                >
+                  <div className={cx('flex-between', styles.headerRow)}>
+                    <div>
+                      <div className={cx('eyebrow', styles.orderNumber)}>
+                        Заявка № {String(request.id).slice(-6)}
+                      </div>
+                      <div className={styles.budget}>{formatOrderBudget(request.budget)}</div>
+                      <div className={styles.orderDate}>
+                        {formatOrderDate(request.createdAt, { day: 'numeric', month: 'long' })}
+                      </div>
+                    </div>
+                    <RequestStatusPill status={request.status} />
+                  </div>
+
+                  <div className={styles.details}>
+                    <div>
+                      <span className={styles.detailLabel}>Повод</span>
+                      {request.occasion}
+                    </div>
+                    {deliveryDate && (
+                      <div>
+                        <span className={styles.detailLabel}>Дата</span>
+                        {deliveryDate}
+                      </div>
+                    )}
+                    <div>
+                      <span className={styles.detailLabel}>
+                        {isPickup ? 'Самовывоз' : 'Адрес'}
+                      </span>
+                      {isPickup
+                        ? 'Сергиев Посад, ул. Вифанская, 29'
+                        : request.deliveryAddress || '—'}
+                    </div>
+                    {request.recipientPhone && (
+                      <div>
+                        <span className={styles.detailLabel}>Телефон</span>
+                        {request.recipientPhone}
+                      </div>
+                    )}
+                  </div>
+                </article>
+              )
+            })}
+          </div>
+        </section>
+      )}
+
+      {orders.length > 0 && (
       <div className={styles.ordersList}>
         {orders.map((o) => {
           const lastPhoto =
@@ -319,6 +398,7 @@ export default function OrdersPage() {
           )
         })}
       </div>
+      )}
     </div>
   )
 }

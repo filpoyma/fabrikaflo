@@ -26,4 +26,7 @@ export type { ISaleBadgeProps } from './SaleBadge/index.ts'
 export { OrderStatusPill } from './OrderStatusPill/index.ts'
 export type { IOrderStatusPillProps } from './OrderStatusPill/index.ts'
 
+export { RequestStatusPill } from './RequestStatusPill/index.ts'
+export type { IRequestStatusPillProps } from './RequestStatusPill/index.ts'
+
 export { cx } from './cx.ts'

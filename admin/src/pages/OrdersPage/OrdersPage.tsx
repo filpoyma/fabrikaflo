@@ -1,28 +1,28 @@
-import React, { useState } from 'react';
 import clsx from 'clsx';
-import { pageStyles } from '../../shared/styles';
+import React, { useState } from 'react';
+import styles from './OrdersPage.module.css';
+
+import { useCouriersQuery } from '../../api/clients';
 import {
+  useAssignOrderCourierMutation,
   useOrdersQuery,
-  useUpdateOrderStatusMutation,
-  useUploadOrderPhotoMutation,
   useSendOrderApprovalMutation,
   useSendOrderPaymentMutation,
-  useAssignOrderCourierMutation,
+  useUpdateOrderStatusMutation,
+  useUploadOrderPhotoMutation,
 } from '../../api/orders';
-import styles from './OrdersPage.module.css'
-import { useCouriersQuery } from '../../api/clients';
-import type { IFlowerOrder } from '../../types/order';
-import { Button, getButtonClassName, Input, Select } from '../../shared/ui';
-
-import InboxIcon from '../../assets/icons/inbox.svg';
-import ShoppingBagIcon from '../../assets/icons/shopping-bag.svg';
 import CheckIcon from '../../assets/icons/check.svg';
-import TruckIcon from '../../assets/icons/scooter.svg';
-import XMarkIcon from '../../assets/icons/x-mark.svg';
-import PlusIcon from '../../assets/icons/plus.svg';
-import ShoppingIcon from '../../assets/icons/shopping-bag.svg';
 import DocumentIcon from '../../assets/icons/document.svg';
-import { PinIcon, DeliveryIcon } from '../../components/BotanicalIcons';
+import InboxIcon from '../../assets/icons/inbox.svg';
+import PlusIcon from '../../assets/icons/plus.svg';
+import TruckIcon from '../../assets/icons/scooter.svg';
+import ShoppingBagIcon from '../../assets/icons/shopping-bag.svg';
+import ShoppingIcon from '../../assets/icons/shopping-bag.svg';
+import XMarkIcon from '../../assets/icons/x-mark.svg';
+import { DeliveryIcon, PinIcon } from '../../components/BotanicalIcons';
+import { pageStyles } from '../../shared/styles';
+import { Button, getButtonClassName, Input, Select } from '../../shared/ui';
+import type { IFlowerOrder } from '../../types/order';
 
 const getErrorMessage = (error: unknown) =>
   error instanceof Error ? error.message : String(error);
@@ -141,9 +141,7 @@ export const OrdersPage: React.FC = () => {
       <div key={order.id} className="card-editorial" data-testid={`order-card-${order.id}`}>
         {/* Card Header */}
         <div className={styles.cardHeader}>
-          <div
-            className={styles.cardTitleRow}
-          >
+          <div className={styles.cardTitleRow}>
             <div className={styles.clientSummary}>
               <span className="card-eyebrow">№ {order.id.substring(0, 8)}</span>
               <div className={clsx('card-title', styles.clientName)}>
@@ -154,9 +152,7 @@ export const OrdersPage: React.FC = () => {
           </div>
 
           {(order.client?.phone || order.client?.tgname) && (
-            <div
-              className={styles.clientContacts}
-            >
+            <div className={styles.clientContacts}>
               {order.client?.phone && <span>{order.client.phone}</span>}
               {order.client?.tgname && (
                 <a
@@ -186,18 +182,14 @@ export const OrdersPage: React.FC = () => {
               <span className="thumb-badge">Пример клиента</span>
             </>
           ) : (
-            <div
-              className={styles.emptyThumbnail}
-            >
+            <div className={styles.emptyThumbnail}>
               {isUploading ? 'Загрузка…' : 'фото ещё нет'}
             </div>
           )}
         </div>
 
         {/* Details */}
-        <div
-          className={styles.cardDetails}
-        >
+        <div className={styles.cardDetails}>
           <div className="card-detail">
             <span className="k">Бюджет</span>
             <span className="v number">{order.budget} ₽</span>
@@ -215,12 +207,8 @@ export const OrdersPage: React.FC = () => {
             </div>
           )}
           {order.request?.examplePhotoUrl && (
-            <div
-              className={clsx('card-detail', styles.referenceDetail)}
-            >
-              <span className={clsx('k', styles.detailLabel)}>
-                Референс
-              </span>
+            <div className={clsx('card-detail', styles.referenceDetail)}>
+              <span className={clsx('k', styles.detailLabel)}>Референс</span>
               <a
                 href={order.request.examplePhotoUrl}
                 target="_blank"
@@ -238,65 +226,35 @@ export const OrdersPage: React.FC = () => {
 
           <div className="card-detail">
             <span className="k">Куда</span>
-            <span
-              className={clsx('v', styles.deliveryAddress)}
-            >
+            <span className={clsx('v', styles.deliveryAddress)}>
               <PinIcon size={12} color="var(--color-gold-deep)" />
               {order.deliveryAddress ? order.deliveryAddress : 'Самовывоз'}
             </span>
             {order.deliveryTime && (
-              <span
-                className={clsx('v', styles.deliveryTime)}
-              >
+              <span className={clsx('v', styles.deliveryTime)}>
                 {new Date(order.deliveryTime).toLocaleString('ru-RU')}
               </span>
             )}
           </div>
           {order.courier && (
-            <div
-              className={styles.courierLabel}
-            >
-              Курьер · {order.courier.name}
-            </div>
+            <div className={styles.courierLabel}>Курьер · {order.courier.name}</div>
           )}
           {order.comment && (
-            <div
-              className={styles.adminComment}
-            >
-              <strong
-                className={styles.commentLabel}
-              >
-                Комментарий
-              </strong>
-              <div
-                className={styles.commentText}
-              >
-                {order.comment}
-              </div>
+            <div className={styles.adminComment}>
+              <strong className={styles.commentLabel}>Комментарий</strong>
+              <div className={styles.commentText}>{order.comment}</div>
             </div>
           )}
           {order.clientFeedback && (
-            <div
-              className={styles.clientFeedback}
-            >
-              <strong
-                className={styles.feedbackLabel}
-              >
-                Замечания клиента
-              </strong>
-              <div
-                className={styles.feedbackText}
-              >
-                {order.clientFeedback}
-              </div>
+            <div className={styles.clientFeedback}>
+              <strong className={styles.feedbackLabel}>Замечания клиента</strong>
+              <div className={styles.feedbackText}>{order.clientFeedback}</div>
             </div>
           )}
         </div>
 
         {/* Action Controls */}
-        <div
-          className={styles.actionControls}
-        >
+        <div className={styles.actionControls}>
           {/* CREATED state */}
           {order.status === 'CREATED' && (
             <Button
@@ -324,7 +282,10 @@ export const OrdersPage: React.FC = () => {
               />
               <label
                 htmlFor={`order-photo-upload-${order.id}`}
-                className={clsx(getButtonClassName({ variant: 'secondary', size: 'sm' }), styles.uploadLabel)}
+                className={clsx(
+                  getButtonClassName({ variant: 'secondary', size: 'sm' }),
+                  styles.uploadLabel
+                )}
               >
                 <PlusIcon className={styles.photoUploadIcon} />
                 <span>{isUploading ? 'Загрузка...' : 'Выбрать фото'}</span>
@@ -355,9 +316,7 @@ export const OrdersPage: React.FC = () => {
 
           {/* WAITING_FOR_APPROVAL state */}
           {order.status === 'WAITING_FOR_APPROVAL' && (
-            <div
-              className={styles.approvalPending}
-            >
+            <div className={styles.approvalPending}>
               Согласование отправлено клиенту в Telegram... ⏳
             </div>
           )}
@@ -447,7 +406,6 @@ export const OrdersPage: React.FC = () => {
               <Button
                 fullWidth
                 size="sm"
-                icon={TruckIcon}
                 onClick={() => {
                   const courierId = selectedCouriers[order.id];
                   if (!courierId) return alert('Пожалуйста, выберите курьера!');
@@ -470,12 +428,8 @@ export const OrdersPage: React.FC = () => {
 
           {/* DELIVERING state */}
           {order.status === 'DELIVERING' && (
-            <div
-              className={styles.deliveryStatus}
-            >
-              <div
-                className={styles.deliveryStatusContent}
-              >
+            <div className={styles.deliveryStatus}>
+              <div className={styles.deliveryStatusContent}>
                 <DeliveryIcon size={18} color="var(--color-sage)" />
                 <span>Курьер в пути… ожидаем отметки о доставке.</span>
               </div>
@@ -502,10 +456,7 @@ export const OrdersPage: React.FC = () => {
   };
 
   return (
-    <div
-      className={clsx('animated-fade-in', pageStyles.page)}
-      data-testid="orders-page"
-    >
+    <div className={clsx('animated-fade-in', pageStyles.page)} data-testid="orders-page">
       <header className="page-header">
         <span className="eyebrow">Доска заказов</span>
         <h1>
@@ -514,82 +465,50 @@ export const OrdersPage: React.FC = () => {
         <p>Сборка, согласование по фото, отправка оплаты и курьерская доставка — единой canvas.</p>
       </header>
 
-      <div
-          className={styles.orderBoard}
-        >
-          {/* Column 1: Assembly */}
-          <div className={styles.column}>
-            <div
-              className={styles.columnHeader}
-            >
-              <h3
-                className={styles.columnTitle}
-              >
-                <ShoppingIcon
-                  className={clsx(styles.columnIcon, styles.columnIconSage)}
-                />
-                Сборка
-              </h3>
-            </div>
-            <div className={styles.orderList}>
-              {colAssembly.map(renderOrderCard)}
-            </div>
+      <div className={styles.orderBoard}>
+        {/* Column 1: Assembly */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <h3 className={styles.columnTitle}>
+              <ShoppingIcon className={clsx(styles.columnIcon, styles.columnIconSage)} />
+              Сборка
+            </h3>
           </div>
+          <div className={styles.orderList}>{colAssembly.map(renderOrderCard)}</div>
+        </div>
 
-          {/* Column 2: Approval & Payment */}
-          <div className={styles.column}>
-            <div
-              className={styles.columnHeader}
-            >
-              <h3
-                className={styles.columnTitle}
-              >
-                <DocumentIcon
-                  className={clsx(styles.columnIcon, styles.columnIconWarn)}
-                />
-                Согласование
-              </h3>
-            </div>
-            <div className={styles.orderList}>
-              {colApproval.map(renderOrderCard)}
-            </div>
+        {/* Column 2: Approval & Payment */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <h3 className={styles.columnTitle}>
+              <DocumentIcon className={clsx(styles.columnIcon, styles.columnIconWarn)} />
+              Согласование
+            </h3>
           </div>
+          <div className={styles.orderList}>{colApproval.map(renderOrderCard)}</div>
+        </div>
 
-          {/* Column 3: Delivery */}
-          <div className={styles.column}>
-            <div
-              className={styles.columnHeader}
-            >
-              <h3
-                className={styles.columnTitle}
-              >
-                <TruckIcon className={clsx(styles.columnIcon, styles.columnIconGold)} />
-                Доставка
-              </h3>
-            </div>
-            <div className={styles.orderList}>
-              {colDelivery.map(renderOrderCard)}
-            </div>
+        {/* Column 3: Delivery */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <h3 className={styles.columnTitle}>
+              <TruckIcon className={clsx(styles.columnIcon, styles.columnIconGold)} />
+              Доставка
+            </h3>
           </div>
+          <div className={styles.orderList}>{colDelivery.map(renderOrderCard)}</div>
+        </div>
 
-          {/* Column 4: Completed */}
-          <div className={styles.column}>
-            <div
-              className={styles.columnHeader}
-            >
-              <h3
-                className={styles.columnTitle}
-              >
-                <CheckIcon
-                  className={clsx(styles.columnIcon, styles.columnIconSuccess)}
-                />
-                Завершено
-              </h3>
-            </div>
-            <div className={styles.orderList}>
-              {colCompleted.map(renderOrderCard)}
-            </div>
+        {/* Column 4: Completed */}
+        <div className={styles.column}>
+          <div className={styles.columnHeader}>
+            <h3 className={styles.columnTitle}>
+              <CheckIcon className={clsx(styles.columnIcon, styles.columnIconSuccess)} />
+              Завершено
+            </h3>
           </div>
+          <div className={styles.orderList}>{colCompleted.map(renderOrderCard)}</div>
+        </div>
       </div>
     </div>
   );

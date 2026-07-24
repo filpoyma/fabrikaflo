@@ -1,17 +1,17 @@
 import React from 'react';
-import { NavLink, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { NavLink, useNavigate } from 'react-router-dom';
 
-import HomeIcon from '../assets/icons/home.svg';
-import InboxIcon from '../assets/icons/inbox.svg';
-import ShoppingBagIcon from '../assets/icons/shopping-bag.svg';
-import UsersIcon from '../assets/icons/users.svg';
-import PhotoIcon from '../assets/icons/photo.svg';
-import UserGroupIcon from '../assets/icons/user-group.svg';
-import LogoutIcon from '../assets/icons/logout.svg';
-import { authActions, selectAuthUser } from '../store/reducers/auth';
 import { useLogoutMutation } from '../api/auth';
 import { setAccessToken } from '../api/authSession.ts';
+import HomeIcon from '../assets/icons/home.svg';
+import InboxIcon from '../assets/icons/inbox.svg';
+import LogoutIcon from '../assets/icons/logout.svg';
+import PhotoIcon from '../assets/icons/photo.svg';
+import ShoppingBagIcon from '../assets/icons/shopping-bag.svg';
+import UserGroupIcon from '../assets/icons/user-group.svg';
+import UsersIcon from '../assets/icons/users.svg';
+import { authActions, selectAuthUser } from '../store/reducers/auth';
 
 export const Sidebar: React.FC = () => {
   const dispatch = useDispatch();
@@ -106,7 +106,7 @@ export const Sidebar: React.FC = () => {
         <nav style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
           <NavLink to="/" style={activeStyle} end data-testid="nav-dashboard">
             <HomeIcon style={{ width: '18px', height: '18px' }} />
-            <span>Панель</span>
+            <span>Доска</span>
           </NavLink>
           <NavLink to="/requests" style={activeStyle} data-testid="nav-requests">
             <InboxIcon style={{ width: '18px', height: '18px' }} />

@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify'
+import { parseDeliveryDateTime } from '../../lib/deliveryDateTime.ts'
 import { NotFoundError } from '../../lib/errors.ts'
 
 export function createRequestsService(fastify: FastifyInstance) {
@@ -59,7 +60,7 @@ export function createRequestsService(fastify: FastifyInstance) {
       })
       if (!request) throw new NotFoundError('Request')
 
-      const time = orderData.deliveryTime ? new Date(orderData.deliveryTime) : null
+      const time = orderData.deliveryTime ? parseDeliveryDateTime(orderData.deliveryTime) : null
 
       // Create Order
       const order = await prisma.order.create({
@@ -110,7 +111,7 @@ export function createRequestsService(fastify: FastifyInstance) {
       comment?: string | null
       examplePhotoUrl?: string | null
     }) {
-      const parsedDate = data.date ? new Date(data.date) : null
+      const parsedDate = data.date ? parseDeliveryDateTime(data.date) : null
       return prisma.request.create({
         data: {
           clientId,

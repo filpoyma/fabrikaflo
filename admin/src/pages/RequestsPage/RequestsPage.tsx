@@ -13,6 +13,10 @@ import CheckIcon from '../../assets/icons/check.svg';
 import PlusIcon from '../../assets/icons/plus.svg';
 import XMarkIcon from '../../assets/icons/x-mark.svg';
 import { PeonyIcon, PickupIcon, VanIcon } from '../../components/BotanicalIcons';
+import {
+  formatStoredDeliveryDate,
+  toDatetimeLocalValue,
+} from '../../shared/order/deliveryDateTime';
 import { pageStyles } from '../../shared/styles';
 import { Button, InlineQueryLoader, Input, Modal, Textarea } from '../../shared/ui';
 import type { IFlowerInquiry } from '../../types/inquiry';
@@ -96,7 +100,7 @@ export const RequestsPage: React.FC = () => {
     setRecipientName(req.client?.name || '');
     setRecipientPhone(req.recipientPhone || req.client?.phone || '');
     setDeliveryAddress(req.deliveryAddress || '');
-    setDeliveryTime('');
+    setDeliveryTime(toDatetimeLocalValue(req.date));
     setPostcardText(req.postcardText || '');
     setWishes(req.comment || '');
     setComment('');
@@ -229,12 +233,7 @@ export const RequestsPage: React.FC = () => {
                           )}
                         </div>
                         <div className="cell-mute">
-                          {req.date
-                            ? new Date(req.date).toLocaleDateString('ru-RU', {
-                                day: 'numeric',
-                                month: 'long',
-                              })
-                            : '—'}
+                          {formatStoredDeliveryDate(req.date) ?? '—'}
                         </div>
                       </td>
                       <td>

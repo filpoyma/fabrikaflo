@@ -10,6 +10,7 @@ import {
 } from '../../api/clients';
 import { useMyOrdersQuery } from '../../api/orders';
 import { useTelegram } from '../../hooks/useTelegram';
+import { dayjs } from '../../shared/lib/dayjs';
 import { formatOrderBudget, formatOrderDate } from '../../shared/order/orderFormat';
 import { isCompletedOrderStatus } from '../../shared/order/orderLabels';
 import { buildCheckoutRepeatState } from '../../shared/order/orderRepeat';
@@ -86,7 +87,7 @@ export default function ProfilePage() {
 
   const lastCompletedOrder = orders.find((o) => isCompletedOrderStatus(o.status)) ?? null;
   const recentOrders = [...orders]
-    .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    .sort((a, b) => dayjs(b.createdAt).valueOf() - dayjs(a.createdAt).valueOf())
     .slice(0, 5);
 
   return (
@@ -179,7 +180,7 @@ export default function ProfilePage() {
           <h3 className={styles.quickRepeatTitle}>🔄 Быстрый повтор заказа</h3>
           <p className={styles.quickRepeatDesc}>
             Повторить заказ № {String(lastCompletedOrder.id).slice(-6)} от{' '}
-            {formatOrderDate(lastCompletedOrder.createdAt, { day: 'numeric', month: 'long' })}:
+            {formatOrderDate(lastCompletedOrder.createdAt, 'D MMMM')}:
           </p>
           <div className={styles.quickRepeatItems}>
             {lastCompletedOrder.wishes && (

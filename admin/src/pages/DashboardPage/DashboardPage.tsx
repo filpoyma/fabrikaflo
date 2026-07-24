@@ -6,6 +6,7 @@ import { useRequestsQuery } from '../../api/requests'
 import { useOrdersQuery } from '../../api/orders'
 import { Button } from '../../shared/ui'
 import { PeonyIcon, DeliveryIcon, PinIcon } from '../../components/BotanicalIcons'
+import { dayjs } from '../../shared/lib/dayjs'
 import styles from './DashboardPage.module.css'
 
 const StatCard: React.FC<{
@@ -69,9 +70,8 @@ export const DashboardPage: React.FC = () => {
   const activeOrders = ordersList.filter((o) => o.status !== 'DELIVERED' && o.status !== 'CANCELLED')
   const deliveringOrders = ordersList.filter((o) => o.status === 'DELIVERING')
 
-  const todayStr = new Date().toDateString()
   const completedToday = ordersList.filter(
-    (o) => o.status === 'DELIVERED' && new Date(o.updatedAt).toDateString() === todayStr,
+    (o) => o.status === 'DELIVERED' && dayjs(o.updatedAt).isSame(dayjs(), 'day'),
   )
 
   const requestsLoading = requestsPending && requests === undefined

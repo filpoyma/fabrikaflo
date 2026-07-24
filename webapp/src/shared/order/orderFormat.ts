@@ -1,16 +1,10 @@
-export function formatOrderDate(
-  createdAt: string | undefined,
-  options?: Intl.DateTimeFormatOptions,
-): string {
-  if (!createdAt) return 'Дата неизвестна'
+import { parseDate } from '../lib/dayjs.ts'
 
-  const date = new Date(createdAt)
-  if (Number.isNaN(date.getTime())) return 'Дата неизвестна'
+export function formatOrderDate(createdAt: string | undefined, format = 'D MMMM YYYY'): string {
+  const parsed = parseDate(createdAt)
+  if (!parsed) return 'Дата неизвестна'
 
-  return date.toLocaleDateString(
-    'ru-RU',
-    options ?? { day: 'numeric', month: 'long', year: 'numeric' },
-  )
+  return parsed.format(format)
 }
 
 export function formatOrderBudget(budget: number | undefined | null): string {

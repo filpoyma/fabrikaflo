@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
 import clsx from 'clsx'
+import { formatDate } from '../../shared/lib/formatters'
 import { pageStyles } from '../../shared/styles'
 import { useClientsQuery } from '../../api/clients'
 import { isInitialQueryLoad } from '../../api/queryUtils'
@@ -94,7 +95,7 @@ export const ClientsPage: React.FC = () => {
                     </td>
                     <td>{client.phone || <span className={clsx('cell-mute', styles.missingValue)}>не указан</span>}</td>
                     <td className={clsx('cell-mute', styles.joinedDate)}>
-                      {new Date(client.createdAt).toLocaleDateString('ru-RU', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      {formatDate(client.createdAt)}
                     </td>
                     <td className="center">
                       <span className={styles.ordersCount}>

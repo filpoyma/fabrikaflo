@@ -20,6 +20,7 @@ import ShoppingBagIcon from '../../assets/icons/shopping-bag.svg';
 import ShoppingIcon from '../../assets/icons/shopping-bag.svg';
 import XMarkIcon from '../../assets/icons/x-mark.svg';
 import { DeliveryIcon, PinIcon } from '../../components/BotanicalIcons';
+import { formatDateTime } from '../../shared/lib/formatters';
 import { pageStyles } from '../../shared/styles';
 import { Button, getButtonClassName, Input, Select } from '../../shared/ui';
 import type { IFlowerOrder } from '../../types/order';
@@ -232,7 +233,7 @@ export const OrdersPage: React.FC = () => {
             </span>
             {order.deliveryTime && (
               <span className={clsx('v', styles.deliveryTime)}>
-                {new Date(order.deliveryTime).toLocaleString('ru-RU')}
+                {formatDateTime(order.deliveryTime)}
               </span>
             )}
           </div>

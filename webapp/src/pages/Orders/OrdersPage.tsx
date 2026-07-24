@@ -160,7 +160,7 @@ export default function OrdersPage() {
                       </div>
                       <div className={styles.budget}>{formatOrderBudget(request.budget)}</div>
                       <div className={styles.orderDate}>
-                        {formatOrderDate(request.createdAt, { day: 'numeric', month: 'long' })}
+                        {formatOrderDate(request.createdAt, 'D MMMM')}
                       </div>
                     </div>
                     <RequestStatusPill status={request.status} />
@@ -223,7 +223,7 @@ export default function OrdersPage() {
                     {formatOrderBudget(o.budget)}
                   </div>
                   <div className={styles.orderDate}>
-                    {formatOrderDate(o.createdAt, { day: 'numeric', month: 'long' })}
+                    {formatOrderDate(o.createdAt, 'D MMMM')}
                   </div>
                 </div>
                 <OrderStatusPill status={o.status} />

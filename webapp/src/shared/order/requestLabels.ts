@@ -1,4 +1,5 @@
 import type { IRequest } from '../../types/domain.ts'
+import { formatStoredDeliveryDateTime } from './deliveryDateTime.ts'
 
 export type TActiveRequestStatus = 'PENDING' | 'CONTACTED'
 
@@ -16,17 +17,5 @@ export function isActiveRequest(request: IRequest): request is IRequest & { stat
 }
 
 export function formatRequestDeliveryDate(date: string | null | undefined): string | null {
-  if (!date) return null
-
-  const parsed = new Date(date)
-  if (Number.isNaN(parsed.getTime())) return null
-
-  const dateStr = parsed.toLocaleDateString('ru-RU', {
-    day: '2-digit',
-    month: '2-digit',
-    year: 'numeric',
-  })
-  const timeStr = parsed.toLocaleTimeString('ru-RU', { hour: '2-digit', minute: '2-digit' })
-
-  return `${dateStr}, ${timeStr}`
+  return formatStoredDeliveryDateTime(date)
 }

@@ -1,4 +1,5 @@
 import type { FastifyInstance } from 'fastify'
+import { parseDeliveryDateTime } from '../../lib/deliveryDateTime.ts'
 import { NotFoundError, ValidationError } from '../../lib/errors.ts'
 
 export function createOrdersService(fastify: FastifyInstance) {
@@ -35,7 +36,7 @@ export function createOrdersService(fastify: FastifyInstance) {
       const client = await prisma.user.findUnique({ where: { id: data.clientId } })
       if (!client) throw new NotFoundError('Client user')
 
-      const time = data.deliveryTime ? new Date(data.deliveryTime) : null
+      const time = data.deliveryTime ? parseDeliveryDateTime(data.deliveryTime) : null
 
       const order = await prisma.order.create({
         data: {

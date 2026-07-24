@@ -74,6 +74,11 @@
   margin-bottom: 1.5rem;
 }
 
+.dateTimeInput {
+  margin-bottom: 0;
+  color-scheme: light;
+}
+
 .deliveryOptions {
   display: flex;
   gap: 0.5rem;

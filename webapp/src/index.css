@@ -57,6 +57,7 @@
 html, body {
   background-color: var(--ivory);
   color: var(--ink);
+  color-scheme: light;
   font-family: var(--font-sans);
   font-weight: 400;
   -webkit-font-smoothing: antialiased;
@@ -145,10 +146,12 @@ p  { color: var(--ink-soft); font-size: 0.95rem; line-height: 1.65; font-family:
 /* --- Inputs --- */
 input, textarea, select {
   width: 100%;
-  background: transparent;
+  background-color: var(--ivory);
   border: none;
   border-bottom: 1px solid var(--line);
   color: var(--ink);
+  caret-color: var(--ink);
+  -webkit-text-fill-color: var(--ink);
   padding: 0.85rem 0.15rem;
   border-radius: 0;
   font-family: var(--font-sans);

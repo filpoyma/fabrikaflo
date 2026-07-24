@@ -177,6 +177,12 @@ export default function CheckoutPage() {
       showAlert(RU_PHONE_INVALID_MESSAGE);
       return;
     }
+    if (!form.deliveryDate.trim() || !form.deliveryTime.trim()) {
+      setShowErrors(true);
+      haptic.error();
+      showAlert('Пожалуйста, укажите дату и время доставки.');
+      return;
+    }
     try {
       setSubmitting(true);
       haptic.impact('medium');
@@ -269,18 +275,28 @@ export default function CheckoutPage() {
             data-testid="budget-slider"
           />
 
-          <label className={cx('eyebrow', styles.fieldLabel)}>Дата доставки</label>
+          <label className={cx('eyebrow', styles.fieldLabel)}>Дата и время доставки</label>
           <div className={styles.dateTimeRow}>
             <input
               type="date"
               value={form.deliveryDate}
               onChange={(e) => setForm({ ...form, deliveryDate: e.target.value })}
+              required
+              className={cx(
+                styles.dateTimeInput,
+                showErrors && !form.deliveryDate.trim() ? styles.inputError : undefined,
+              )}
               data-testid="delivery-date-input"
             />
             <input
               type="time"
               value={form.deliveryTime}
               onChange={(e) => setForm({ ...form, deliveryTime: e.target.value })}
+              required
+              className={cx(
+                styles.dateTimeInput,
+                showErrors && !form.deliveryTime.trim() ? styles.inputError : undefined,
+              )}
               data-testid="delivery-time-input"
             />
           </div>

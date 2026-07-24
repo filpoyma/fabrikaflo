@@ -4,6 +4,7 @@ import styles from './ProfileAddressSection.module.css';
 import { useUpdateProfileMutation } from '../../../../api/clients';
 import MapPinIcon from '../../../../assets/icons/map-pin.svg';
 import { useTelegram } from '../../../../hooks/useTelegram';
+import { PHONE_PLACEHOLDER } from '../../../../shared/constants/placeholder.constants.ts';
 import { Button, cx } from '../../../../shared/ui';
 import { isValidRuPhone, RU_PHONE_INVALID_MESSAGE } from '../../../../shared/utils/phnum.utils';
 import type { IClientProfile } from '../../../../types';
@@ -77,7 +78,7 @@ export function ProfileAddressSection({
       <input
         type="tel"
         className={cx('input', styles.field, phoneError && styles.inputError)}
-        placeholder="+7 999 123 45 67"
+        placeholder={PHONE_PLACEHOLDER}
         value={phone}
         onChange={(e) => {
           setPhone(e.target.value);

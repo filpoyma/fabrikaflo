@@ -117,8 +117,8 @@ export function registerOrderHandlers(bot: any, fastify: FastifyInstance, adminC
               `Переведите заказ в статус ожидания оплаты или отправьте ссылку.`,
             { parse_mode: 'Markdown' }
           );
-        } catch (e) {
-          // Ignore
+        } catch (err) {
+          fastify.log.error(err, 'Failed to notify admin %s about bouquet approval for order %s', adminId, order.id)
         }
       }
     }

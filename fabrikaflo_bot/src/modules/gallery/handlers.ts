@@ -1,9 +1,15 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { createGalleryService } from './service.ts'
 
-export async function listGallery(request: FastifyRequest, _reply: FastifyReply) {
+export async function listGallery(request: FastifyRequest) {
   const service = createGalleryService(request.server)
   const data = await service.getAll()
+  return { data }
+}
+
+export async function getGalleryItem(request: FastifyRequest<{ Params: { id: string } }>) {
+  const service = createGalleryService(request.server)
+  const data = await service.getById(request.params.id)
   return { data }
 }
 
@@ -39,18 +45,12 @@ export async function createGalleryItem(request: FastifyRequest, reply: FastifyR
   return reply.code(201).send({ data })
 }
 
-export async function deleteGalleryItem(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  _reply: FastifyReply,
-) {
+export async function deleteGalleryItem(request: FastifyRequest<{ Params: { id: string } }>) {
   const service = createGalleryService(request.server)
   return service.deleteItem(request.params.id)
 }
 
-export async function updateGalleryItem(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  reply: FastifyReply,
-) {
+export async function updateGalleryItem(request: FastifyRequest<{ Params: { id: string } }>) {
   const parts = request.parts()
   let fileBuffer: Buffer | null = null
   let title: string | undefined = undefined
@@ -71,6 +71,7 @@ export async function updateGalleryItem(
   }
 
   const service = createGalleryService(request.server)
+
   let photoUrl: string | undefined = undefined
 
   if (fileBuffer && fileBuffer.length > 0) {

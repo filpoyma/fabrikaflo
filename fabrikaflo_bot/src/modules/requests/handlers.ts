@@ -1,22 +1,19 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { createRequestsService } from './service.ts'
 
-export async function listRequests(request: FastifyRequest, _reply: FastifyReply) {
+export async function listRequests(request: FastifyRequest) {
   const service = createRequestsService(request.server)
   const data = await service.getAll()
   return { data }
 }
 
-export async function listMyRequests(request: FastifyRequest, _reply: FastifyReply) {
+export async function listMyRequests(request: FastifyRequest) {
   const service = createRequestsService(request.server)
   const data = await service.getMyRequests(request.user.id)
   return { data }
 }
 
-export async function getRequest(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  _reply: FastifyReply,
-) {
+export async function getRequest(request: FastifyRequest<{ Params: { id: string } }>) {
   const service = createRequestsService(request.server)
   const data = await service.getById(request.params.id)
   return { data }
@@ -24,7 +21,6 @@ export async function getRequest(
 
 export async function updateRequestStatus(
   request: FastifyRequest<{ Params: { id: string }; Body: { status: string } }>,
-  _reply: FastifyReply,
 ) {
   const service = createRequestsService(request.server)
   const data = await service.updateStatus(request.params.id, request.body.status)
@@ -45,7 +41,6 @@ export async function convertRequest(
       budget: number
     }
   }>,
-  _reply: FastifyReply,
 ) {
   const service = createRequestsService(request.server)
   return service.convertToOrder(request.params.id, request.body)

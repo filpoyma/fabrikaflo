@@ -75,8 +75,8 @@ export function registerPortfolioHandlers(
         },
         { reply_markup: keyboard }
       );
-    } catch (e) {
-      // Fallback if media is same or update fails
+    } catch (err) {
+      fastify.log.warn(err, 'Failed to update portfolio media message')
     }
     await ctx.answerCallbackQuery();
   });

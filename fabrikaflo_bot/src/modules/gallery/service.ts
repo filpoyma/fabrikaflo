@@ -11,6 +11,12 @@ export function createGalleryService(fastify: FastifyInstance) {
       })
     },
 
+    async getById(id: string) {
+      const item = await prisma.portfolioItem.findUnique({ where: { id } })
+      if (!item) throw new NotFoundError('Portfolio item')
+      return item
+    },
+
     async createItem(photoUrl: string, title?: string, description?: string) {
       return prisma.portfolioItem.create({
         data: {

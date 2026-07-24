@@ -9,10 +9,8 @@ export const galleryApi = {
     return (response.data ?? []).map(galleryToProduct)
   },
   async getById(id: string): Promise<IProduct> {
-    const items = await galleryApi.list()
-    const found = items.find((item) => item.id === id)
-    if (!found) throw new Error('Portfolio item not found')
-    return found
+    const response = await api.get(`gallery/${id}`).json<{ data: IPortfolioItem }>()
+    return galleryToProduct(response.data)
   },
   async getCategories(): Promise<ICategory[]> {
     return [{ name: 'Авторские букеты', slug: 'bouquets' }]

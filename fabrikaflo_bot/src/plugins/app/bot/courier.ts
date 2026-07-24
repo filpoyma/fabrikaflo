@@ -81,7 +81,7 @@ export function registerCourierHandlers(bot: any, fastify: FastifyInstance, admi
           `🎉 Ваш букет успешно доставлен получателю! Спасибо, что доверили нам этот приятный момент. 🌸`
         )
       } catch (err) {
-        // Ignore
+        fastify.log.error(err, 'Failed to notify client %s about delivery of order %s', order.client.telegramId, order.id)
       }
     }
 
@@ -103,8 +103,8 @@ export function registerCourierHandlers(bot: any, fastify: FastifyInstance, admi
             `✅ Курьер доставил заказ для клиента: *${order.client.name}* (Бюджет: ${order.budget} руб., доставлено: ${deliveredAt})`,
             { parse_mode: 'Markdown' },
           )
-        } catch (e) {
-          // Ignore
+        } catch (err) {
+          fastify.log.error(err, 'Failed to notify admin %s about delivery of order %s', adminId, order.id)
         }
       }
     }

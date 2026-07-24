@@ -1,0 +1,1 @@
+export const PHONE_PLACEHOLDER = '8 XXX XXX XX XX';

@@ -1,7 +1,7 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
 import { createTeamService } from './service.ts'
 
-export async function listTeam(request: FastifyRequest, _reply: FastifyReply) {
+export async function listTeam(request: FastifyRequest) {
   const service = createTeamService(request.server)
   const data = await service.getAllMembers()
   return { data }
@@ -37,7 +37,6 @@ export async function updateTeamMember(
       password?: string
     }
   }>,
-  _reply: FastifyReply,
 ) {
   const service = createTeamService(request.server)
   const data = await service.updateMember(request.params.id, request.body)
@@ -70,11 +69,7 @@ export async function uploadTeamMemberAvatar(
   return { data }
 }
 
-export async function deleteTeamMember(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  _reply: FastifyReply,
-) {
+export async function deleteTeamMember(request: FastifyRequest<{ Params: { id: string } }>) {
   const service = createTeamService(request.server)
   return service.deleteMember(request.params.id)
 }
-

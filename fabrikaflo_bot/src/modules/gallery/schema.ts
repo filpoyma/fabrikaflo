@@ -17,6 +17,18 @@ export const listGallerySchema = {
   },
 }
 
+export const getGallerySchema = {
+  tags: ['gallery'],
+  params: Type.Object({
+    id: Type.String(),
+  }),
+  response: {
+    200: Type.Object({
+      data: PortfolioItemSchema,
+    }),
+  },
+}
+
 export const createGallerySchema = {
   tags: ['gallery'],
   response: {

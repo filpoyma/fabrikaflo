@@ -1,16 +1,14 @@
 import type { FastifyRequest, FastifyReply } from 'fastify'
+import type { OrderStatus } from '../../generated/prisma/client.ts'
 import { createOrdersService } from './service.ts'
 
-export async function listOrders(request: FastifyRequest, _reply: FastifyReply) {
+export async function listOrders(request: FastifyRequest) {
   const service = createOrdersService(request.server)
   const data = await service.getAll()
   return { data }
 }
 
-export async function getOrder(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  _reply: FastifyReply,
-) {
+export async function getOrder(request: FastifyRequest<{ Params: { id: string } }>) {
   const service = createOrdersService(request.server)
   const data = await service.getById(request.params.id)
   return { data }
@@ -39,10 +37,9 @@ export async function createOrder(
 
 export async function updateOrderStatus(
   request: FastifyRequest<{ Params: { id: string }; Body: { status: string } }>,
-  _reply: FastifyReply,
 ) {
   const service = createOrdersService(request.server)
-  const data = await service.updateStatus(request.params.id, request.body.status)
+  const data = await service.updateStatus(request.params.id, request.body.status as OrderStatus)
   return { data }
 }
 
@@ -65,17 +62,13 @@ export async function uploadPhoto(
   return { data }
 }
 
-export async function sendApproval(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  _reply: FastifyReply,
-) {
+export async function sendApproval(request: FastifyRequest<{ Params: { id: string } }>) {
   const service = createOrdersService(request.server)
   return service.sendPhotoForApproval(request.params.id)
 }
 
 export async function sendPayment(
   request: FastifyRequest<{ Params: { id: string }; Body: { paymentLink: string } }>,
-  _reply: FastifyReply,
 ) {
   const service = createOrdersService(request.server)
   return service.sendPaymentLink(request.params.id, request.body.paymentLink)
@@ -83,38 +76,30 @@ export async function sendPayment(
 
 export async function assignCourier(
   request: FastifyRequest<{ Params: { id: string }; Body: { courierId: string } }>,
-  _reply: FastifyReply,
 ) {
   const service = createOrdersService(request.server)
   return service.assignCourier(request.params.id, request.body.courierId)
 }
 
-export async function listMyOrders(request: FastifyRequest, _reply: FastifyReply) {
+export async function listMyOrders(request: FastifyRequest) {
   const service = createOrdersService(request.server)
   const data = await service.getMyOrders(request.user.id)
   return { data }
 }
 
-export async function clientGetOrder(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  _reply: FastifyReply,
-) {
+export async function clientGetOrder(request: FastifyRequest<{ Params: { id: string } }>) {
   const service = createOrdersService(request.server)
   const data = await service.clientGetById(request.params.id, request.user.id)
   return { data }
 }
 
-export async function clientApproveOrder(
-  request: FastifyRequest<{ Params: { id: string } }>,
-  _reply: FastifyReply,
-) {
+export async function clientApproveOrder(request: FastifyRequest<{ Params: { id: string } }>) {
   const service = createOrdersService(request.server)
   return service.clientApproveOrder(request.params.id, request.user.id)
 }
 
 export async function clientDisapproveOrder(
   request: FastifyRequest<{ Params: { id: string }; Body: { feedback: string } }>,
-  _reply: FastifyReply,
 ) {
   const service = createOrdersService(request.server)
   return service.clientDisapproveOrder(request.params.id, request.user.id, request.body.feedback)

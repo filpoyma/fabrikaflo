@@ -11,6 +11,7 @@ import MapPinIcon from '../../assets/icons/map-pin.svg';
 import UploadIcon from '../../assets/icons/upload.svg';
 import XIcon from '../../assets/icons/x.svg';
 import { useTelegram } from '../../hooks/useTelegram';
+import { PHONE_PLACEHOLDER } from '../../shared/constants/placeholder.constants.ts';
 import { buildCheckoutSuccessMessage } from '../../shared/order/buildCheckoutSuccessMessage';
 import { formatDeliveryDateTime } from '../../shared/order/deliveryDateTime';
 import { Button, Chip, cx, IconButton, PageTitle } from '../../shared/ui';
@@ -284,7 +285,7 @@ export default function CheckoutPage() {
               required
               className={cx(
                 styles.dateTimeInput,
-                showErrors && !form.deliveryDate.trim() ? styles.inputError : undefined,
+                showErrors && !form.deliveryDate.trim() ? styles.inputError : undefined
               )}
               data-testid="delivery-date-input"
             />
@@ -295,7 +296,7 @@ export default function CheckoutPage() {
               required
               className={cx(
                 styles.dateTimeInput,
-                showErrors && !form.deliveryTime.trim() ? styles.inputError : undefined,
+                showErrors && !form.deliveryTime.trim() ? styles.inputError : undefined
               )}
               data-testid="delivery-time-input"
             />
@@ -381,7 +382,7 @@ export default function CheckoutPage() {
           </label>
           <input
             type="tel"
-            placeholder="+7 999 123 45 67"
+            placeholder={PHONE_PLACEHOLDER}
             value={form.recipientPhone}
             onChange={(e) => setForm({ ...form, recipientPhone: e.target.value })}
             required

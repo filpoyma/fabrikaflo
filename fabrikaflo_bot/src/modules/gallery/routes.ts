@@ -5,7 +5,8 @@ import * as schema from './schema.ts'
 export const galleryRoutes: FastifyPluginAsyncTypebox = async (fastify) => {
   // Publicly readable for bot display
   fastify.get('/', { schema: schema.listGallerySchema }, handlers.listGallery)
-  
+  fastify.get('/:id', { schema: schema.getGallerySchema }, handlers.getGalleryItem)
+
   // Restricted for admin management
   fastify.post(
     '/',

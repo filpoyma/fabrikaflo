@@ -118,7 +118,7 @@ export const RequestsPage: React.FC = () => {
       deliveryAddress: selectedRequest.deliveryType === 'DELIVERY' ? deliveryAddress : '',
       deliveryTime: deliveryTime || undefined,
       postcardText: postcardText || undefined,
-      wishes,
+      wishes: wishes || undefined,
       comment: comment || undefined,
       budget: Number(budget),
     };
@@ -341,7 +341,6 @@ export const RequestsPage: React.FC = () => {
                 className={styles.commentField}
                 value={wishes}
                 onChange={(e) => setWishes(e.target.value)}
-                required
               />
             </div>
 

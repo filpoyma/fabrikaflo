@@ -219,6 +219,7 @@ export function createOrdersService(fastify: FastifyInstance) {
         await fastify.sendBotNotification(courier.telegramId, details, {
           courierConfirm: true,
           orderId: order.id,
+          deliveryAddress: order.deliveryAddress,
         })
       }
 

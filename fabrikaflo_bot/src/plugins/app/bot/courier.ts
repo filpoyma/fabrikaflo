@@ -1,5 +1,6 @@
 import type { FastifyInstance } from 'fastify'
 import { InlineKeyboard } from 'grammy'
+import { buildCourierDeliveryKeyboard } from './mapLinks.ts'
 import { getOrCreateUser } from './utils.ts'
 
 export function registerCourierHandlers(bot: any, fastify: FastifyInstance, adminChatId?: string) {
@@ -38,10 +39,7 @@ export function registerCourierHandlers(bot: any, fastify: FastifyInstance, admi
         `• Открытка: _${order.postcardText || 'нет'}_\n` +
         `• Заказчик: ${order.client.name} (${order.client.phone || ''})`
 
-      const inlineKeyboard = new InlineKeyboard().text(
-        '✅ Доставлено',
-        `courier_complete:${order.id}`
-      )
+      const inlineKeyboard = buildCourierDeliveryKeyboard(order.id, order.deliveryAddress)
 
       await ctx.reply(details, {
         parse_mode: 'Markdown',
@@ -89,12 +87,21 @@ export function registerCourierHandlers(bot: any, fastify: FastifyInstance, admi
 
     // Notify admins
     if (adminChatId) {
+      const deliveredAt = new Date().toLocaleString('ru-RU', {
+        timeZone: 'Europe/Moscow',
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      })
       const admins = adminChatId.split(',').map((id) => id.trim())
       for (const adminId of admins) {
         try {
           await bot.api.sendMessage(
             adminId,
-            `✅ Курьер доставил заказ для клиента: *${order.client.name}* (Бюджет: ${order.budget} руб.)`
+            `✅ Курьер доставил заказ для клиента: *${order.client.name}* (Бюджет: ${order.budget} руб., доставлено: ${deliveredAt})`,
+            { parse_mode: 'Markdown' },
           )
         } catch (e) {
           // Ignore

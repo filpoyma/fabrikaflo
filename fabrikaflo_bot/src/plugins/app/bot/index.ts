@@ -3,6 +3,7 @@ import fp from 'fastify-plugin';
 import { Bot, InlineKeyboard, webhookCallback } from 'grammy';
 
 import { registerCourierHandlers } from './courier.ts';
+import { buildCourierDeliveryKeyboard } from './mapLinks.ts';
 import { getClientMainMenu, getCourierMainMenu } from './keyboards.ts';
 import { registerOrderHandlers } from './orders.ts';
 import { registerPortfolioHandlers } from './portfolio.ts';
@@ -211,7 +212,19 @@ export default fp(
               }
             }
             if (options?.courierConfirm && options?.orderId) {
-              inlineKeyboard.text('✅ Доставлено', `courier_complete:${options.orderId}`);
+              const courierKeyboard = buildCourierDeliveryKeyboard(
+                options.orderId,
+                options.deliveryAddress,
+              )
+
+              if (inlineKeyboard.inline_keyboard.length > 0) {
+                courierKeyboard.inline_keyboard.unshift(...inlineKeyboard.inline_keyboard)
+              }
+
+              return await bot.api.sendMessage(telegramId, text, {
+                parse_mode: 'Markdown',
+                reply_markup: courierKeyboard,
+              })
             }
 
             return await bot.api.sendMessage(telegramId, text, {
